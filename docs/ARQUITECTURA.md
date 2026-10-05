@@ -5,6 +5,8 @@ Percha es un sitio estático con dos páginas y dos scripts propios:
 | Archivo | Responsabilidad |
 | --- | --- |
 | `assets/js/patrones.js` | Motor de patronaje. Define las medidas (`MEDIDAS`), las prendas (`PRENDAS`), las tallas de referencia (`tallaBase`) y genera el SVG (`generar`). No toca el DOM y funciona también en Node. |
+| `assets/js/i18n.js` | Traducciones: detecta el idioma, aplica los atributos `data-i18n*` del HTML y expone `t()` y `num()`. |
+| `assets/js/lang/*.js` | Un diccionario por idioma. `es.js` es la referencia. |
 | `assets/js/app.js` | Interfaz: selector de prenda, formulario, validación, vista previa con zoom, guardado en `localStorage` y exportación a SVG/PDF. |
 
 ## Flujo de datos
@@ -91,3 +93,27 @@ Se dibuja el contorno con un trazo de `2 × margen` (borde coral exterior + rell
 4. **Icono.** Añade un SVG de 48 × 48 en `ICONOS` dentro de `app.js` (y una tarjeta en `index.html` si quieres mostrarla en la landing).
 5. **Pruebas.** `npm test` recorre automáticamente todas las prendas con todas las tallas y con valores extremos.
 6. **Verificación.** Exporta un PDF, imprímelo al 100 % y mide el cuadro de control y alguna línea clave (por ejemplo, el ancho de cadera).
+
+## Internacionalización
+
+- Las cadenas viven en `assets/js/lang/<código>.js` como un objeto plano `clave → texto`, registrado con `PerchaI18n.add(código, { nombre, locale }, dict)`.
+- Interpolación con llaves: `'chip.measures': '{n} medidas'` → `t('chip.measures', { n: 4 })`.
+- En el HTML:
+  - `data-i18n="clave"` reemplaza el texto del elemento.
+  - `data-i18n-html="clave"` reemplaza el HTML (solo para textos propios con `<b>`, `<br>`…).
+  - `data-i18n-attr="aria-label:clave,title:otra"` traduce atributos.
+  - `data-i18n-args='{"n":4}'` pasa parámetros.
+  - `<select data-lang-switch>` se convierte en el selector de idioma.
+- El motor de patrones usa `tr()` para todos los textos que se imprimen (nombres de pieza, «Cortar 2», notas…) y `fmtN()` para formatear números según el idioma (`20,7` / `20.7`).
+- Orden de detección: parámetro `?lang=`, preferencia guardada en `localStorage`, idiomas del navegador y, por último, español.
+- El texto del HTML está en español por defecto, así la página se lee aunque JavaScript falle.
+- Los PDF usan las fuentes estándar de jsPDF (codificación WinAnsi): cubren los idiomas de Europa occidental. Para alfabetos no latinos habría que incrustar una fuente TTF con `doc.addFont`.
+
+## Añadir un idioma
+
+1. Copia `assets/js/lang/es.js` a `assets/js/lang/<código>.js` (por ejemplo `it.js`).
+2. Cambia la primera línea: `PerchaI18n.add('it', { nombre: 'Italiano', locale: 'it-IT' }, { … })`.
+3. Traduce todos los valores. No cambies las claves ni los marcadores `{n}`, `{w}`…
+4. Añade `<script src="assets/js/lang/it.js" defer></script>` en `index.html` y `herramienta.html`, junto a los demás idiomas (y un `<link rel="alternate" hreflang="it">` en la landing).
+5. Ejecuta `npm test`: comprueba que el idioma tiene exactamente las mismas claves que `es.js` y los mismos parámetros.
+6. Revisa la web en móvil: algunos idiomas son más largos y pueden necesitar textos más cortos en botones.

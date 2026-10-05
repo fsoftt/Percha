@@ -1,6 +1,6 @@
 {
   "name": "percha",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Generador de patrones de costura a medida que funciona en el navegador.",
   "private": true,
   "license": "MIT",

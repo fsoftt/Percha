@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Percha · Herramienta</title>
-  <meta name="description" content="Introduce tus medidas y genera un patrón de costura a escala real. Exporta a PDF en A4, Carta o plóter.">
+  <title data-i18n="meta.tool.title">Percha · Herramienta</title>
+  <meta name="description" data-i18n-attr="content:meta.tool.desc" content="Introduce tus medidas y genera un patrón de costura a escala real. Exporta a PDF en A4, Carta o plóter.">
   <meta name="theme-color" content="#FF4D2E">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,14 +15,15 @@
 <body>
   <header class="nav">
     <div class="wrap nav__in">
-      <a class="logo" href="./" aria-label="Percha, inicio">
+      <a class="logo" href="./" aria-label="Percha, inicio" data-i18n-attr="aria-label:nav.home">
         <svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="#14101F"/><path d="M20 9.5a3.2 3.2 0 1 1 3.2 3.2c-1.6 0-3.2 1.1-3.2 2.7v1.4M20 16.8 8 26.5h24z" fill="none" stroke="#D4FF3A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span>percha<i>.</i></span>
       </a>
-      <nav class="nav__links" aria-label="Principal">
-        <a href="./#como-funciona">Cómo funciona</a>
-        <a href="./#medidas">Cómo medir</a>
-        <a class="btn btn--small btn--ghost" href="./">← Inicio</a>
+      <nav class="nav__links" aria-label="Principal" data-i18n-attr="aria-label:nav.main">
+        <a href="./#como-funciona" data-i18n="nav.how">Cómo funciona</a>
+        <a href="./#medidas" data-i18n="nav.howMeasure">Cómo medir</a>
+        <label class="lang"><span class="sr-only" data-i18n="lang.label">Idioma</span><select data-lang-switch aria-label="Idioma" data-i18n-attr="aria-label:lang.label"><option value="es">Español</option></select></label>
+        <a class="btn btn--small btn--ghost" href="./" data-i18n="nav.back">← Inicio</a>
       </nav>
     </div>
   </header>
@@ -30,73 +31,73 @@
   <main class="wrap">
     <div class="tool-head">
       <div>
-        <h1>Crea tu patrón</h1>
-        <p>Elige prenda, introduce tus medidas en centímetros y exporta.</p>
+        <h1 data-i18n="tool.title">Crea tu patrón</h1>
+        <p data-i18n="tool.lead">Elige prenda, introduce tus medidas en centímetros y exporta.</p>
       </div>
-      <a class="btn btn--small mobile-preview-btn" href="#vista">Ver patrón ↓</a>
+      <a class="btn btn--small mobile-preview-btn" href="#vista" data-i18n="tool.view">Ver patrón ↓</a>
     </div>
 
     <div class="app">
       <div>
         <section class="panel" aria-labelledby="h-prenda">
-          <h2 id="h-prenda"><span class="num">1</span> Prenda</h2>
-          <div class="picker" id="picker" role="group" aria-label="Prenda"></div>
+          <h2 id="h-prenda"><span class="num">1</span> <span data-i18n="tool.s1">Prenda</span></h2>
+          <div class="picker" id="picker" role="group" aria-label="Prenda" data-i18n-attr="aria-label:tool.s1"></div>
         </section>
 
         <section class="panel" aria-labelledby="h-medidas">
-          <h2 id="h-medidas"><span class="num">2</span> Medidas</h2>
+          <h2 id="h-medidas"><span class="num">2</span> <span data-i18n="tool.s2">Medidas</span></h2>
           <div class="field" style="margin-bottom:16px">
-            <label for="talla">Partir de una talla de referencia</label>
+            <label for="talla" data-i18n="tool.size.label">Partir de una talla de referencia</label>
             <select id="talla"></select>
-            <span class="hint">Carga valores aproximados y ajusta los que cambien en tu cuerpo. Pulsa <b>?</b> para ver cómo medir.</span>
+            <span class="hint" data-i18n-html="tool.size.hint">Carga valores aproximados y ajusta los que cambien en tu cuerpo. Pulsa <b>?</b> para ver cómo medir.</span>
           </div>
           <form class="fields" id="fields" novalidate autocomplete="off"></form>
         </section>
 
         <section class="panel" aria-labelledby="h-opciones">
-          <h2 id="h-opciones"><span class="num">3</span> Opciones</h2>
+          <h2 id="h-opciones"><span class="num">3</span> <span data-i18n="tool.s3">Opciones</span></h2>
           <div class="opt">
-            <span class="opt-label" id="l-margen">Margen de costura</span>
+            <span class="opt-label" id="l-margen" data-i18n="tool.sa">Margen de costura</span>
             <div class="seg" id="margen" role="group" aria-labelledby="l-margen">
-              <button type="button" data-v="0">Sin margen</button>
+              <button type="button" data-v="0" data-i18n="tool.sa.none">Sin margen</button>
               <button type="button" data-v="1">1 cm</button>
               <button type="button" data-v="1.5">1,5 cm</button>
             </div>
           </div>
           <div class="opt">
-            <span class="opt-label" id="l-papel">Papel para el PDF</span>
+            <span class="opt-label" id="l-papel" data-i18n="tool.paper">Papel para el PDF</span>
             <div class="seg" id="papel" role="group" aria-labelledby="l-papel">
               <button type="button" data-v="a4">A4</button>
-              <button type="button" data-v="carta">Carta</button>
-              <button type="button" data-v="plotter">Plóter (1 hoja)</button>
+              <button type="button" data-v="carta" data-i18n="tool.paper.letter">Carta</button>
+              <button type="button" data-v="plotter" data-i18n="tool.paper.plotter">Plóter (1 hoja)</button>
             </div>
           </div>
         </section>
       </div>
 
-      <section class="stage" id="vista" aria-label="Vista previa del patrón">
+      <section class="stage" id="vista" aria-label="Vista previa del patrón" data-i18n-attr="aria-label:tool.preview">
         <div class="stage__bar">
           <div class="stage__info" id="info"></div>
-          <div class="zoom" role="group" aria-label="Zoom">
-            <button type="button" id="zoomOut" aria-label="Alejar">−</button>
+          <div class="zoom" role="group" aria-label="Zoom" data-i18n-attr="aria-label:tool.zoom">
+            <button type="button" id="zoomOut" aria-label="Alejar" data-i18n-attr="aria-label:tool.zoomOut">−</button>
             <output id="zoomVal">100%</output>
-            <button type="button" id="zoomIn" aria-label="Acercar">+</button>
-            <button type="button" id="zoomFit" aria-label="Ajustar a la vista" title="Ajustar" style="font-size:.85rem;width:auto;padding:0 12px">Ajustar</button>
+            <button type="button" id="zoomIn" aria-label="Acercar" data-i18n-attr="aria-label:tool.zoomIn">+</button>
+            <button type="button" id="zoomFit" aria-label="Ajustar" title="Ajustar" data-i18n="tool.zoomFit" data-i18n-attr="aria-label:tool.zoomFit,title:tool.zoomFit" style="font-size:.85rem;width:auto;padding:0 12px">Ajustar</button>
           </div>
         </div>
         <div class="canvas" id="canvas"><div class="canvas__inner" id="canvasInner"></div></div>
-        <div class="legend" aria-label="Leyenda">
-          <span><i style="background:#14101F;height:3px"></i>Línea de costura</span>
-          <span><i style="background:#FFD9CF;border:2px solid #FF4D2E"></i>Margen de costura</span>
-          <span><i style="background:repeating-linear-gradient(90deg,#6A3DF0 0 8px,transparent 8px 11px);height:3px"></i>Doblez de la tela</span>
-          <span><i style="background:repeating-linear-gradient(90deg,#7A6FA6 0 5px,transparent 5px 8px);height:2px"></i>Líneas guía</span>
+        <div class="legend" aria-label="Leyenda" data-i18n-attr="aria-label:tool.legend">
+          <span><i style="background:#14101F;height:3px"></i><span data-i18n="tool.lg.seam">Línea de costura</span></span>
+          <span><i style="background:#FFD9CF;border:2px solid #FF4D2E"></i><span data-i18n="tool.lg.sa">Margen de costura</span></span>
+          <span><i style="background:repeating-linear-gradient(90deg,#6A3DF0 0 8px,transparent 8px 11px);height:3px"></i><span data-i18n="tool.lg.fold">Doblez de la tela</span></span>
+          <span><i style="background:repeating-linear-gradient(90deg,#7A6FA6 0 5px,transparent 5px 8px);height:2px"></i><span data-i18n="tool.lg.guide">Líneas guía</span></span>
         </div>
         <div class="actions">
-          <button class="btn" type="button" id="btnPdf">Exportar PDF</button>
-          <button class="btn btn--lime" type="button" id="btnSvg">Descargar SVG</button>
+          <button class="btn" type="button" id="btnPdf" data-i18n="tool.pdf">Exportar PDF</button>
+          <button class="btn btn--lime" type="button" id="btnSvg" data-i18n="tool.svg">Descargar SVG</button>
         </div>
         <div class="panel">
-          <h2 style="font-size:1rem;margin-bottom:10px">Notas del trazado</h2>
+          <h2 style="font-size:1rem;margin-bottom:10px" data-i18n="tool.notes">Notas del trazado</h2>
           <ul class="notes" id="notas"></ul>
         </div>
       </section>
@@ -105,8 +106,8 @@
 
   <footer class="footer">
     <div class="wrap footer__in">
-      <span>Imprime al <b>100 %</b> («Tamaño real») y comprueba el cuadro de 10 × 10 cm.</span>
-      <span><a href="https://github.com/fsoftt/Percha">Código en GitHub</a> · Licencia MIT</span>
+      <span data-i18n-html="foot.tool">Imprime al <b>100 %</b> («Tamaño real») y comprueba el cuadro de 10 × 10 cm.</span>
+      <span><a href="https://github.com/fsoftt/Percha" data-i18n="foot.code">Código en GitHub</a> · <span data-i18n="foot.license">Licencia MIT</span></span>
     </div>
   </footer>
 
@@ -115,6 +116,11 @@
 
   <script src="assets/vendor/jspdf.umd.min.js" defer></script>
   <script src="assets/vendor/svg2pdf.umd.min.js" defer></script>
+  <script src="assets/js/i18n.js" defer></script>
+  <script src="assets/js/lang/es.js" defer></script>
+  <script src="assets/js/lang/en.js" defer></script>
+  <script src="assets/js/lang/fr.js" defer></script>
+  <script src="assets/js/lang/pt.js" defer></script>
   <script src="assets/js/patrones.js" defer></script>
   <script src="assets/js/app.js" defer></script>
 </body>

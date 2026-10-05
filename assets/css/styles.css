@@ -104,6 +104,15 @@ p { margin: 0; }
 .nav__links a:not(.btn):hover { color: var(--text); }
 @media (max-width: 760px) {
   .nav__links a:not(.btn) { display: none; }
+  .nav__links { gap: 10px; }
+}
+.lang select {
+  width: auto; min-height: 0; padding: 8px 30px 8px 12px; border-radius: 999px;
+  font: 600 .85rem/1 var(--font-body); background-color: var(--surface-2); border: 1px solid var(--line);
+  background-position: calc(100% - 15px) 50%, calc(100% - 10px) 50%;
+}
+@media (max-width: 560px) {
+  .nav__links .btn { display: none; }
 }
 
 /* ---------- Landing ---------- */
@@ -124,7 +133,7 @@ p { margin: 0; }
   border: 2px solid var(--ink); border-radius: 999px;
   padding: 6px 14px; font-weight: 700; font-size: .85rem; letter-spacing: .02em;
 }
-.hero h1 { font-size: clamp(2.8rem, 7vw, 5.6rem); font-weight: 800; margin: 22px 0 22px; }
+.hero h1 { font-size: clamp(2.2rem, 9.5vw, 5.6rem); font-weight: 800; margin: 22px 0 22px; overflow-wrap: break-word; hyphens: auto; }
 .hero h1 .scribble { position: relative; color: var(--coral); white-space: nowrap; }
 .hero h1 .scribble::after {
   content: ""; position: absolute; left: -2%; right: -2%; bottom: .02em; height: .16em;
