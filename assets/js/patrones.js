@@ -6,6 +6,11 @@
 (function (global) {
   'use strict';
 
+  // ---------- Traducción ----------
+  // Usa PerchaI18n si está cargado; si no, devuelve la clave.
+  const tr = (k, p) => (global.PerchaI18n ? global.PerchaI18n.t(k, p) : k);
+  const fmtN = (v) => (global.PerchaI18n ? global.PerchaI18n.num(v) : (Math.round(v * 10) / 10).toString());
+
   // ---------- Geometría básica ----------
   const P = (x, y) => ({ x, y });
   const f = (n) => (Math.round(n * 1000) / 1000).toString();
@@ -106,7 +111,7 @@
         .L(P(0, L))
         .Z();
 
-      const lineas = [guide(P(0, hh), P(w, hh), 'Línea de cadera')];
+      const lineas = [guide(P(0, hh), P(w, hh), tr('p.hipLine'))];
       const waistY = (x) => cbY + (st.y - cbY) * Math.pow(x / st.x, 2);
       for (let i = 1; i <= n; i++) {
         const x = (st.x * i) / (n + 1);
@@ -116,28 +121,28 @@
       }
       if (!isF) {
         lineas.push(notch(P(0, 20), P(1, 0)));
-        lineas.push({ d: seg(P(0.8, 20), P(3.5, 20)), tipo: 'guia', texto: 'Fin cremallera', at: P(2.2, 19.4) });
+        lineas.push({ d: seg(P(0.8, 20), P(3.5, 20)), tipo: 'guia', texto: tr('p.zipEnd'), at: P(2.2, 19.4) });
       }
       piezas.push({
-        nombre: isF ? 'Falda · Delantero' : 'Falda · Espalda',
-        corte: isF ? 'Cortar 1 al doblez' : 'Cortar 2',
+        nombre: isF ? tr('p.skirtFront') : tr('p.skirtBack'),
+        corte: isF ? tr('p.cutFold') : tr('p.cut2'),
         doblez: isF,
         outline: path,
         lineas,
         hilo: { x: w * 0.55, y1: hh + 4, y2: L - 6 },
         etiqueta: P(w * 0.5, hh + (L - hh) * 0.35),
       });
-      if (pz > 0) notas.push(`${isF ? 'Delantero' : 'Espalda'}: ${n} pinza(s) de ${(pz / n).toFixed(1)} cm`);
+      if (pz > 0) notas.push(tr(isF ? 'n.dartsFront' : 'n.dartsBack', { n, w: fmtN(pz / n) }));
     }
 
     const cl = W + 1 + 3;
     const cint = new Path().M(P(0, 0)).L(P(cl, 0)).L(P(cl, 8)).L(P(0, 8)).Z();
     piezas.push({
-      nombre: 'Cinturilla',
-      corte: 'Cortar 1',
+      nombre: tr('p.waistband'),
+      corte: tr('p.cut1'),
       doblez: false,
       outline: cint,
-      lineas: [guide(P(0, 4), P(cl, 4), 'Doblar aquí'), { d: seg(P(cl - 3, 0), P(cl - 3, 8)), tipo: 'guia', texto: 'Cruce 3 cm', at: P(cl - 1.5, 2) }],
+      lineas: [guide(P(0, 4), P(cl, 4), tr('p.foldHere')), { d: seg(P(cl - 3, 0), P(cl - 3, 8)), tipo: 'guia', texto: tr('p.overlap'), at: P(cl - 1.5, 2) }],
       hilo: { x: null, y: 6, x1: 4, x2: Math.min(cl - 6, 30) },
       etiqueta: P(Math.min(cl / 2, 22), 2),
       compacta: true,
@@ -146,9 +151,9 @@
     return {
       piezas,
       notas: [
-        'Holgura: 4 cm en cadera, 1 cm en cintura.',
+        tr('n.skirtEase'),
         ...notas,
-        'Cremallera invisible de 20 cm en centro espalda.',
+        tr('n.zip'),
       ],
     };
   }
@@ -183,7 +188,7 @@
       .L(P(0, te))
       .Z();
     const dxB = ae / 4 + 1;
-    const linB = [guide(P(0, sisa), P(bw, sisa), 'Línea de sisa')];
+    const linB = [guide(P(0, sisa), P(bw, sisa), tr('p.armLine'))];
     if (pzB > 0.3) linB.push(dart(P(dxB - pzB / 2, te), P(dxB, sisa + 2), P(dxB + pzB / 2, te)));
 
     // Delantero
@@ -211,7 +216,7 @@
       .L(P(0, td))
       .Z();
 
-    const linF = [guide(P(0, uaY), P(fw, uaY), 'Línea de sisa')];
+    const linF = [guide(P(0, uaY), P(fw, uaY), tr('p.armLine'))];
     // Pinza de costado: absorbe la diferencia de largo por el busto
     const dSide = clamp(td - (te + 2), 0, 6);
     if (dSide >= 0.5) {
@@ -221,28 +226,28 @@
       const v = P(mid.x - bp.x, mid.y - bp.y), n = Math.hypot(v.x, v.y) || 1;
       const tip = P(bp.x + (v.x / n) * 2.5, bp.y + (v.y / n) * 2.5);
       linF.push(dart(a, tip, b));
-      notas.push(`Pinza de costado de ${dSide.toFixed(1)} cm (diferencia de talles).`);
+      notas.push(tr('n.sideDart', { v: fmtN(dSide) }));
     }
     if (pzF > 0.3) linF.push(dart(P(bp.x - pzF / 2, td), P(bp.x, bp.y + 2.5), P(bp.x + pzF / 2, td)));
-    linF.push({ d: `M${f(bp.x - 0.4)} ${f(bp.y)} L${f(bp.x + 0.4)} ${f(bp.y)} M${f(bp.x)} ${f(bp.y - 0.4)} L${f(bp.x)} ${f(bp.y + 0.4)}`, tipo: 'piquete', texto: 'Punto de busto', at: P(bp.x + 2.2, bp.y - 0.6) });
+    linF.push({ d: `M${f(bp.x - 0.4)} ${f(bp.y)} L${f(bp.x + 0.4)} ${f(bp.y)} M${f(bp.x)} ${f(bp.y - 0.4)} L${f(bp.x)} ${f(bp.y + 0.4)}`, tipo: 'piquete', texto: tr('p.bustPoint'), at: P(bp.x + 2.2, bp.y - 0.6) });
 
     return {
       piezas: [
         {
-          nombre: 'Cuerpo · Espalda', corte: 'Cortar 1 al doblez', doblez: true, outline: back, lineas: linB,
+          nombre: tr('p.bodiceBack'), corte: tr('p.cutFold'), doblez: true, outline: back, lineas: linB,
           hilo: { x: bw * 0.6, y1: sisa + 3, y2: te - 4 }, etiqueta: P(bw * 0.45, sisa - 5),
         },
         {
-          nombre: 'Cuerpo · Delantero', corte: 'Cortar 1 al doblez', doblez: true, outline: front, lineas: linF,
+          nombre: tr('p.bodiceFront'), corte: tr('p.cutFold'), doblez: true, outline: front, lineas: linF,
           hilo: { x: fw * 0.72, y1: uaY + 9, y2: td - 3 }, etiqueta: P(fw * 0.45, uaY - 5),
         },
       ],
       notas: [
-        'Holgura: 8 cm en pecho, 4 cm en cintura.',
-        `Profundidad de sisa: ${sisa.toFixed(1)} cm desde la nuca.`,
+        tr('n.bodiceEase'),
+        tr('n.armDepth', { v: fmtN(sisa) }),
         ...notas,
-        pzF > 0.3 ? `Pinza de cintura delantera: ${pzF.toFixed(1)} cm.` : 'Sin pinza de cintura delantera.',
-        pzB > 0.3 ? `Pinza de cintura espalda: ${pzB.toFixed(1)} cm.` : 'Sin pinza de cintura en espalda.',
+        pzF > 0.3 ? tr('n.frontDart', { v: fmtN(pzF) }) : tr('n.noFrontDart'),
+        pzB > 0.3 ? tr('n.backDart', { v: fmtN(pzB) }) : tr('n.noBackDart'),
       ],
     };
   }
@@ -279,16 +284,16 @@
         .C(P(0, yh * 0.45), P(s * 0.6, yh * 0.12), st)
         .Z();
       const lineas = [
-        guide(P(0, yh), P(fw, yh), 'Cadera'),
-        guide(P(0, T), P(tip.x, T), 'Tiro'),
-        guide(kOut, kIn, 'Rodilla'),
+        guide(P(0, yh), P(fw, yh), tr('p.hip')),
+        guide(P(0, T), P(tip.x, T), tr('p.crotch')),
+        guide(kOut, kIn, tr('p.knee')),
       ];
       if (pz > 0.3) lineas.push(dart(P(xc - pz / 2, 0), P(xc, 9), P(xc + pz / 2, 0)));
       piezas.push({
-        nombre: 'Pantalón · Delantero', corte: 'Cortar 2', doblez: false, outline: path, lineas,
+        nombre: tr('p.pantsFront'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
         hilo: { x: xc, y1: T + 12, y2: L - 6 }, etiqueta: P(xc, T + 6),
       });
-      notas.push(`Delantero: ancho de cadera ${fw.toFixed(1)} cm + cruce ${ext.toFixed(1)} cm.`);
+      notas.push(tr('n.pantsFront', { w: fmtN(fw), e: fmtN(ext) }));
     }
 
     // Trasero
@@ -317,9 +322,9 @@
         .C(P(0, yh * 0.45), P(s * 0.6, yh * 0.12), st)
         .Z();
       const lineas = [
-        guide(P(0, yh), P(bw, yh), 'Cadera'),
-        guide(P(0, T), P(tip.x, T), 'Tiro'),
-        guide(kOut, kIn, 'Rodilla'),
+        guide(P(0, yh), P(bw, yh), tr('p.hip')),
+        guide(P(0, T), P(tip.x, T), tr('p.crotch')),
+        guide(kOut, kIn, tr('p.knee')),
       ];
       if (pz > 0.3) {
         const n = pz > 3 ? 2 : 1;
@@ -336,26 +341,26 @@
             P(c.x + u.x * h, c.y + u.y * h)
           ));
         }
-        notas.push(`Trasero: ${n} pinza(s) de ${(pz / n).toFixed(1)} cm.`);
+        notas.push(tr('n.pantsBack', { n, w: fmtN(pz / n) }));
       }
       piezas.push({
-        nombre: 'Pantalón · Trasero', corte: 'Cortar 2', doblez: false, outline: path, lineas,
+        nombre: tr('p.pantsBack'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
         hilo: { x: xc, y1: T + 12, y2: L - 6 }, etiqueta: P(xc, T + 6.5),
       });
     }
 
     const cl = W + 2 + 3;
     piezas.push({
-      nombre: 'Cinturilla', corte: 'Cortar 1', doblez: false,
+      nombre: tr('p.waistband'), corte: tr('p.cut1'), doblez: false,
       outline: new Path().M(P(0, 0)).L(P(cl, 0)).L(P(cl, 8)).L(P(0, 8)).Z(),
-      lineas: [guide(P(0, 4), P(cl, 4), 'Doblar aquí')],
+      lineas: [guide(P(0, 4), P(cl, 4), tr('p.foldHere'))],
       hilo: { x: null, y: 6, x1: 4, x2: Math.min(cl - 6, 30) },
       etiqueta: P(Math.min(cl / 2, 22), 2), compacta: true,
     });
 
     return {
       piezas,
-      notas: ['Holgura: 4 cm en cadera, 2 cm en cintura.', ...notas, 'El hilo coincide con la raya del pantalón.'],
+      notas: [tr('n.pantsEase'), ...notas, tr('n.crease')],
     };
   }
 
@@ -384,9 +389,9 @@
       arm += path.len - before;
       path.L(P(w, Lt)).L(P(0, Lt)).Z();
       piezas.push({
-        nombre: lado === 'esp' ? 'Camiseta · Espalda' : 'Camiseta · Delantero',
-        corte: 'Cortar 1 al doblez', doblez: true, outline: path,
-        lineas: [guide(P(0, sisa), P(w, sisa), 'Línea de sisa')],
+        nombre: lado === 'esp' ? tr('p.teeBack') : tr('p.teeFront'),
+        corte: tr('p.cutFold'), doblez: true, outline: path,
+        lineas: [guide(P(0, sisa), P(w, sisa), tr('p.armLine'))],
         hilo: { x: w * 0.6, y1: sisa + 4, y2: Lt - 6 }, etiqueta: P(w * 0.45, sisa + (Lt - sisa) * 0.3),
       });
     }
@@ -410,51 +415,61 @@
       .L(P(2, hemY))
       .Z();
     piezas.push({
-      nombre: 'Camiseta · Manga', corte: 'Cortar 2', doblez: false, outline: sleeve,
-      lineas: [guide(P(0, h), P(2 * sw, h), 'Línea de bíceps'), notch(P(sw, 0), P(0, 1))],
+      nombre: tr('p.teeSleeve'), corte: tr('p.cut2'), doblez: false, outline: sleeve,
+      lineas: [guide(P(0, h), P(2 * sw, h), tr('p.bicep')), notch(P(sw, 0), P(0, 1))],
       hilo: { x: sw, y1: h + 1.5, y2: hemY - 1.5 }, etiqueta: P(sw, h - 3.5),
     });
 
     return {
       piezas,
       notas: [
-        'Holgura: 10 cm en pecho, 6 cm en bíceps.',
-        `Contorno de sisa (delantero + espalda): ${arm.toFixed(1)} cm.`,
-        `Altura de copa de manga calculada: ${h.toFixed(1)} cm.`,
-        'Pensada para tejido de punto.',
+        tr('n.teeEase'),
+        tr('n.armhole', { v: fmtN(arm) }),
+        tr('n.cap', { v: fmtN(h) }),
+        tr('n.knit'),
       ],
     };
   }
 
   // ---------- Catálogo de prendas y medidas ----------
   const MEDIDAS = {
-    pecho: { label: 'Contorno de pecho', ayuda: 'Por la parte más saliente del busto, cinta horizontal.', min: 60, max: 160 },
-    cintura: { label: 'Contorno de cintura', ayuda: 'En la parte más estrecha del torso, sin apretar.', min: 45, max: 150 },
-    cadera: { label: 'Contorno de cadera', ayuda: 'Por la parte más ancha de las nalgas.', min: 60, max: 170 },
-    altCadera: { label: 'Altura de cadera', ayuda: 'Desde la cintura hasta la línea de cadera, por el costado.', min: 12, max: 30 },
-    largoFalda: { label: 'Largo de falda', ayuda: 'Desde la cintura hasta donde quieres el bajo.', min: 30, max: 110 },
-    talleEsp: { label: 'Talle espalda', ayuda: 'Desde la nuca (vértebra prominente) hasta la cintura.', min: 30, max: 55 },
-    talleDel: { label: 'Talle delantero', ayuda: 'Desde el cuello en el hombro, pasando por el busto, hasta la cintura.', min: 32, max: 62 },
-    anchoEsp: { label: 'Ancho de espalda', ayuda: 'De axila a axila por la espalda, a media altura del omóplato.', min: 25, max: 55 },
-    hombro: { label: 'Largo de hombro', ayuda: 'Desde la base del cuello hasta el hueso del hombro.', min: 8, max: 20 },
-    cuello: { label: 'Contorno de cuello', ayuda: 'Por la base del cuello.', min: 28, max: 55 },
-    altBusto: { label: 'Altura de busto', ayuda: 'Desde el cuello en el hombro hasta el pezón.', min: 18, max: 40 },
-    sepBusto: { label: 'Separación de busto', ayuda: 'Distancia entre ambos pezones.', min: 12, max: 28 },
-    tiro: { label: 'Tiro', ayuda: 'Sentada en una silla dura: desde la cintura hasta el asiento, por el costado.', min: 18, max: 40 },
-    largoPantalon: { label: 'Largo de pantalón', ayuda: 'Desde la cintura hasta el suelo por el costado (o donde quieras el bajo).', min: 50, max: 130 },
-    bajo: { label: 'Contorno de bajo', ayuda: 'Ancho total deseado en el bajo de cada pierna.', min: 30, max: 70 },
-    largoCamiseta: { label: 'Largo de camiseta', ayuda: 'Desde el cuello en el hombro hasta el bajo deseado.', min: 40, max: 95 },
-    hombros: { label: 'Ancho de hombros', ayuda: 'De hueso a hueso de los hombros, por la espalda.', min: 28, max: 60 },
-    largoManga: { label: 'Largo de manga', ayuda: 'Desde el hueso del hombro hasta el bajo de la manga.', min: 10, max: 70 },
-    brazo: { label: 'Contorno de brazo', ayuda: 'Por la parte más ancha del brazo (bíceps).', min: 18, max: 55 },
+    pecho: { min: 60, max: 160 },
+    cintura: { min: 45, max: 150 },
+    cadera: { min: 60, max: 170 },
+    altCadera: { min: 12, max: 30 },
+    largoFalda: { min: 30, max: 110 },
+    talleEsp: { min: 30, max: 55 },
+    talleDel: { min: 32, max: 62 },
+    anchoEsp: { min: 25, max: 55 },
+    hombro: { min: 8, max: 20 },
+    cuello: { min: 28, max: 55 },
+    altBusto: { min: 18, max: 40 },
+    sepBusto: { min: 12, max: 28 },
+    tiro: { label: tr('p.crotch'), ayuda: 'Sentada en una silla dura: desde la cintura hasta el asiento, por el costado.', min: 18, max: 40 },
+    largoPantalon: { min: 50, max: 130 },
+    bajo: { min: 30, max: 70 },
+    largoCamiseta: { min: 40, max: 95 },
+    hombros: { min: 28, max: 60 },
+    largoManga: { min: 10, max: 70 },
+    brazo: { min: 18, max: 55 },
   };
 
   const PRENDAS = {
-    falda: { nombre: 'Falda recta', resumen: 'Delantero, espalda y cinturilla', medidas: ['cintura', 'cadera', 'altCadera', 'largoFalda'], trazar: falda },
-    cuerpo: { nombre: 'Cuerpo básico', resumen: 'Patrón base con pinzas de busto y cintura', medidas: ['pecho', 'cintura', 'talleEsp', 'talleDel', 'anchoEsp', 'hombro', 'cuello', 'altBusto', 'sepBusto'], trazar: cuerpo },
-    pantalon: { nombre: 'Pantalón básico', resumen: 'Delantero, trasero y cinturilla', medidas: ['cintura', 'cadera', 'tiro', 'largoPantalon', 'bajo'], trazar: pantalon },
-    camiseta: { nombre: 'Camiseta', resumen: 'Delantero, espalda y manga corta o larga', medidas: ['pecho', 'hombros', 'cuello', 'largoCamiseta', 'largoManga', 'brazo'], trazar: camiseta },
+    falda: { medidas: ['cintura', 'cadera', 'altCadera', 'largoFalda'], trazar: falda },
+    cuerpo: { medidas: ['pecho', 'cintura', 'talleEsp', 'talleDel', 'anchoEsp', 'hombro', 'cuello', 'altBusto', 'sepBusto'], trazar: cuerpo },
+    pantalon: { medidas: ['cintura', 'cadera', 'tiro', 'largoPantalon', 'bajo'], trazar: pantalon },
+    camiseta: { medidas: ['pecho', 'hombros', 'cuello', 'largoCamiseta', 'largoManga', 'brazo'], trazar: camiseta },
   };
+
+  // Textos traducibles como propiedades calculadas: MEDIDAS.pecho.label, PRENDAS.falda.nombre…
+  for (const [k, m] of Object.entries(MEDIDAS)) {
+    Object.defineProperty(m, 'label', { get: () => tr(`m.${k}.l`), enumerable: true });
+    Object.defineProperty(m, 'ayuda', { get: () => tr(`m.${k}.h`), enumerable: true });
+  }
+  for (const [k, p] of Object.entries(PRENDAS)) {
+    Object.defineProperty(p, 'nombre', { get: () => tr(`g.${k}.name`), enumerable: true });
+    Object.defineProperty(p, 'resumen', { get: () => tr(`g.${k}.sum`), enumerable: true });
+  }
 
   // Tallas de referencia (aproximadas, tabla española de mujer)
   function tallaBase(t) {
@@ -502,7 +517,7 @@
     if (pz.doblez) {
       o.push(`<path d="M0 ${f(bb.minY)} L0 ${f(bb.maxY)}" stroke="${COL.doblez}" stroke-width="0.1" stroke-dasharray="1.2 0.4 0.2 0.4"/>`);
       const my = (bb.minY + bb.maxY) / 2;
-      o.push(`<text transform="translate(0.9 ${f(my)}) rotate(-90)" font-size="0.9" font-weight="bold" fill="${COL.doblez}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif">DOBLEZ DE LA TELA</text>`);
+      o.push(`<text transform="translate(0.9 ${f(my)}) rotate(-90)" font-size="0.9" font-weight="bold" fill="${COL.doblez}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif">${esc(tr('p.fold'))}</text>`);
     }
 
     // Hilo
@@ -521,7 +536,7 @@
         }
         const mid = lerp(a, b, 0.5);
         const rot = h.x === null ? 0 : -90;
-        o.push(`<text transform="translate(${f(mid.x - (rot ? 0.35 : 0))} ${f(mid.y - (rot ? 0 : 0.35))}) rotate(${rot})" font-size="0.65" fill="${COL.texto}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif">HILO</text>`);
+        o.push(`<text transform="translate(${f(mid.x - (rot ? 0.35 : 0))} ${f(mid.y - (rot ? 0 : 0.35))}) rotate(${rot})" font-size="0.65" fill="${COL.texto}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif">${esc(tr('p.grain'))}</text>`);
       }
     }
 
@@ -565,7 +580,7 @@
     const width = Math.max(totalW + 2, 40);
     const height = y + rowH + 2;
 
-    const fecha = new Date().toLocaleDateString('es-ES');
+    const fecha = new Date().toLocaleDateString(global.PerchaI18n ? global.PerchaI18n.locale() : 'es-ES');
     const info = `Percha · ${prenda.nombre} · ${fecha}`;
     const g = [];
     g.push(`<rect x="0" y="0" width="${f(width)}" height="${f(height)}" fill="#FFFFFF"/>`);
@@ -573,15 +588,15 @@
     g.push(`<rect x="2" y="2" width="10" height="10" fill="none" stroke="${COL.linea}" stroke-width="0.06"/>`);
     g.push(`<path d="M2 7 L12 7 M7 2 L7 12" stroke="${COL.guia}" stroke-width="0.03" stroke-dasharray="0.3 0.3"/>`);
     g.push(`<text x="7" y="6.4" font-size="0.75" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="${COL.texto}">10 × 10 cm</text>`);
-    g.push(`<text x="7" y="8.1" font-size="0.5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="${COL.guia}">Comprueba la escala</text>`);
+    g.push(`<text x="7" y="8.1" font-size="0.5" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="${COL.guia}">${esc(tr('p.check'))}</text>`);
     g.push(`<g font-family="Helvetica, Arial, sans-serif" fill="${COL.texto}">`);
     g.push(`<text x="14" y="4.4" font-size="1.6" font-weight="bold">percha<tspan fill="${COL.corte}">.</tspan></text>`);
     g.push(`<text x="14" y="6.4" font-size="0.85">${esc(prenda.nombre)} · ${esc(prenda.resumen)}</text>`);
-    const med = prenda.medidas.map((k) => `${MEDIDAS[k].label}: ${medidas[k]} cm`);
+    const med = prenda.medidas.map((k) => `${MEDIDAS[k].label}: ${fmtN(medidas[k])} cm`);
     for (let i = 0; i < med.length; i += 3) {
       g.push(`<text x="14" y="${f(7.8 + (i / 3) * 0.8)}" font-size="0.55" fill="${COL.guia}">${esc(med.slice(i, i + 3).join(' · '))}</text>`);
     }
-    g.push(`<text x="14" y="${f(8.1 + Math.ceil(med.length / 3) * 0.8)}" font-size="0.55" fill="${COL.corte}">${sa > 0 ? `Margen de costura incluido: ${String(sa).replace('.', ',')} cm (zona coral). Cortar por la línea exterior.` : 'Sin margen de costura: añádelo al cortar la tela.'}</text>`);
+    g.push(`<text x="14" y="${f(8.1 + Math.ceil(med.length / 3) * 0.8)}" font-size="0.55" fill="${COL.corte}">${esc(sa > 0 ? tr('p.saIncl', { sa: fmtN(sa) }) : tr('p.saNone'))}</text>`);
     g.push('</g>');
 
     placed.forEach((p, i) => {

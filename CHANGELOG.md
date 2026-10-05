@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 — 2026-10-05
+
+- Multilenguaje: español, inglés, francés y portugués.
+- Se traducen la landing, la herramienta, los textos del patrón (piezas, cortes, notas) y la hoja de montaje del PDF.
+- Detección automática del idioma del navegador, selector en la cabecera y parámetro `?lang=`.
+- Números formateados según el idioma.
+- Pruebas que verifican que todos los idiomas tienen las mismas claves y parámetros.
+
 ## 1.0.0 — 2026-10-05
 
 - Primera versión pública.

@@ -1,7 +1,13 @@
 // Pruebas del motor de patronaje. Ejecutar con: node tests/patrones.test.js
 'use strict';
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+require('../assets/js/i18n.js');
+const LANG_DIR = path.join(__dirname, '../assets/js/lang');
+for (const f of fs.readdirSync(LANG_DIR)) require(path.join(LANG_DIR, f));
 require('../assets/js/patrones.js');
+const I18n = globalThis.PerchaI18n;
 const { PRENDAS, MEDIDAS, tallaBase, generar } = globalThis.Percha;
 
 let ok = 0;
@@ -58,8 +64,41 @@ test('la falda tiene el ancho de cadera esperado (escala 1:1)', () => {
 });
 
 test('la manga de la camiseta encaja en la sisa', () => {
+  I18n.setLang('es');
   const r = generar('camiseta', tallaBase(40), { margen: 0 });
   assert.ok(r.notas.some((n) => n.startsWith('Altura de copa')));
+});
+
+test('todos los idiomas tienen exactamente las mismas claves que el español', () => {
+  const base = Object.keys(I18n._dicts.es);
+  for (const code of I18n.idiomas) {
+    const keys = Object.keys(I18n._dicts[code]);
+    const faltan = base.filter((k) => !keys.includes(k));
+    const sobran = keys.filter((k) => !base.includes(k));
+    assert.deepEqual(faltan, [], `${code}: faltan ${faltan.join(', ')}`);
+    assert.deepEqual(sobran, [], `${code}: sobran ${sobran.join(', ')}`);
+  }
+});
+
+test('las traducciones conservan los mismos parámetros {x}', () => {
+  const params = (s) => (s.match(/\{\w+\}/g) || []).sort().join();
+  for (const code of I18n.idiomas) {
+    for (const [k, v] of Object.entries(I18n._dicts.es)) {
+      assert.equal(params(I18n._dicts[code][k]), params(v), `${code}: ${k}`);
+    }
+  }
+});
+
+test('el patrón se genera en todos los idiomas sin claves sin traducir', () => {
+  for (const code of I18n.idiomas) {
+    I18n.setLang(code);
+    for (const id of Object.keys(PRENDAS)) {
+      const r = generar(id, tallaBase(40), { margen: 1 });
+      assert.ok(!/\b(p|n|m|g)\.[a-zA-Z]+(\.[a-z]+)?\b/.test(r.svg.replace(/<[^>]+>/g, ' ')), `${code} ${id}`);
+      for (const nota of r.notas) assert.ok(!/^[a-z]+\.[a-zA-Z.]+$/.test(nota), `${code}: ${nota}`);
+    }
+  }
+  I18n.setLang('es');
 });
 
 console.log(`\n${ok} pruebas superadas`);

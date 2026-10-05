@@ -8,7 +8,7 @@
 - **Reportar errores** con la plantilla de *bug*.
 - **Proponer o programar prendas nuevas** (ver [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md#añadir-una-prenda-nueva)).
 - **Mejorar la interfaz**, la accesibilidad o la documentación.
-- **Traducir** la web y la herramienta.
+- **Traducir** Percha a un idioma nuevo o mejorar las traducciones existentes (ver [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md#añadir-un-idioma)).
 
 ## Flujo de trabajo
 
@@ -21,7 +21,7 @@
 ## Convenciones
 
 - JavaScript plano (ES2018+), sin dependencias de compilación. Nada de frameworks.
-- Todo el texto visible está en español. Los nombres internos pueden estar en español (como el resto del código).
+- Ningún texto visible va escrito directamente en el código: añade una clave en **todos** los archivos de `assets/js/lang/` (si no sabes traducirla, deja el texto en español y menciónalo en el PR). Los nombres internos del código están en español.
 - Coordenadas del motor en **centímetros**, eje Y hacia abajo.
 - Colores siempre a través de los tokens de `:root` en `styles.css`.
 - Mantén las funciones de trazado puras: reciben medidas y devuelven piezas, sin tocar el DOM.
