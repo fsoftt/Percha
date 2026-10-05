@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Percha · Patronaje a medida</title>
+  <meta name="description" content="Percha genera patrones de costura a tu medida. Introduce tus medidas y descarga el patrón a escala real en PDF, listo para imprimir en A4.">
+  <meta name="theme-color" content="#FF4D2E">
+  <meta property="og:title" content="Percha · Patronaje a medida">
+  <meta property="og:description" content="Tus medidas, tu patrón. Genera patrones de falda, cuerpo, pantalón y camiseta a escala real.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav__in">
+      <a class="logo" href="./" aria-label="Percha, inicio">
+        <svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="#14101F"/><path d="M20 9.5a3.2 3.2 0 1 1 3.2 3.2c-1.6 0-3.2 1.1-3.2 2.7v1.4M20 16.8 8 26.5h24z" fill="none" stroke="#D4FF3A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>percha<i>.</i></span>
+      </a>
+      <nav class="nav__links" aria-label="Principal">
+        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#prendas">Prendas</a>
+        <a href="#medidas">Medidas</a>
+        <a href="#faq">Preguntas</a>
+        <a href="https://github.com/fsoftt/Percha">GitHub</a>
+        <a class="btn btn--small" href="herramienta.html">Abrir herramienta</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero__grid">
+        <div>
+          <span class="tag">✂ Gratis · Open source · Sin registro</span>
+          <h1>Tus medidas.<br>Tu <span class="scribble">patrón.</span></h1>
+          <p class="hero__lead">Percha convierte unas pocas medidas de tu cuerpo en un patrón de costura a escala real, listo para imprimir en casa y cortar.</p>
+          <div class="hero__cta">
+            <a class="btn" href="herramienta.html">Crear mi patrón →</a>
+            <a class="btn btn--ghost" href="#como-funciona">Ver cómo funciona</a>
+          </div>
+          <div class="hero__stats">
+            <div><b>4</b><span>prendas base</span></div>
+            <div><b>1:1</b><span>escala real</span></div>
+            <div><b>PDF</b><span>A4, Carta o plóter</span></div>
+          </div>
+        </div>
+
+        <div class="hero__art" aria-hidden="true">
+          <div class="card card--main">
+            <svg viewBox="0 0 300 300">
+              <defs>
+                <pattern id="g" width="15" height="15" patternUnits="userSpaceOnUse"><path d="M15 0H0V15" fill="none" stroke="#14101F" stroke-opacity=".07"/></pattern>
+              </defs>
+              <rect width="300" height="300" fill="url(#g)"/>
+              <path d="M40 40 C80 40 120 34 140 30 C150 70 165 95 170 120 L170 270 L40 270 Z" fill="#FFD9CF" stroke="#FF4D2E" stroke-width="16" stroke-linejoin="round"/>
+              <path d="M40 40 C80 40 120 34 140 30 C150 70 165 95 170 120 L170 270 L40 270 Z" fill="#fff" stroke="#14101F" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M85 38 L92 105 L99 37" fill="none" stroke="#14101F" stroke-width="2"/>
+              <path d="M40 120 H170" stroke="#7A6FA6" stroke-width="1.5" stroke-dasharray="6 4"/>
+              <path d="M40 30 V280" stroke="#6A3DF0" stroke-width="3" stroke-dasharray="14 5 3 5"/>
+              <path d="M120 150 V245" stroke="#14101F" stroke-width="2"/>
+              <path d="M114 158 l6 -10 l6 10 M114 237 l6 10 l6 -10" fill="#14101F"/>
+              <text x="105" y="190" font-family="Inter, sans-serif" font-weight="800" font-size="14" text-anchor="middle" fill="#14101F">Delantero</text>
+              <text x="105" y="207" font-family="Inter, sans-serif" font-weight="700" font-size="10" text-anchor="middle" fill="#FF4D2E">Cortar 1 al doblez</text>
+              <rect x="200" y="40" width="70" height="70" fill="none" stroke="#14101F" stroke-width="2"/>
+              <text x="235" y="80" font-family="Inter, sans-serif" font-size="11" font-weight="700" text-anchor="middle" fill="#14101F">10×10</text>
+              <path d="M205 150 h60 M205 165 h45 M205 180 h52" stroke="#14101F" stroke-opacity=".25" stroke-width="5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="card card--chip">Cintura 68 cm ✓</div>
+          <div class="card card--chip2">↓ PDF listo</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Falda recta</span><span>Cuerpo básico</span><span>Pantalón</span><span>Camiseta</span><span>Escala 1:1</span><span>Margen de costura</span><span>PDF en mosaico</span>
+        <span>Falda recta</span><span>Cuerpo básico</span><span>Pantalón</span><span>Camiseta</span><span>Escala 1:1</span><span>Margen de costura</span><span>PDF en mosaico</span>
+      </div>
+    </div>
+
+    <section class="section" id="como-funciona">
+      <div class="wrap">
+        <div class="section__head">
+          <span class="eyebrow">Cómo funciona</span>
+          <h2>De la cinta métrica a la tijera en cuatro pasos</h2>
+          <p>Percha aplica reglas clásicas de patronaje (holguras, pinzas, profundidad de sisa, cruce de tiro…) sobre tus medidas para trazar cada pieza.</p>
+        </div>
+        <div class="steps">
+          <article class="step">
+            <span class="step__n">01</span>
+            <h3>Elige la prenda</h3>
+            <p>Falda recta, cuerpo básico, pantalón o camiseta. Cada una pide solo las medidas que necesita.</p>
+          </article>
+          <article class="step">
+            <span class="step__n">02</span>
+            <h3>Introduce tus medidas</h3>
+            <p>En centímetros. Parte de una talla de referencia y ajusta. Cada campo explica cómo medir.</p>
+          </article>
+          <article class="step">
+            <span class="step__n">03</span>
+            <h3>Revisa el patrón</h3>
+            <p>Se dibuja al instante con pinzas, línea de hilo, doblez y margen de costura opcional.</p>
+          </article>
+          <article class="step">
+            <span class="step__n">04</span>
+            <h3>Exporta e imprime</h3>
+            <p>Descarga un PDF en hojas A4 o Carta para unir con cinta, o en una sola hoja para plóter.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="prendas" style="padding-top:0">
+      <div class="wrap">
+        <div class="section__head">
+          <span class="eyebrow">Prendas</span>
+          <h2>Patrones base para empezar a crear</h2>
+          <p>Bloques básicos que puedes usar tal cual o transformar en tus propios diseños.</p>
+        </div>
+        <div class="garments">
+          <a class="garment" href="herramienta.html#falda">
+            <div class="garment__ill"><svg viewBox="0 0 48 48" fill="#FF4D2E" stroke="#14101F" stroke-width="2" stroke-linejoin="round"><path d="M15 8h18l6 32H9z"/><path d="M15 13h18" fill="none"/></svg></div>
+            <h3>Falda recta</h3>
+            <p>Delantero, espalda con cremallera y cinturilla. Pinzas calculadas automáticamente.</p>
+            <div class="chips"><span class="chip">4 medidas</span><span class="chip">3 piezas</span></div>
+          </a>
+          <a class="garment" href="herramienta.html#cuerpo">
+            <div class="garment__ill"><svg viewBox="0 0 48 48" fill="#B9A6FF" stroke="#14101F" stroke-width="2" stroke-linejoin="round"><path d="M17 6c2 4 12 4 14 0l5 3-1 9c-2 2-2 6 0 8v14H13V26c2-2 2-6 0-8l-1-9z"/></svg></div>
+            <h3>Cuerpo básico</h3>
+            <p>El patrón base del torso con pinzas de busto y cintura. La base de blusas y vestidos.</p>
+            <div class="chips"><span class="chip">9 medidas</span><span class="chip">2 piezas</span></div>
+          </a>
+          <a class="garment" href="herramienta.html#pantalon">
+            <div class="garment__ill"><svg viewBox="0 0 48 48" fill="#D4FF3A" stroke="#14101F" stroke-width="2" stroke-linejoin="round"><path d="M14 6h20l3 36h-9l-4-24-4 24h-9z"/></svg></div>
+            <h3>Pantalón básico</h3>
+            <p>Delantero y trasero con tiro, rodilla y raya marcados. Ancho de bajo a elegir.</p>
+            <div class="chips"><span class="chip">5 medidas</span><span class="chip">3 piezas</span></div>
+          </a>
+          <a class="garment" href="herramienta.html#camiseta">
+            <div class="garment__ill"><svg viewBox="0 0 48 48" fill="#6A3DF0" stroke="#14101F" stroke-width="2" stroke-linejoin="round"><path d="M17 6c2 4 12 4 14 0l11 6-4 9-5-2v23H15V19l-5 2-4-9z"/></svg></div>
+            <h3>Camiseta</h3>
+            <p>Para tejido de punto. La copa de la manga se ajusta sola al contorno de la sisa.</p>
+            <div class="chips"><span class="chip">6 medidas</span><span class="chip">3 piezas</span></div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="medidas" style="padding-top:0">
+      <div class="wrap">
+        <div class="dark-band">
+          <div class="measure-grid">
+            <div>
+              <div class="section__head" style="margin-bottom:28px">
+                <span class="eyebrow" style="color:var(--lime)">Cómo tomar medidas</span>
+                <h2>Mide bien, cose una vez</h2>
+                <p>Usa una cinta métrica flexible, ropa interior ajustada y pide ayuda si puedes. Mide sin apretar y sin dejar holgura: Percha añade la holgura por ti.</p>
+              </div>
+              <ul class="measure-list">
+                <li><i>1</i><div><b>Contornos</b><span>Pecho, cintura y cadera con la cinta paralela al suelo. La cadera, por la parte más ancha.</span></div></li>
+                <li><i>2</i><div><b>Talles</b><span>Espalda: de la vértebra prominente de la nuca a la cintura. Delantero: del cuello en el hombro, pasando por el busto.</span></div></li>
+                <li><i>3</i><div><b>Tiro</b><span>Sentada en una silla dura, mide por el costado desde la cintura hasta el asiento.</span></div></li>
+                <li><i>4</i><div><b>Largos</b><span>Desde la cintura (o el hombro) hasta donde quieras que termine la prenda.</span></div></li>
+              </ul>
+            </div>
+            <div class="tips">
+              <div class="tip"><h3>Marca la cintura</h3><p>Ata un cordón fino alrededor de la cintura: se coloca solo en la parte más estrecha y te sirve de referencia para los talles y largos.</p></div>
+              <div class="tip"><h3>Empieza por una talla</h3><p>En la herramienta puedes cargar una talla de referencia (34–54) y modificar solo lo que cambie en tu cuerpo.</p></div>
+              <div class="tip"><h3>Haz una toile</h3><p>Prueba el patrón primero en una tela barata (loneta o sábana vieja) y corrige antes de cortar la tela buena.</p></div>
+              <div class="tip"><h3>Tus datos se quedan contigo</h3><p>Las medidas se guardan solo en tu navegador. No hay cuentas, ni servidores, ni seguimiento.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="section__head">
+          <span class="eyebrow">Imprimir y montar</span>
+          <h2>Pensado para imprimir en casa</h2>
+        </div>
+        <div class="print-row">
+          <div class="feature">
+            <div class="feature__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+            <h3>PDF en mosaico</h3>
+            <p>Hojas A4 o Carta numeradas (A1, A2, B1…) con 1 cm de solape y marcas de unión. Incluye una hoja de montaje.</p>
+          </div>
+          <div class="feature">
+            <div class="feature__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"/><path d="M3 9h18M9 3v18"/></svg></div>
+            <h3>Cuadro de control</h3>
+            <p>Cada patrón trae un cuadrado de 10 × 10 cm. Mídelo tras imprimir: si no mide 10 cm, revisa que la escala esté al 100 %.</p>
+          </div>
+          <div class="feature">
+            <div class="feature__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></div>
+            <h3>Plóter y SVG</h3>
+            <p>Exporta el patrón completo en una sola página PDF o en SVG vectorial para copisterías, plóter o tu programa de diseño.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq" style="padding-top:0">
+      <div class="wrap">
+        <div class="section__head">
+          <span class="eyebrow">Preguntas frecuentes</span>
+          <h2>Lo que suele preguntarse</h2>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>¿Necesito saber patronaje para usar Percha?</summary>
+            <p>No. Solo necesitas medir con cuidado. El patrón indica qué cortar, cuántas veces, dónde va el doblez de la tela y la dirección del hilo.</p>
+          </details>
+          <details>
+            <summary>¿El patrón incluye margen de costura?</summary>
+            <p>Tú eliges: sin margen, 1 cm o 1,5 cm. El margen se muestra en color coral alrededor de cada pieza; en los bordes que van al doblez no se añade.</p>
+          </details>
+          <details>
+            <summary>¿Cómo imprimo el PDF a la escala correcta?</summary>
+            <p>Abre el PDF y en el diálogo de impresión elige «Tamaño real» o «Escala 100 %». Desactiva «Ajustar a la página». Comprueba el cuadro de 10 × 10 cm antes de pegar las hojas.</p>
+          </details>
+          <details>
+            <summary>¿Son patrones profesionales?</summary>
+            <p>Son bloques base trazados con métodos clásicos simplificados. Son un excelente punto de partida, pero cada cuerpo es distinto: haz siempre una prueba antes de cortar la tela final.</p>
+          </details>
+          <details>
+            <summary>¿Puedo contribuir o añadir prendas?</summary>
+            <p>¡Sí! Percha es open source. Cada prenda es una función de trazado en JavaScript; en el repositorio encontrarás una guía para añadir las tuyas.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="cta">
+          <div>
+            <h2>¿Lista la cinta métrica?</h2>
+            <p>Tu primer patrón a medida está a cinco minutos.</p>
+          </div>
+          <a class="btn btn--lime" href="herramienta.html">Empezar ahora →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__in">
+      <span><b>percha.</b> — patronaje a medida, libre y gratuito.</span>
+      <span><a href="https://github.com/fsoftt/Percha">Código en GitHub</a> · Licencia MIT</span>
+    </div>
+  </footer>
+</body>
+</html>
