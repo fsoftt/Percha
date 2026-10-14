@@ -344,6 +344,9 @@
         guide(P(0, T), P(tip.x, T), tr('p.crotch')),
         guide(kOut, kIn, tr('p.knee')),
         guide(cf, P(cf.x, clamp(T * 0.65, 15, 20)), tr('p.fly')),
+        { d: `M${f(0)} 3 C3 5 5 9 6 15`, tipo: 'guia', texto: tr('p.pocket'), at: P(7.5, 10) },
+        notch(P(0, 3), P(1, 0.3)),
+        notch(P(6, 15), P(0.5, 1)),
       ];
       if (pz > 0.3) lineas.push(dart(P(xc - pz / 2, 0), P(xc, 9), P(xc + pz / 2, 0)));
       piezas.push({
@@ -431,6 +434,28 @@
         hilo: { x: 2.5, y1: 2, y2: flyL - 2 }, etiqueta: P(2.5, flyL / 2 - 1), compacta: true,
       });
       notas.push(tr('n.pantsFly', { v: fmtN(flyL) }));
+    }
+
+    // Bolsillo lateral (fondo) y tira para trabillas: piezas opcionales
+    {
+      const bag = new Path()
+        .M(P(0, 0)).L(P(15, 0))
+        .C(P(17, 6), P(16, 14), P(11, 18))
+        .C(P(7, 21), P(3, 21), P(0, 19))
+        .Z();
+      piezas.push({
+        nombre: tr('p.pocket'), corte: tr('p.cut4'), doblez: false, outline: bag,
+        lineas: [guide(P(0, 3), P(6, 15), tr('p.pocket'))],
+        hilo: { x: 7, y1: 3, y2: 18 }, etiqueta: P(7.5, 9), compacta: true,
+      });
+      const strip = new Path().M(P(0, 0)).L(P(15, 0)).L(P(15, 9)).L(P(0, 9)).Z();
+      const cutLines = [3, 6, 9, 12].map((x) => ({ d: seg(P(x, 0), P(x, 9)), tipo: 'corte' }));
+      piezas.push({
+        nombre: tr('p.loops'), corte: tr('p.cut1'), doblez: false, outline: strip,
+        lineas: cutLines,
+        hilo: { x: null, y: 7, x1: 2, x2: 13 }, etiqueta: P(7.5, 2.5), compacta: true,
+      });
+      notas.push(tr('n.pockets'), tr('n.loops'));
     }
 
     return {
@@ -679,7 +704,7 @@
     Object.defineProperty(p, 'resumen', { get: () => tr(`g.${k}.sum`), enumerable: true });
   }
 
-  // Tallas de referencia (aproximadas, tabla española de mujer)
+  // Tallas de referencia (aproximadas; mujer: tabla española 34–54; hombre: 44–60)
   function tallaBase(t) {
     const k = (t - 38) / 2;
     return {
@@ -688,6 +713,17 @@
       hombro: 12 + 0.25 * k, cuello: 36 + 1 * k, altBusto: 26 + 0.5 * k, sepBusto: 18 + 0.5 * k,
       tiro: 26 + 0.5 * k, largoPantalon: 102, bajo: 40 + 1 * k, largoCamiseta: 62 + 0.5 * k,
       hombros: 38 + 1 * k, largoManga: 20, brazo: 27 + 1.5 * k, muslo: 54 + 2 * k, largoBoxer: 38 + 0.5 * k,
+    };
+  }
+
+  function tallaBaseHombre(t) {
+    const k = (t - 50) / 2;
+    return {
+      pecho: 100 + 4 * k, cintura: 88 + 4 * k, cadera: 102 + 4 * k, altCadera: 21 + 0.25 * k,
+      largoFalda: 60, talleEsp: 44 + 0.5 * k, talleDel: 47 + 0.75 * k, anchoEsp: 39 + 1 * k,
+      hombro: 13 + 0.25 * k, cuello: 40 + 1 * k, altBusto: 28 + 0.5 * k, sepBusto: 19 + 0.5 * k,
+      tiro: 28 + 0.5 * k, largoPantalon: 106, bajo: 42 + 1 * k, largoCamiseta: 66 + 0.5 * k,
+      hombros: 44 + 1 * k, largoManga: 22, brazo: 30 + 1.5 * k, muslo: 58 + 2 * k, largoBoxer: 40 + 0.5 * k,
     };
   }
 
@@ -816,5 +852,5 @@
     return { svg, inner, width, height, notas: res.notas, piezas: res.piezas.length };
   }
 
-  global.Percha = { PRENDAS, MEDIDAS, tallaBase, generar, _internals: { cubicLen } };
+  global.Percha = { PRENDAS, MEDIDAS, tallaBase, tallaBaseHombre, generar, _internals: { cubicLen } };
 })(typeof window !== 'undefined' ? window : globalThis);

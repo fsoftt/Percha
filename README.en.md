@@ -33,14 +33,14 @@ Everything runs in the browser: no server, no accounts, no tracking. Measurement
 | --- | --- | --- |
 | Straight skirt | waist, hips, waist-to-hip, length | front (on fold), vented back, facings, waistband |
 | Basic bodice | bust, waist, front and back length, back width, shoulder, neck, bust height and span, sleeve length, upper arm | front, back and sleeve with cap matched to the armhole |
-| Basic trousers | waist, hips, crotch depth, length, hem width | front, back, fly facing and underlap, waistband |
+| Basic trousers | waist, hips, crotch depth, length, hem width | front, back, fly facing and underlap, pocket bag, belt-loop strip, waistband |
 | T-shirt | bust, shoulder width, neck, length, sleeve length, upper arm | front, back, sleeve with cap matched to the armhole, neckband |
 | Boxers | waist, hips, crotch depth, thigh, length | shaped front, back, fly facing and underlap, elastic strip |
 
 ## Usage
 
 1. Open the [tool](https://fsoftt.github.io/Percha/herramienta.html?lang=en).
-2. Pick a garment and, optionally, a reference size (EU 34–54).
+2. Pick a garment and, optionally, a reference size (women 34–54 or men 44–60).
 3. Adjust the measurements in centimetres. The **?** button on each field explains how to measure.
 4. Choose the seam allowance (0, 1 or 1.5 cm) and paper size.
 5. Click **Export PDF** and print at **100% / actual size**. Check the 10 × 10 cm test square.

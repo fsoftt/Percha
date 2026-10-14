@@ -8,7 +8,7 @@ const LANG_DIR = path.join(__dirname, '../assets/js/lang');
 for (const f of fs.readdirSync(LANG_DIR)) require(path.join(LANG_DIR, f));
 require('../assets/js/patrones.js');
 const I18n = globalThis.PerchaI18n;
-const { PRENDAS, MEDIDAS, tallaBase, generar } = globalThis.Percha;
+const { PRENDAS, MEDIDAS, tallaBase, tallaBaseHombre, generar } = globalThis.Percha;
 
 let ok = 0;
 function test(nombre, fn) {
@@ -27,6 +27,12 @@ test('las tallas de referencia están dentro de los rangos', () => {
     const m = tallaBase(t);
     for (const [k, def] of Object.entries(MEDIDAS)) {
       assert.ok(m[k] >= def.min && m[k] <= def.max, `talla ${t}: ${k}=${m[k]}`);
+    }
+  }
+  for (let t = 44; t <= 60; t += 2) {
+    const m = tallaBaseHombre(t);
+    for (const [k, def] of Object.entries(MEDIDAS)) {
+      assert.ok(m[k] >= def.min && m[k] <= def.max, `talla hombre ${t}: ${k}=${m[k]}`);
     }
   }
 });
@@ -121,10 +127,34 @@ test('el cuerpo trae manga con copa ajustada a la sisa', () => {
 test('el pantalón trae bragueta con vista y tapeta', () => {
   I18n.setLang('es');
   const res = PRENDAS.pantalon.trazar(tallaBase(38));
-  assert.equal(res.piezas.length, 5);
+  assert.equal(res.piezas.length, 7);
   assert.ok(res.piezas.some((p) => p.nombre === 'Bragueta · Vista'));
   assert.ok(res.piezas.some((p) => p.nombre === 'Bragueta · Tapeta'));
   assert.ok(res.notas.some((n) => n.startsWith('Bragueta con cremallera')));
+});
+
+test('el pantalón trae bolsillo y tira para trabillas', () => {
+  I18n.setLang('es');
+  const res = PRENDAS.pantalon.trazar(tallaBase(38));
+  const fondo = res.piezas.find((p) => p.nombre === 'Bolsillo · Fondo');
+  assert.ok(fondo);
+  assert.equal(fondo.corte, 'Cortar 4');
+  assert.ok(res.piezas.some((p) => p.nombre === 'Tira para trabillas'));
+  assert.ok(res.piezas.some((p) => p.nombre === 'Pantalón · Delantero' && p.lineas.some((l) => l.texto === 'Bolsillo · Fondo')));
+  assert.ok(res.notas.some((n) => n.startsWith('Bolsillos laterales')));
+  assert.ok(res.notas.some((n) => n.startsWith('Tira de 15')));
+});
+
+test('la tabla masculina genera patrones válidos en todos los idiomas', () => {
+  for (const code of I18n.idiomas) {
+    I18n.setLang(code);
+    for (const id of ['pantalon', 'camiseta', 'boxer', 'cuerpo']) {
+      const r = generar(id, tallaBaseHombre(50), { margen: 1 });
+      assert.ok(!/NaN|Infinity|undefined/.test(r.svg), `${code} ${id} hombre`);
+      assert.ok(r.width > 0 && r.height > 0);
+    }
+  }
+  I18n.setLang('es');
 });
 
 test('la camiseta trae tira de cuello con largo positivo', () => {

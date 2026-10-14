@@ -46,14 +46,14 @@ Todo ocurre en el navegador: no hay servidor, cuentas ni seguimiento. Las medida
 | --- | --- | --- |
 | Falda recta | cintura, cadera, altura de cadera, largo | delantero (al doblez), espalda con abertura, vistas, cinturilla |
 | Cuerpo básico | pecho, cintura, talles delantero y espalda, ancho de espalda, hombro, cuello, altura y separación de busto, largo de manga, brazo | delantero, espalda y manga con copa ajustada a la sisa |
-| Pantalón básico | cintura, cadera, tiro, largo, contorno de bajo | delantero, trasero, vista y tapeta de bragueta, cinturilla |
+| Pantalón básico | cintura, cadera, tiro, largo, contorno de bajo | delantero, trasero, vista y tapeta de bragueta, fondo de bolsillo, tira para trabillas, cinturilla |
 | Camiseta | pecho, ancho de hombros, cuello, largo, largo de manga, brazo | delantero, espalda, manga con copa ajustada a la sisa, tira de cuello |
 | Bóxer | cintura, cadera, tiro, muslo, largo | delantero con suplemento, trasero, vista y tapeta de bragueta, tira para goma |
 
 ## Uso
 
 1. Abre la [herramienta](https://fsoftt.github.io/Percha/herramienta.html).
-2. Elige la prenda y, si quieres, una talla de referencia (34–54).
+2. Elige la prenda y, si quieres, una talla de referencia (mujer 34–54 u hombre 44–60).
 3. Ajusta las medidas en centímetros. El botón **?** de cada campo explica cómo medir.
 4. Elige el margen de costura (0, 1 o 1,5 cm) y el papel.
 5. Pulsa **Exportar PDF** e imprime al **100 % / tamaño real**. Comprueba el cuadro de control de 10 × 10 cm.

@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const { PRENDAS, MEDIDAS, tallaBase, generar } = window.Percha;
+  const { PRENDAS, MEDIDAS, tallaBase, tallaBaseHombre, generar } = window.Percha;
   const I18n = window.PerchaI18n;
   const t = I18n.t;
   I18n.init();
@@ -26,8 +26,13 @@
   const SOLAPE = 1; // cm
 
   // ---------- Estado ----------
+  const TALLAS = {
+    mujer: { min: 34, max: 54, def: '38', base: (n) => tallaBase(n) },
+    hombre: { min: 44, max: 60, def: '50', base: (n) => tallaBaseHombre(n) },
+  };
   const state = {
     prenda: 'falda',
+    sistema: 'mujer',
     talla: '38',
     medidas: tallaBase(38),
     margen: 1,
@@ -39,16 +44,17 @@
     const saved = JSON.parse(localStorage.getItem(STORE) || 'null');
     if (saved) {
       Object.assign(state.medidas, saved.medidas || {});
-      for (const k of ['prenda', 'talla', 'margen', 'papel']) if (saved[k] !== undefined) state[k] = saved[k];
+      for (const k of ['prenda', 'talla', 'margen', 'papel', 'sistema']) if (saved[k] !== undefined) state[k] = saved[k];
     }
   } catch (e) { /* almacenamiento no disponible */ }
+  if (!TALLAS[state.sistema]) state.sistema = 'mujer';
   const fromHash = location.hash.replace('#', '');
   if (PRENDAS[fromHash]) state.prenda = fromHash;
   if (!PRENDAS[state.prenda]) state.prenda = 'falda';
 
   function save() {
     try {
-      localStorage.setItem(STORE, JSON.stringify({ medidas: state.medidas, prenda: state.prenda, talla: state.talla, margen: state.margen, papel: state.papel }));
+      localStorage.setItem(STORE, JSON.stringify({ medidas: state.medidas, prenda: state.prenda, talla: state.talla, margen: state.margen, papel: state.papel, sistema: state.sistema }));
     } catch (e) { /* ignorar */ }
   }
 
@@ -90,8 +96,9 @@
   // ---------- Tallas ----------
   function renderTallas() {
     const sel = $('#talla');
+    const sys = TALLAS[state.sistema] || TALLAS.mujer;
     const opts = [`<option value="custom">${t('tool.size.custom')}</option>`];
-    for (let n = 34; n <= 54; n += 2) opts.push(`<option value="${n}">${t('tool.size.n', { n })}</option>`);
+    for (let n = sys.min; n <= sys.max; n += 2) opts.push(`<option value="${n}">${t('tool.size.n', { n })}</option>`);
     sel.innerHTML = opts.join('');
     sel.value = state.talla;
   }
@@ -101,11 +108,29 @@
     sel.addEventListener('change', () => {
       if (sel.value === 'custom') { state.talla = 'custom'; save(); return; }
       state.talla = sel.value;
-      state.medidas = tallaBase(Number(sel.value));
+      state.medidas = TALLAS[state.sistema].base(Number(sel.value));
       renderFields();
       update();
       toast(t('toast.size', { n: sel.value }));
     });
+  }
+
+  function bindSistema() {
+    const box = document.getElementById('sistema');
+    const sync = () => box.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === state.sistema)));
+    box.addEventListener('click', (e) => {
+      const b = e.target.closest('button');
+      if (!b || b.dataset.v === state.sistema) return;
+      state.sistema = b.dataset.v;
+      state.talla = TALLAS[state.sistema].def;
+      state.medidas = TALLAS[state.sistema].base(Number(state.talla));
+      sync();
+      renderTallas();
+      renderFields();
+      update();
+      toast(t('toast.size', { n: state.talla }));
+    });
+    sync();
   }
 
   // ---------- Campos de medidas ----------
@@ -403,6 +428,7 @@
   renderPicker();
   renderTallas();
   bindTallas();
+  bindSistema();
   renderFields();
   bindSeg('margen', 'margen', parseFloat);
   bindSeg('papel', 'papel', String);
@@ -411,6 +437,7 @@
     renderPicker();
     renderTallas();
     renderFields();
+    document.querySelectorAll('#sistema button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === state.sistema)));
     update();
   });
   window.addEventListener('hashchange', () => {

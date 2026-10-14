@@ -66,7 +66,7 @@ Se dibuja el contorno con un trazo de `2 × margen` (borde coral exterior + rell
 
 ## Añadir una prenda nueva
 
-1. **Medidas.** Si necesitas medidas nuevas, añádelas a `MEDIDAS` con `label`, `ayuda`, `min` y `max`, y dales un valor en `tallaBase()`.
+1. **Medidas.** Si necesitas medidas nuevas, añádelas a `MEDIDAS` con `label`, `ayuda`, `min` y `max`, y dales un valor en `tallaBase()` (y en `tallaBaseHombre()` si la prenda es masculina).
 2. **Función de trazado.** Escribe una función pura que reciba las medidas y devuelva `{ piezas, notas }`:
 
    ```js

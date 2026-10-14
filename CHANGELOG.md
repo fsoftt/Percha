@@ -8,6 +8,8 @@
 - Falda con abertura trasera y vista para el martillo.
 - Cuerpo básico con manga de tejido plano (copa ajustada a la sisa).
 - Pruebas específicas por prenda (piezas, suplemento, tira de cuello).
+- Tabla de tallas masculina 44–60 con selector Mujer/Hombre en la herramienta.
+- Pantalón con bolsillos laterales (fondo + abertura) y tira para 5 trabillas.
 
 ## 1.1.0 — 2026-10-05
 
