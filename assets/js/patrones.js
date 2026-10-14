@@ -478,7 +478,11 @@
         .Z();
       piezas.push({
         nombre: tr('p.pocket'), corte: tr('p.cut4'), doblez: false, outline: bag,
-        lineas: [guide(P(0, 3), P(6, 15), tr('p.pocket'))],
+        lineas: [
+          guide(P(0, 3), P(6, 15), tr('p.pocket')),
+          notch(P(0, 3), P(1, 0.3)),
+          notch(P(6, 15), P(0.5, 1)),
+        ],
         pasos: [{ n: 2, x: 7, y: 10 }],
         hilo: { x: 7, y1: 3, y2: 18 }, etiqueta: P(7.5, 9), compacta: true,
       });

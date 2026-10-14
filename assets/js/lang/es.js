@@ -351,7 +351,7 @@ PerchaI18n.add('es', { nombre: 'Español', locale: 'es-ES' }, {
   'n.pantsEase': 'Holgura: 4 cm en cadera, 2 cm en cintura.',
   'n.pantsFront': 'Delantero: ancho de cadera {w} cm + cruce {e} cm.',
   'n.pantsFly': 'Bragueta con cremallera de {v} cm: vista (4,5 cm) y tapeta.',
-  'n.pockets': 'Bolsillos laterales: abertura curva en el delantero; corta 4 fondos (2 por lado).',
+  'n.pockets': 'Bolsillos laterales: abertura curva en el delantero; corta 4 fondos (por lado: una capa al delantero y otra al trasero).',
   'n.loops': 'Tira de 15 × 9 cm: corta 5 trabillas de 3 × 9 cm.',
   'n.pantsBack': 'Trasero: {n} pinza(s) de {w} cm.',
   'n.crease': 'El hilo coincide con la raya del pantalón.',

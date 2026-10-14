@@ -347,7 +347,7 @@ PerchaI18n.add('en', { nombre: 'English', locale: 'en-GB' }, {
   'n.pantsEase': 'Ease: 4 cm at hips, 2 cm at waist.',
   'n.pantsFront': 'Front: hip width {w} cm + crotch extension {e} cm.',
   'n.pantsFly': 'Fly with {v} cm zip: facing (4.5 cm) and underlap.',
-  'n.pockets': 'Side pockets: curved opening on the front; cut 4 bags (2 per side).',
+  'n.pockets': 'Side pockets: curved opening on the front; cut 4 bags (per side: one layer to the front, one to the back).',
   'n.loops': '15 × 9 cm strip: cut 5 belt loops of 3 × 9 cm.',
   'n.pantsBack': 'Back: {n} dart(s) of {w} cm.',
   'n.crease': 'The grainline follows the trouser crease.',

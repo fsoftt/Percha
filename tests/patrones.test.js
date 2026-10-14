@@ -139,6 +139,8 @@ test('el pantalón trae bolsillo y tira para trabillas', () => {
   const fondo = res.piezas.find((p) => p.nombre === 'Bolsillo · Fondo');
   assert.ok(fondo);
   assert.equal(fondo.corte, 'Cortar 4');
+  assert.ok(fondo.lineas.filter((l) => l.tipo === 'piquete').length >= 2, 'el fondo no trae piquetes de coincidencia');
+  assert.ok(res.piezas.some((p) => p.nombre === 'Tira para trabillas'));
   assert.ok(res.piezas.some((p) => p.nombre === 'Tira para trabillas'));
   assert.ok(res.piezas.some((p) => p.nombre === 'Pantalón · Delantero' && p.lineas.some((l) => l.texto === 'Bolsillo · Fondo')));
   assert.ok(res.notas.some((n) => n.startsWith('Bolsillos laterales')));

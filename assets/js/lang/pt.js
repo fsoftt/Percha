@@ -347,7 +347,7 @@ PerchaI18n.add('pt', { nombre: 'Português', locale: 'pt-PT' }, {
   'n.pantsEase': 'Folga: 4 cm na anca, 2 cm na cintura.',
   'n.pantsFront': 'Frente: largura de anca {w} cm + gancho {e} cm.',
   'n.pantsFly': 'Braguilha com fecho de {v} cm: vista e portinhola.',
-  'n.pockets': 'Bolsos laterais: abertura curva na frente; cortar 4 fundos (2 por lado).',
+  'n.pockets': 'Bolsos laterais: abertura curva na frente; cortar 4 fundos (por lado: uma camada à frente, outra às costas).',
   'n.loops': 'Tira de 15 × 9 cm: cortar 5 passadores de 3 × 9 cm.',
   'n.pantsBack': 'Costas: {n} pinça(s) de {w} cm.',
   'n.crease': 'O fio coincide com o vinco da calça.',

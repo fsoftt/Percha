@@ -344,7 +344,7 @@ PerchaI18n.add('fr', { nombre: 'Français', locale: 'fr-FR' }, {
   'n.pantsEase': 'Aisance : 4 cm aux hanches, 2 cm à la taille.',
   'n.pantsFront': 'Devant : largeur de hanches {w} cm + fourche {e} cm.',
   'n.pantsFly': 'Braguette avec fermeture de {v} cm : parementure et sous-pont.',
-  'n.pockets': 'Poches latérales : ouverture courbe sur le devant ; couper 4 fonds (2 par côté).',
+  'n.pockets': 'Poches latérales : ouverture courbe sur le devant ; couper 4 fonds (par côté : une épaisseur au devant, une au dos).',
   'n.loops': 'Bande de 15 × 9 cm : couper 5 passants de 3 × 9 cm.',
   'n.pantsBack': 'Dos : {n} pince(s) de {w} cm.',
   'n.crease': 'Le droit-fil suit le pli du pantalon.',
