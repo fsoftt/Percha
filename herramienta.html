@@ -76,12 +76,25 @@
               <button type="button" data-v="plotter" data-i18n="tool.paper.plotter">Plóter (1 hoja)</button>
             </div>
           </div>
+          <div class="opt">
+            <span class="opt-label" id="l-tela" data-i18n="tool.fabric">Ancho de tela</span>
+            <div class="seg" id="tela" role="group" aria-labelledby="l-tela">
+              <button type="button" data-v="110">110 cm</button>
+              <button type="button" data-v="140">140 cm</button>
+              <button type="button" data-v="150">150 cm</button>
+            </div>
+          </div>
         </section>
       </div>
 
       <section class="stage" id="vista" aria-label="Vista previa del patrón" data-i18n-attr="aria-label:tool.preview">
         <div class="stage__bar">
           <div class="stage__info" id="info"></div>
+          <div class="seg" id="modo" role="group" aria-label="Vista previa del patrón" data-i18n-attr="aria-label:tool.preview">
+            <button type="button" data-v="patron" data-i18n="tool.vpatron">Patrón</button>
+            <button type="button" data-v="montaje" data-i18n="tool.vmontaje">Montaje</button>
+            <button type="button" data-v="boceto" data-i18n="tool.vboceto">Boceto</button>
+          </div>
           <div class="zoom" role="group" aria-label="Zoom" data-i18n-attr="aria-label:tool.zoom">
             <button type="button" id="zoomOut" aria-label="Alejar" data-i18n-attr="aria-label:tool.zoomOut">−</button>
             <output id="zoomVal">100%</output>
@@ -95,6 +108,7 @@
           <span><i style="background:#FFD9CF;border:2px solid #FF4D2E"></i><span data-i18n="tool.lg.sa">Margen de costura</span></span>
           <span><i style="background:repeating-linear-gradient(90deg,#6A3DF0 0 8px,transparent 8px 11px);height:3px"></i><span data-i18n="tool.lg.fold">Doblez de la tela</span></span>
           <span><i style="background:repeating-linear-gradient(90deg,#7A6FA6 0 5px,transparent 5px 8px);height:2px"></i><span data-i18n="tool.lg.guide">Líneas guía</span></span>
+          <span><i style="background:#FF4D2E;border-radius:50%;width:14px;height:14px;color:#fff;font-size:10px;font-style:normal;font-weight:800;display:inline-flex;align-items:center;justify-content:center">1</i><span data-i18n="tool.lg.step">Paso de costura</span></span>
         </div>
         <div class="actions">
           <button class="btn" type="button" id="btnPdf" data-i18n="tool.pdf">Exportar PDF</button>

@@ -55,8 +55,9 @@ Todo ocurre en el navegador: no hay servidor, cuentas ni seguimiento. Las medida
 1. Abre la [herramienta](https://fsoftt.github.io/Percha/herramienta.html).
 2. Elige la prenda y, si quieres, una talla de referencia (mujer 34–54 u hombre 44–60).
 3. Ajusta las medidas en centímetros. El botón **?** de cada campo explica cómo medir.
-4. Elige el margen de costura (0, 1 o 1,5 cm) y el papel.
-5. Pulsa **Exportar PDF** e imprime al **100 % / tamaño real**. Comprueba el cuadro de control de 10 × 10 cm.
+4. Elige el margen de costura (0, 1 o 1,5 cm), el papel y el ancho de tu tela.
+5. Revisa el patrón, la vista de **Montaje** (pasos numerados) o el **Boceto** de la prenda terminada.
+6. Pulsa **Exportar PDF** e imprime al **100 % / tamaño real**. Comprueba el cuadro de control de 10 × 10 cm.
 
 > ⚠️ Son bloques base trazados con métodos clásicos simplificados. Haz siempre una prueba (toile) en tela barata antes de cortar la tela definitiva.
 
@@ -115,7 +116,8 @@ El archivo `.nojekyll` evita que GitHub procese el sitio con Jekyll.
 - [ ] Medidas en pulgadas
 - [x] Interfaz en español, inglés, francés y portugués
 - [ ] Más idiomas (italiano, catalán, alemán…)
-- [ ] Tallas de referencia de hombre e infantiles
+- [x] Tallas de referencia de hombre (44–60)
+- [ ] Tallas infantiles
 - [ ] Exportar a DXF para software CAD textil
 
 ## Licencia

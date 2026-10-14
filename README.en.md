@@ -42,8 +42,9 @@ Everything runs in the browser: no server, no accounts, no tracking. Measurement
 1. Open the [tool](https://fsoftt.github.io/Percha/herramienta.html?lang=en).
 2. Pick a garment and, optionally, a reference size (women 34–54 or men 44–60).
 3. Adjust the measurements in centimetres. The **?** button on each field explains how to measure.
-4. Choose the seam allowance (0, 1 or 1.5 cm) and paper size.
-5. Click **Export PDF** and print at **100% / actual size**. Check the 10 × 10 cm test square.
+4. Choose the seam allowance (0, 1 or 1.5 cm), the paper size and your fabric width.
+5. Check the pattern, the **Assembly** view (numbered steps) or the finished-garment **Sketch**.
+6. Click **Export PDF** and print at **100% / actual size**. Check the 10 × 10 cm test square.
 
 > ⚠️ These are basic blocks drafted with simplified classic methods. Always make a test garment (toile) before cutting your final fabric.
 

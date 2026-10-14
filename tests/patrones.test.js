@@ -189,4 +189,75 @@ test('todas las prendas marcan el dobladillo del bajo', () => {
   }
 });
 
+test('todas las prendas explican espejo, margen por borde y orden de costura', () => {
+  I18n.setLang('es');
+  const sew = { falda: 'Orden de costura: 1) pinzas', pantalon: 'Orden de costura: 1) pinzas', camiseta: 'Orden de costura: 1) hombros', cuerpo: 'Orden de costura: 1) pinzas', boxer: 'Orden de costura: 1) bragueta' };
+  for (const id of Object.keys(sew)) {
+    const res = PRENDAS[id].trazar(tallaBase(38));
+    assert.ok(res.notas.some((n) => n.includes('espejo')), `${id}: sin nota de espejo`);
+    assert.ok(res.notas.some((n) => n.includes('Margen aplicado')), `${id}: sin nota de margen por borde`);
+    assert.ok(res.notas.some((n) => n.startsWith(sew[id])), `${id}: sin orden de costura`);
+  }
+});
+
+test('la estimación de tela baja con telas más anchas', () => {
+  I18n.setLang('es');
+  const num = (nota) => Number(nota.match(/([\d.,]+) m\./)[1].replace(',', '.'));
+  const a = generar('pantalon', tallaBase(38), { margen: 1, anchoTela: 110 });
+  const b = generar('pantalon', tallaBase(38), { margen: 1, anchoTela: 150 });
+  const na = a.notas.find((n) => n.startsWith('Tela estimada'));
+  const nb = b.notas.find((n) => n.startsWith('Tela estimada'));
+  assert.ok(na && nb);
+  assert.ok(num(na) > 0 && num(nb) > 0);
+  assert.ok(num(na) >= num(nb), `${num(na)} < ${num(nb)}`);
+});
+
+test('la vista de montaje numera todos los pasos de cada prenda', () => {
+  I18n.setLang('es');
+  const pasos = { falda: 6, cuerpo: 5, pantalon: 7, camiseta: 5, boxer: 6 };
+  for (const [id, n] of Object.entries(pasos)) {
+    const r = generar(id, tallaBase(38), { margen: 1, montaje: true });
+    assert.ok(r.overlay.length > 0, `${id}: sin capa de montaje`);
+    const nums = new Set([...r.overlay.matchAll(/<text[^>]*>(\d+)<\/text>/g)].map((m) => Number(m[1])));
+    assert.deepEqual([...nums].sort((a, b) => a - b), Array.from({ length: n }, (_, i) => i + 1), `${id}: pasos ${[...nums]}`);
+    assert.ok(r.svg.includes(r.overlay), `${id}: el svg no incluye la capa`);
+    const limpio = generar(id, tallaBase(38), { margen: 1 });
+    assert.ok(!limpio.svg.includes('<circle'), `${id}: el patrón limpio lleva insignias`);
+  }
+});
+
+test('el boceto de prenda terminada es válido en todas las tallas e idiomas', () => {
+  const { bocetar } = globalThis.Percha;
+  for (const code of I18n.idiomas) {
+    I18n.setLang(code);
+    for (let t = 34; t <= 54; t += 2) {
+      for (const id of Object.keys(PRENDAS)) {
+        const b = bocetar(id, tallaBase(t));
+        assert.ok(!/NaN|Infinity|undefined/.test(b.svg), `${code} ${id} t${t}`);
+        assert.ok(b.width > 0 && b.height > 0);
+      }
+    }
+    for (let t = 44; t <= 60; t += 2) {
+      const b = bocetar('boxer', tallaBaseHombre(t));
+      assert.ok(!/NaN|Infinity|undefined/.test(b.svg), `${code} boxer hombre t${t}`);
+    }
+    const b = bocetar('camiseta', tallaBase(40));
+    assert.ok(!/p\.[a-zA-Z]+/.test(b.svg.replace(/<[^>]+>/g, ' ')), `${code}: clave sin traducir en boceto`);
+  }
+  I18n.setLang('es');
+});
+
+test('las claves usadas en el HTML existen en el diccionario', () => {
+  const dict = I18n._dicts.es;
+  for (const f of ['index.html', 'herramienta.html']) {
+    const html = fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
+    const keys = new Set();
+    for (const m of html.matchAll(/data-i18n(?:-html)?="([^"]+)"/g)) keys.add(m[1]);
+    for (const m of html.matchAll(/data-i18n-attr="([^"]+)"/g)) {
+      for (const part of m[1].split(',')) keys.add(part.split(':')[1].trim());
+    }
+    for (const k of keys) assert.ok(k in dict, `${f}: falta ${k}`);
+  }
+});
+
 console.log(`\n${ok} pruebas superadas`);

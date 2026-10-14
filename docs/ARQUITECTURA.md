@@ -45,6 +45,7 @@ medidas (cm) ──► PRENDAS[id].trazar(medidas) ──► { piezas, notas }
   ],
   hilo: { x, y1, y2 },          // línea de hilo vertical (o { x: null, y, x1, x2 } horizontal)
   etiqueta: { x, y },           // posición del nombre de la pieza
+  pasos: [{ n: 1, x, y }],      // insignias de la vista de montaje (coordenadas locales)
   compacta: false,              // etiqueta pequeña para piezas estrechas
 }
 ```
@@ -60,9 +61,16 @@ Se dibuja el contorno con un trazo de `2 × margen` (borde coral exterior + rell
 ## Exportación a PDF
 
 `app.js` usa [jsPDF](https://github.com/parallax/jsPDF) y [svg2pdf.js](https://github.com/yWorks/svg2pdf.js), incluidos en `assets/vendor/`:
-
 - **Mosaico**: elige la orientación (vertical u horizontal) que necesite menos hojas. Cada hoja tiene 10 mm de margen de impresión y 1 cm de solape. Para cada hoja se crea un SVG con un `viewBox` que recorta la zona correspondiente del patrón, más una capa con la etiqueta (A1, B2…), la línea de solape y rombos de alineación. La primera página es la hoja de montaje con instrucciones y un mapa.
 - **Plóter**: una sola página con el tamaño exacto del patrón.
+
+## Vistas de montaje y boceto
+
+La herramienta ofrece tres vistas de la misma prenda (conmutador en la barra de vista previa):
+
+- **Patrón**: el trazado 1:1 que se exporta a PDF/SVG.
+- **Montaje**: el mismo trazado con insignias numeradas sobre las costuras (`pasos` de cada pieza, en coordenadas locales). Los números siguen el orden de las notas de costura (`n.sew*`). Es solo vista previa: la exportación usa siempre el patrón limpio.
+- **Boceto** (`bocetar()`): dibujo esquemático de la prenda ya unida, sin escala (lo indica en el propio dibujo). Son trazos delanteros parametrizados por las medidas, no piezas colocadas.
 
 ## Añadir una prenda nueva
 

@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const { PRENDAS, MEDIDAS, tallaBase, tallaBaseHombre, generar } = window.Percha;
+  const { PRENDAS, MEDIDAS, tallaBase, tallaBaseHombre, generar, bocetar } = window.Percha;
   const I18n = window.PerchaI18n;
   const t = I18n.t;
   I18n.init();
@@ -37,6 +37,8 @@
     medidas: tallaBase(38),
     margen: 1,
     papel: 'a4',
+    tela: 140,
+    vista: 'patron', // patron | montaje | boceto (solo vista previa; no se guarda)
     zoom: null, // px por cm; null = ajustar
   };
 
@@ -44,17 +46,18 @@
     const saved = JSON.parse(localStorage.getItem(STORE) || 'null');
     if (saved) {
       Object.assign(state.medidas, saved.medidas || {});
-      for (const k of ['prenda', 'talla', 'margen', 'papel', 'sistema']) if (saved[k] !== undefined) state[k] = saved[k];
+      for (const k of ['prenda', 'talla', 'margen', 'papel', 'sistema', 'tela']) if (saved[k] !== undefined) state[k] = saved[k];
     }
   } catch (e) { /* almacenamiento no disponible */ }
   if (!TALLAS[state.sistema]) state.sistema = 'mujer';
+  if (![110, 140, 150].includes(Number(state.tela))) state.tela = 140;
   const fromHash = location.hash.replace('#', '');
   if (PRENDAS[fromHash]) state.prenda = fromHash;
   if (!PRENDAS[state.prenda]) state.prenda = 'falda';
 
   function save() {
     try {
-      localStorage.setItem(STORE, JSON.stringify({ medidas: state.medidas, prenda: state.prenda, talla: state.talla, margen: state.margen, papel: state.papel, sistema: state.sistema }));
+      localStorage.setItem(STORE, JSON.stringify({ medidas: state.medidas, prenda: state.prenda, talla: state.talla, margen: state.margen, papel: state.papel, sistema: state.sistema, tela: state.tela }));
     } catch (e) { /* ignorar */ }
   }
 
@@ -231,12 +234,27 @@
 
   function update() {
     save();
+    let pat;
     try {
-      current = generar(state.prenda, state.medidas, { margen: state.margen });
+      pat = generar(state.prenda, state.medidas, { margen: state.margen, anchoTela: state.tela, montaje: state.vista === 'montaje' });
     } catch (e) {
       console.error(e);
       toast(t('toast.drawErr'));
       return;
+    }
+    // La exportación usa siempre el patrón limpio (inner); montaje y boceto son solo vista previa.
+    current = { svg: pat.svg, inner: pat.inner, width: pat.width, height: pat.height, notas: pat.notas, piezas: pat.piezas };
+    if (state.vista === 'boceto') {
+      try {
+        const boc = bocetar(state.prenda, state.medidas);
+        current.svg = boc.svg;
+        current.width = boc.width;
+        current.height = boc.height;
+      } catch (e) {
+        console.error(e);
+        toast(t('toast.drawErr'));
+        return;
+      }
     }
     const inner = $('#canvasInner');
     inner.innerHTML = current.svg;
@@ -244,7 +262,12 @@
 
     const info = [];
     info.push(`<span class="pill">${PRENDAS[state.prenda].nombre}</span>`);
-    info.push(`<span class="pill">${t('tool.info.size')} <b>${Math.ceil(current.width)} × ${Math.ceil(current.height)} cm</b></span>`);
+    if (state.vista === 'boceto') {
+      info.push(`<span class="pill"><b>${t('tool.vboceto')}</b> · ${t('p.sketch')}</span>`);
+    } else {
+      if (state.vista === 'montaje') info.push(`<span class="pill"><b>${t('tool.vmontaje')}</b></span>`);
+      info.push(`<span class="pill">${t('tool.info.size')} <b>${Math.ceil(current.width)} × ${Math.ceil(current.height)} cm</b></span>`);
+    }
     if (state.papel === 'plotter') info.push(`<span class="pill">PDF <b>${t('tool.info.plotter')}</b></span>`);
     else {
       const tl = tiles(current.width, current.height, state.papel);
@@ -432,6 +455,8 @@
   renderFields();
   bindSeg('margen', 'margen', parseFloat);
   bindSeg('papel', 'papel', String);
+  bindSeg('tela', 'tela', Number);
+  bindSeg('modo', 'vista', String);
   update();
   I18n.onChange(() => {
     renderPicker();
