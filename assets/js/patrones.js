@@ -112,7 +112,7 @@
         .L(P(0, L))
         .Z();
 
-      const lineas = [guide(P(0, hh), P(w, hh), tr('p.hipLine'))];
+      const lineas = [guide(P(0, hh), P(w, hh), tr('p.hipLine')), guide(P(0, L - 4), P(w, L - 4), tr('p.hem'))];
       const waistY = (x) => cbY + (st.y - cbY) * Math.pow(x / st.x, 2);
       for (let i = 1; i <= n; i++) {
         const x = (st.x * i) / (n + 1);
@@ -169,6 +169,7 @@
         ...notas,
         tr('n.zip'),
         tr('n.skirtVent', { v: fmtN(ventH) }),
+        tr('n.hem', { v: fmtN(4) }),
       ],
     };
   }
@@ -289,11 +290,12 @@
         lineas: [
           guide(P(0, capH), P(2 * sw, capH), tr('p.bicep')),
           { d: seg(P(2, codoY), P(2 * sw - 2, codoY)), tipo: 'guia' },
+          guide(P(2, hemYB - 2), P(2 * sw - 2, hemYB - 2), tr('p.hem')),
           notch(P(sw, 0), P(0, 1)),
         ],
         hilo: { x: sw, y1: capH + 1.5, y2: hemYB - 1.5 }, etiqueta: P(sw, capH - 3.5),
       });
-      notas.push(tr('n.bodiceSleeve', { v: fmtN(capH) }));
+      notas.push(tr('n.bodiceSleeve', { v: fmtN(capH) }), tr('n.hem', { v: fmtN(2) }));
     }
 
     return {
@@ -344,6 +346,7 @@
         guide(P(0, T), P(tip.x, T), tr('p.crotch')),
         guide(kOut, kIn, tr('p.knee')),
         guide(cf, P(cf.x, clamp(T * 0.65, 15, 20)), tr('p.fly')),
+        guide(P(hOut.x, L - 4), P(hIn.x, L - 4), tr('p.hem')),
         { d: `M${f(0)} 3 C3 5 5 9 6 15`, tipo: 'guia', texto: tr('p.pocket'), at: P(7.5, 10) },
         notch(P(0, 3), P(1, 0.3)),
         notch(P(6, 15), P(0.5, 1)),
@@ -385,6 +388,7 @@
         guide(P(0, yh), P(bw, yh), tr('p.hip')),
         guide(P(0, T), P(tip.x, T), tr('p.crotch')),
         guide(kOut, kIn, tr('p.knee')),
+        guide(P(hOut.x, L - 4), P(hIn.x, L - 4), tr('p.hem')),
       ];
       if (pz > 0.3) {
         const n = pz > 3 ? 2 : 1;
@@ -460,7 +464,7 @@
 
     return {
       piezas,
-      notas: [tr('n.pantsEase'), ...notas, tr('n.crease')],
+      notas: [tr('n.pantsEase'), ...notas, tr('n.hem', { v: fmtN(4) }), tr('n.crease')],
     };
   }
 
@@ -491,7 +495,7 @@
       piezas.push({
         nombre: lado === 'esp' ? tr('p.teeBack') : tr('p.teeFront'),
         corte: tr('p.cutFold'), doblez: true, outline: path,
-        lineas: [guide(P(0, sisa), P(w, sisa), tr('p.armLine'))],
+        lineas: [guide(P(0, sisa), P(w, sisa), tr('p.armLine')), guide(P(0, Lt - 2.5), P(w, Lt - 2.5), tr('p.hem'))],
         hilo: { x: w * 0.6, y1: sisa + 4, y2: Lt - 6 }, etiqueta: P(w * 0.45, sisa + (Lt - sisa) * 0.3),
       });
     }
@@ -516,7 +520,7 @@
       .Z();
     piezas.push({
       nombre: tr('p.teeSleeve'), corte: tr('p.cut2'), doblez: false, outline: sleeve,
-      lineas: [guide(P(0, h), P(2 * sw, h), tr('p.bicep')), notch(P(sw, 0), P(0, 1))],
+      lineas: [guide(P(0, h), P(2 * sw, h), tr('p.bicep')), guide(P(2, hemY - 2.5), P(2 * sw - 2, hemY - 2.5), tr('p.hem')), notch(P(sw, 0), P(0, 1))],
       hilo: { x: sw, y1: h + 1.5, y2: hemY - 1.5 }, etiqueta: P(sw, h - 3.5),
     });
 
@@ -544,6 +548,7 @@
         tr('n.armhole', { v: fmtN(arm) }),
         tr('n.cap', { v: fmtN(h) }),
         bandNote,
+        tr('n.hem', { v: fmtN(2.5) }),
         tr('n.knit'),
       ],
     };
@@ -583,6 +588,7 @@
         guide(P(0, T), P(tip.x, T), tr('p.crotch')),
         guide(P(0, 3), P(cf.x, 3), tr('p.casing')),
         { d: flyD, tipo: 'guia', texto: tr('p.fly'), at: P(flyEnd.x + 0.4, 10) },
+        guide(P(hOut.x, L - 2), P(hIn.x, L - 2), tr('p.hem')),
         { d: seg(hOut, hIn), tipo: 'guia' },
         notch(tip, P(-1, 1)),
       ];
@@ -630,6 +636,7 @@
         guide(P(0, yh), P(hw, yh), tr('p.hip')),
         guide(P(0, T), P(tip.x, T), tr('p.crotch')),
         guide(P(0, 3), P(cb.x, 3), tr('p.casing')),
+        guide(P(hOut.x, L - 2), P(hIn.x, L - 2), tr('p.hem')),
         { d: seg(hOut, hIn), tipo: 'guia' },
         notch(tip, P(-1, 1)),
       ];
@@ -657,6 +664,7 @@
         tr('n.boxerElastic', { v: fmtN(W) }),
         tr('n.boxerFabric'),
         tr('n.boxerRef'),
+        tr('n.hem', { v: fmtN(2) }),
       ],
     };
   }

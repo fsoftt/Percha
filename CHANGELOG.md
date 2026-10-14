@@ -10,6 +10,7 @@
 - Pruebas específicas por prenda (piezas, suplemento, tira de cuello).
 - Tabla de tallas masculina 44–60 con selector Mujer/Hombre en la herramienta.
 - Pantalón con bolsillos laterales (fondo + abertura) y tira para 5 trabillas.
+- Guía de dobladillo del bajo en las 5 prendas, con nota del ancho.
 
 ## 1.1.0 — 2026-10-05
 

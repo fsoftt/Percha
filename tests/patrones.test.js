@@ -180,4 +180,13 @@ test('el bóxer trae suplemento y bragueta curva', () => {
   assert.ok(res.notas.some((n) => n.includes('masculino')));
 });
 
+test('todas las prendas marcan el dobladillo del bajo', () => {
+  I18n.setLang('es');
+  for (const id of ['falda', 'pantalon', 'camiseta', 'cuerpo', 'boxer']) {
+    const res = PRENDAS[id].trazar(tallaBase(38));
+    assert.ok(res.piezas.some((p) => p.lineas.some((l) => l.texto === 'Dobladillo')), `${id}: sin guía de dobladillo`);
+    assert.ok(res.notas.some((n) => n.includes('Dobladillo')), `${id}: sin nota de dobladillo`);
+  }
+});
+
 console.log(`\n${ok} pruebas superadas`);
