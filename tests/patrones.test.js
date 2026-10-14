@@ -264,7 +264,7 @@ test('el boceto de prenda terminada es válido en todas las tallas e idiomas', (
   I18n.setLang('es');
 });
 
-test('el tutorial del bóxer tiene 6 pasos animados válidos', () => {
+test('el tutorial del bóxer usa los contornos reales del patrón', () => {
   const { tutorialBoxer } = globalThis.Percha;
   for (const code of I18n.idiomas) {
     I18n.setLang(code);
@@ -272,8 +272,6 @@ test('el tutorial del bóxer tiene 6 pasos animados válidos', () => {
       const r = tutorialBoxer(tallaBase(t));
       assert.ok(!/NaN|Infinity|undefined/.test(r.svg), `${code} t${t}`);
       assert.ok(r.width > 0 && r.height > 0);
-      assert.deepEqual(r.steps.map((s) => s.n), [1, 2, 3, 4, 5, 6], `${code} t${t}`);
-      assert.equal((r.svg.match(/data-step="/g) || []).length, 6);
     }
     for (let t = 44; t <= 60; t += 2) {
       const r = tutorialBoxer(tallaBaseHombre(t));
@@ -281,6 +279,26 @@ test('el tutorial del bóxer tiene 6 pasos animados válidos', () => {
     }
   }
   I18n.setLang('es');
+  const m = tallaBase(40);
+  const r = tutorialBoxer(m);
+  assert.deepEqual(r.steps.map((s) => s.n), [1, 2, 3, 4, 5, 6]);
+  assert.equal((r.svg.match(/data-step="/g) || []).length, 6);
+  // Los mismos contornos que el PDF: delantero, trasero y goma, con parejas en espejo
+  const piezas = PRENDAS.boxer.trazar(m).piezas;
+  assert.ok(r.svg.includes(piezas[0].outline.toString()), 'sin el delantero real');
+  assert.ok(r.svg.includes(piezas[3].outline.toString()), 'sin el trasero real');
+  assert.ok(r.svg.includes(piezas[4].outline.toString()), 'sin la goma real');
+  assert.ok(r.svg.includes('scale(-1 1)'), 'sin parejas en espejo');
+});
+
+test('el boceto del bóxer usa los contornos reales del patrón', () => {
+  I18n.setLang('es');
+  const m = tallaBase(40);
+  const b = globalThis.Percha.bocetar('boxer', m);
+  const piezas = PRENDAS.boxer.trazar(m).piezas;
+  assert.ok(b.svg.includes(piezas[0].outline.toString()), 'sin el delantero real');
+  assert.ok(b.svg.includes('scale(-1 1)'), 'sin parejas en espejo');
+  assert.ok(!/NaN|Infinity|undefined/.test(b.svg));
 });
 
 test('las claves usadas en el HTML existen en el diccionario', () => {

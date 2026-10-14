@@ -168,6 +168,8 @@ PerchaI18n.add('pt', { nombre: 'Português', locale: 'pt-PT' }, {
   'tut.pause': 'Pausar',
   'tut.prev': '← Anterior',
   'tut.next': 'Seguinte →',
+  'tut.front': 'frente',
+  'tut.back': 'costas',
   'tut.stepof': 'Passo {a} de {b}',
   'tut.mat.t': 'Materiais',
   'tut.mat1': 'Tecido de algodão (popelina ou malha); a ferramenta estima os metros.',

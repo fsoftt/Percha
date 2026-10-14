@@ -676,6 +676,7 @@
       ];
       piezas.push({
         nombre: tr('p.boxerFront'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
+        eje: cf.x,
         pasos: [
           { n: 1, x: flyEnd.x, y: 10 }, { n: 2, x: cf.x + 1, y: 7 },
           { n: 3, x: (tip.x + hIn.x) / 2 - 1.5, y: (T + L) / 2 }, { n: 4, x: hOut.x + 2, y: (T + L) / 2 },
@@ -731,6 +732,7 @@
       ];
       piezas.push({
         nombre: tr('p.boxerBack'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
+        eje: cb.x,
         pasos: [
           { n: 2, x: cb.x - 1, y: 7 },
           { n: 3, x: (tip.x + hIn.x) / 2 - 1.5, y: (T + L) / 2 }, { n: 4, x: hOut.x + 2, y: (T + L) / 2 },
@@ -836,15 +838,58 @@
   }
 
   function bocetoBoxer(m) {
-    const waistW = m.cintura + 8, hipW = m.cadera + 12, T = m.tiro, L = m.largoBoxer;
-    const legW = (m.muslo + 6) / 2, yh = (T * 2) / 3;
-    const inH = 2, outF = inH + legW;
+    // Prenda unida con los contornos reales del patrón (vista exterior:
+    // sin vista ni tapeta, que quedan ocultas por dentro).
+    const u = unirBoxer(m);
     const d = [];
-    d.push(`<rect x="${f(-waistW / 2)}" y="-3" width="${f(waistW)}" height="3" fill="${BC.suave}" stroke="${BC.corte}" stroke-width="0.35"/>`);
-    d.push(`<path d="M${f(-waistW / 2)} 0 L${f(waistW / 2)} 0 L${f(hipW / 2)} ${f(yh)} L${f(outF)} ${f(L)} L${f(inH)} ${f(L)} L0 ${f(T)} L${f(-inH)} ${f(L)} L${f(-outF)} ${f(L)} L${f(-hipW / 2)} ${f(yh)} Z" fill="#FFFFFF" stroke="${BC.linea}" stroke-width="0.4" stroke-linejoin="round"/>`);
-    d.push(`<path d="M1 0 C2.5 5 2.5 10 2 14" fill="none" stroke="${BC.corte}" stroke-width="0.3"/>`);
-    d.push(`<path d="M${f(inH)} ${f(L - 2)} H${f(outF)} M${f(-outF)} ${f(L - 2)} H${f(-inH)}" stroke="${BC.guia}" stroke-width="0.25" stroke-dasharray="1 0.8"/>`);
-    return { d: d.join(''), w: outF * 2 + 6, h: L + 3, y0: -3 };
+    for (const e of [u.placed[0], u.placed[1], u.placed[2], u.placed[3], u.placed[4]]) {
+      d.push(grupoColocado(e, `<path d="${e.pz.outline}" fill="#FFFFFF" stroke="${BC.linea}" stroke-width="0.07" stroke-linejoin="round"/>`));
+    }
+    d.push(`<text x="0" y="${f(u.L + 2.6)}" font-size="1.1" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="${BC.guia}">${esc(tr('tut.front'))}</text>`);
+    d.push(`<text x="${f(u.cxB)}" y="${f(u.L + 2.6)}" font-size="1.1" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="${BC.guia}">${esc(tr('tut.back'))}</text>`);
+    const w = u.maxX - u.minX;
+    return { d: `<g transform="translate(${f(-(u.minX + u.maxX) / 2)} 0)">${d.join('')}</g>`, w, h: u.maxY - u.minY, y0: u.minY };
+  }
+
+  // ---------- Bóxer unido (parejas espejadas con los contornos reales) ----------
+  // Compone delantero y trasero como pares espejados usando los mismos
+  // contornos del patrón, para que el tutorial y el boceto se parezcan a
+  // las figuras del PDF. La unión es esquemática (espejo sobre eje recto):
+  // sirve para reconocer las piezas, no para medir sobre ella.
+  function unirBoxer(m) {
+    const res = boxer(m);
+    // Orden fijo de boxer(): [delantero, vista, tapeta, trasero, goma]
+    const front = res.piezas[0], vista = res.piezas[1], tap = res.piezas[2];
+    const back = res.piezas[3], elastic = res.piezas[4];
+    for (const pz of res.piezas) pz._bb = bbox(pz.outline.pts);
+    const ejeF = front.eje, ejeB = back.eje;
+    const halfUF = Math.max(ejeF - front._bb.minX, front._bb.maxX - ejeF);
+    const halfUB = Math.max(ejeB - back._bb.minX, back._bb.maxX - ejeB);
+    const gap = 8, cxB = halfUF + gap + halfUB;
+    const cl = elastic._bb.maxX - elastic._bb.minX;
+    const L = Math.max(m.largoBoxer, m.tiro + 5);
+    const vx = -(halfUF + 3 + 6);
+    const placed = [
+      { pz: front, tx: -ejeF, ty: 0, mir: false },
+      { pz: front, tx: ejeF, ty: 0, mir: true },
+      { pz: back, tx: cxB - ejeB, ty: 0, mir: false },
+      { pz: back, tx: cxB + ejeB, ty: 0, mir: true },
+      { pz: elastic, tx: -cl / 2, ty: -12, mir: false },
+      { pz: vista, tx: vx, ty: 8, mir: false },
+      { pz: tap, tx: vx, ty: 24, mir: false },
+    ];
+    const minX = vx - 2, maxX = cxB + halfUB + 4, minY = -16, maxY = L + 5;
+    return { placed, front, back, elastic, vista, tap, ejeF, ejeB, cxB, cl, L, halfUF, halfUB, minX, maxX, minY, maxY };
+  }
+
+  function grupoColocado(e, interior) {
+    const t = e.mir ? `translate(${f(e.tx)} ${f(e.ty)}) scale(-1 1)` : `translate(${f(e.tx)} ${f(e.ty)})`;
+    return `<g transform="${t}">${interior}</g>`;
+  }
+
+  function insigniaEn(e, s, r, fs) {
+    const x = e.mir ? e.tx - s.x : e.tx + s.x;
+    return `<g class="tut-badge" transform="translate(${f(x)} ${f(e.ty + s.y)})"><circle r="${r}" fill="#FF4D2E" stroke="#FFFFFF" stroke-width="0.2"/><text y="${f(r * 0.38)}" font-size="${fs}" font-weight="bold" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="#FFFFFF">${s.n}</text></g>`;
   }
 
   const BOCETOS = { falda: bocetoFalda, cuerpo: bocetoCuerpo, pantalon: bocetoPantalon, camiseta: bocetoCamiseta, boxer: bocetoBoxer };
@@ -859,67 +904,34 @@
     return { svg: `<svg xmlns="http://www.w3.org/2000/svg" width="${f(W)}" height="${f(H)}" viewBox="0 0 ${f(W)} ${f(H)}">${inner}</svg>`, inner, width: W, height: H };
   }
 
-  // ---------- Tutorial animado del bóxer (delantero + trasero, sin escala) ----------
-  // Devuelve el plano con las 6 costuras en grupos .tut-step (con data-step)
-  // para que la página las anime por orden. Dibujo esquemático, sin escala.
+  // ---------- Tutorial animado del bóxer (contornos reales del patrón) ----------
+  // Monta delantero y trasero como en unirBoxer() y anima por pasos las
+  // piezas implicadas, con las insignias sobre las costuras. La página
+  // (tutorial.js) enciende los grupos .tut-step por orden.
   function tutorialBoxer(m) {
-    const W = m.cintura, H = m.cadera, T = m.tiro, Th = m.muslo;
-    const L = Math.max(m.largoBoxer, T + 5);
-    const waistW = (W + 8) / 2, hipW = (H + 12) / 2, legW = (Th + 6) / 2;
-    const yh = (T * 2) / 3, pouch = clamp(H / 40, 2, 3.5);
-    const inH = 2, outF = inH + legW;
-    const hipBW = hipW + 2, outB = inH + legW + 1;
-    const gap = 8, xB = outF + gap + outB;
-    const X = (v) => f(xB + v);
+    const u = unirBoxer(m);
     const F = '#FFFFFF', LC = '#FF4D2E', LG = '#B9A6FF';
+    const base = u.placed.map((e) => grupoColocado(e, `<path d="${e.pz.outline}" fill="${F}" stroke="${LG}" stroke-width="0.12" stroke-linejoin="round"/>`)).join('') +
+      `<text x="0" y="${f(u.L + 3.4)}" font-size="1.6" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="${LG}">${esc(tr('tut.front'))}</text>` +
+      `<text x="${f(u.cxB)}" y="${f(u.L + 3.4)}" font-size="1.6" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="${LG}">${esc(tr('tut.back'))}</text>`;
 
-    const flatF = `M${f(-waistW / 2)} 0 L${f(waistW / 2)} 0 L${f(hipW / 2)} ${f(yh)} L${f(outF)} ${f(L)} L${f(inH)} ${f(L)} L0 ${f(T)} L${f(-inH)} ${f(L)} L${f(-outF)} ${f(L)} L${f(-hipW / 2)} ${f(yh)} Z`;
-    const flatB = `M${X(-waistW / 2)} 0 L${X(waistW / 2)} 0 L${X(hipBW / 2)} ${f(yh)} L${X(outB)} ${f(L)} L${X(inH)} ${f(L)} L${X(0)} ${f(T + 1)} L${X(-inH)} ${f(L)} L${X(-outB)} ${f(L)} L${X(-hipBW / 2)} ${f(yh)} Z`;
-    const base = `<path d="${flatF}" fill="${F}" stroke="${LG}" stroke-width="0.3"/>` +
-      `<path d="${flatB}" fill="${F}" stroke="${LG}" stroke-width="0.3"/>` +
-      `<rect x="${f(-waistW / 2)}" y="-6" width="${f(waistW)}" height="3" fill="none" stroke="${LG}" stroke-width="0.25" stroke-dasharray="1 0.8"/>` +
-      `<rect x="${X(-waistW / 2)}" y="-6" width="${f(waistW)}" height="3" fill="none" stroke="${LG}" stroke-width="0.25" stroke-dasharray="1 0.8"/>` +
-      `<text x="${f(-outF)}" y="${f(L + 3.4)}" font-size="2.4" font-family="Helvetica, Arial, sans-serif" fill="${LG}">delantero</text>` +
-      `<text x="${X(-outB)}" y="${f(L + 3.4)}" font-size="2.4" font-family="Helvetica, Arial, sans-serif" fill="${LG}">trasero</text>`;
+    // Piezas implicadas por paso (índices de placed)
+    const acts = { 1: [0, 5, 6], 2: [0, 1, 2, 3], 3: [0, 1, 2, 3], 4: [0, 1, 2, 3], 5: [4, 0, 1, 2, 3], 6: [0, 1, 2, 3] };
+    const ov = [1, 2, 3, 4, 5, 6].map((n) => {
+      const contour = acts[n].map((i) => {
+        const e = u.placed[i];
+        return grupoColocado(e, `<path class="tut-seam" d="${e.pz.outline}" pathLength="100" fill="none" stroke="${LC}" stroke-width="0.3" stroke-linecap="round" stroke-linejoin="round"/>`);
+      }).join('');
+      const badges = acts[n].map((i) => {
+        const e = u.placed[i];
+        return (e.pz.pasos || []).filter((s) => s.n === n).map((s) => insigniaEn(e, s, 1.4, 1.6)).join('');
+      }).join('');
+      return `<g class="tut-step" data-step="${n}">${contour}${badges}</g>`;
+    }).join('');
 
-    const steps = [
-      { n: 1, paths: ['M1 0 C2.5 5 2.5 10 2 14'], bx: 6.5, by: 10 },
-      {
-        n: 2,
-        paths: [`M1 0 C${f(pouch)} 5 ${f(pouch)} 10 ${f(pouch * 0.8)} 14 L0 ${f(T)}`, `M${X(0)} 0 L${X(0)} ${f(T + 1)}`],
-        bx: xB + 3.5, by: (T + 1) / 2,
-      },
-      {
-        n: 3,
-        paths: [`M0 ${f(T)} L${f(inH)} ${f(L)}`, `M0 ${f(T)} L${f(-inH)} ${f(L)}`, `M${X(0)} ${f(T + 1)} L${X(inH)} ${f(L)}`, `M${X(0)} ${f(T + 1)} L${X(-inH)} ${f(L)}`],
-        bx: inH / 2, by: (T + L) / 2,
-      },
-      {
-        n: 4,
-        paths: [`M${f(-waistW / 2)} 0 L${f(-hipW / 2)} ${f(yh)} L${f(-outF)} ${f(L)}`, `M${f(waistW / 2)} 0 L${f(hipW / 2)} ${f(yh)} L${f(outF)} ${f(L)}`, `M${X(-waistW / 2)} 0 L${X(-hipBW / 2)} ${f(yh)} L${X(-outB)} ${f(L)}`, `M${X(waistW / 2)} 0 L${X(hipBW / 2)} ${f(yh)} L${X(outB)} ${f(L)}`],
-        bx: -(waistW / 2 + outF) / 2, by: L / 2,
-      },
-      {
-        n: 5,
-        paths: [`M${f(-waistW / 2)} -6 H${f(waistW / 2)} V-3 H${f(-waistW / 2)} Z`, `M${X(-waistW / 2)} -6 H${X(waistW / 2)} V-3 H${X(-waistW / 2)} Z`],
-        bx: 0, by: -4.5,
-      },
-      {
-        n: 6,
-        paths: [`M${f(inH)} ${f(L - 2)} H${f(outF)}`, `M${f(-outF)} ${f(L - 2)} H${f(-inH)}`, `M${X(inH)} ${f(L - 2)} H${X(outB)}`, `M${X(-outB)} ${f(L - 2)} H${X(-inH)}`],
-        bx: inH + legW / 2, by: L - 2,
-      },
-    ];
-    const ov = steps.map((s) =>
-      `<g class="tut-step" data-step="${s.n}">` +
-      s.paths.map((d) => `<path class="tut-seam" d="${d}" pathLength="100" fill="none" stroke="${LC}" stroke-width="0.6" stroke-linecap="round"/>`).join('') +
-      `<g class="tut-badge" transform="translate(${f(s.bx)} ${f(s.by)})"><circle r="2" fill="${LC}" stroke="#FFFFFF" stroke-width="0.3"/><text y="0.75" font-size="2.3" font-weight="bold" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" fill="#FFFFFF">${s.n}</text></g></g>`
-    ).join('');
-
-    const minX = -(outF + 5), maxX = xB + outB + 5, minY = -11, maxY = L + 5;
-    const Wd = maxX - minX, Ht = maxY - minY;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${f(Wd)}" height="${f(Ht)}" viewBox="${f(minX)} ${f(minY)} ${f(Wd)} ${f(Ht)}"><g class="tut-base">${base}</g><g class="tut-seams">${ov}</g></svg>`;
-    return { svg, width: Wd, height: Ht, steps: steps.map((s) => ({ n: s.n, bx: s.bx, by: s.by })) };
+    const Wd = u.maxX - u.minX, Ht = u.maxY - u.minY;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${f(Wd)}" height="${f(Ht)}" viewBox="${f(u.minX)} ${f(u.minY)} ${f(Wd)} ${f(Ht)}"><g class="tut-base">${base}</g><g class="tut-seams">${ov}</g></svg>`;
+    return { svg, width: Wd, height: Ht, steps: [1, 2, 3, 4, 5, 6].map((n) => ({ n })) };
   }
 
   // ---------- Catálogo de prendas y medidas ----------

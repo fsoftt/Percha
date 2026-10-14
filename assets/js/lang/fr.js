@@ -168,6 +168,8 @@ PerchaI18n.add('fr', { nombre: 'Français', locale: 'fr-FR' }, {
   'tut.pause': 'Pause',
   'tut.prev': '← Précédent',
   'tut.next': 'Suivant →',
+  'tut.front': 'devant',
+  'tut.back': 'dos',
   'tut.stepof': 'Étape {a} sur {b}',
   'tut.mat.t': 'Fournitures',
   'tut.mat1': 'Tissu de coton (popeline ou maille) ; l’outil estime le métrage.',

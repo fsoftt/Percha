@@ -168,6 +168,8 @@ PerchaI18n.add('en', { nombre: 'English', locale: 'en-GB' }, {
   'tut.pause': 'Pause',
   'tut.prev': '← Previous',
   'tut.next': 'Next →',
+  'tut.front': 'front',
+  'tut.back': 'back',
   'tut.stepof': 'Step {a} of {b}',
   'tut.mat.t': 'Materials',
   'tut.mat1': 'Cotton fabric (poplin or knit); the tool estimates the metres.',

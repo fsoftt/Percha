@@ -171,6 +171,8 @@ PerchaI18n.add('es', { nombre: 'Español', locale: 'es-ES' }, {
   'tut.pause': 'Pausar',
   'tut.prev': '← Anterior',
   'tut.next': 'Siguiente →',
+  'tut.front': 'delantero',
+  'tut.back': 'trasero',
   'tut.stepof': 'Paso {a} de {b}',
   'tut.mat.t': 'Materiales',
   'tut.mat1': 'Tela de algodón (popelín o punto); la herramienta estima los metros.',

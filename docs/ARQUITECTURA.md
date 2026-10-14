@@ -70,8 +70,8 @@ La herramienta ofrece tres vistas de la misma prenda (conmutador en la barra de 
 
 - **Patrón**: el trazado 1:1 que se exporta a PDF/SVG.
 - **Montaje**: el mismo trazado con insignias numeradas sobre las costuras (`pasos` de cada pieza, en coordenadas locales). Los números siguen el orden de las notas de costura (`n.sew*`). Es solo vista previa: la exportación usa siempre el patrón limpio.
-- **Boceto** (`bocetar()`): dibujo esquemático de la prenda ya unida, sin escala (lo indica en el propio dibujo). Son trazos delanteros parametrizados por las medidas, no piezas colocadas.
-- **Tutorial** (`tutorialBoxer()` en `assets/js/tutorial.js`, página `tutorial.html`): delantero y trasero del bóxer con las 6 costuras en grupos `.tut-step` que la página anima por orden (reproducir, anterior/siguiente, puntos). Usa las medidas guardadas en `localStorage`.
+- **Boceto** (`bocetar()`): dibujo esquemático de la prenda ya unida, sin escala (lo indica en el propio dibujo). En el bóxer usa los contornos reales del patrón montados en espejo; en el resto, trazos delanteros parametrizados por las medidas.
+- **Tutorial** (`tutorialBoxer()` en `assets/js/tutorial.js`, página `tutorial.html`): delantero y trasero del bóxer **con los contornos reales del patrón**, montados como pares en espejo (`unirBoxer()`), con las 6 costuras en grupos `.tut-step` que la página anima por orden (reproducir, anterior/siguiente, puntos). Usa las medidas guardadas en `localStorage`. La unión es esquemática (espejo recto): sirve para reconocer las piezas, no para medir sobre ella.
 
 ## Añadir una prenda nueva
 

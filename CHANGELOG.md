@@ -16,6 +16,7 @@
 - Vistas de Montaje (pasos numerados sobre el patrón) y Boceto (prenda unida, sin escala).
 - Página de glosario con 24 conceptos en 4 idiomas, enlazada desde la navegación.
 - Página tutorial animada del bóxer en 6 pasos, con tus medidas guardadas.
+- El tutorial y el boceto del bóxer usan los contornos reales del patrón en espejo.
 - Bolsillos traseros de ojal con vivo en el pantalón (delanteros renombrados para distinguirlos).
 
 ## 1.1.0 — 2026-10-05
