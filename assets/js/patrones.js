@@ -438,34 +438,54 @@
     const yh = (T * 2) / 3;
     const piezas = [];
 
-    // Delantero (costado en x=0, centro delante a la derecha)
+    // Delantero (costado en x=0, centro delante a la derecha, con suplemento)
     {
       const ww = (W + 8) / 4, hw = (H + 12) / 4;
       const ext = H / 20;
+      const pouch = clamp(H / 40, 2, 3.5);
+      const php = P(hw + pouch * 0.5, yh);
       const xc = (hw + ext) / 2;
       const hemHalf = (Th + 6) / 4;
       const st = P(0, 0), cf = P(ww, 0);
-      const tip = P(hw + ext, T);
+      const tip = P(hw + ext + pouch * 0.3, T);
       const hIn = P(xc + hemHalf, L), hOut = P(xc - hemHalf, L);
+      const flyEnd = P(ww + pouch * 0.8, 14);
       const path = new Path()
-        .M(st).L(cf).L(P(hw, yh))
-        .C(P(hw, yh + (T - yh) * 0.6), P(hw + ext * 0.35, T), tip)
+        .M(st).L(cf)
+        .C(P(cf.x + pouch, 5), P(hw + pouch, 10), php)
+        .C(P(hw + pouch * 0.5, yh + (T - yh) * 0.6), P(hw + ext * 0.35 + pouch * 0.3, T), tip)
         .C(P(tip.x - 0.6, T + 2), P(hIn.x + 0.3, L - 6), hIn)
         .L(hOut)
         .C(P(hOut.x - 0.3, (L + yh) / 2), P(0, T + 2), P(0, yh))
         .C(P(0, yh * 0.45), P(st.x * 0.6, 0.4), st)
         .Z();
+      const flyD = `M${f(cf.x)} ${f(cf.y)} C${f(cf.x + pouch)} 5 ${f(ww + pouch)} 10 ${f(flyEnd.x)} ${f(flyEnd.y)}`;
       const lineas = [
-        guide(P(0, yh), P(hw, yh), tr('p.hip')),
+        guide(P(0, yh), php, tr('p.hip')),
         guide(P(0, T), P(tip.x, T), tr('p.crotch')),
         guide(P(0, 3), P(cf.x, 3), tr('p.casing')),
-        guide(cf, P(cf.x, 12), tr('p.fly')),
+        { d: flyD, tipo: 'guia', texto: tr('p.fly'), at: P(flyEnd.x + 0.4, 10) },
         { d: seg(hOut, hIn), tipo: 'guia' },
         notch(tip, P(-1, 1)),
       ];
       piezas.push({
         nombre: tr('p.boxerFront'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
-        hilo: { x: xc, y1: 8, y2: L - 4 }, etiqueta: P(xc, (T + L) / 2),
+        hilo: { x: xc, y1: 8, y2: L - 4 }, etiqueta: P(xc - 1, (T + L) / 2),
+      });
+
+      // Vista y tapeta de la bragueta (rectas; dar forma con la curva del delantero)
+      const flyL = 14;
+      const vista = new Path().M(P(0, 0)).L(P(4, 0)).L(P(4, flyL)).L(P(0, flyL)).Z();
+      piezas.push({
+        nombre: tr('p.flyFace'), corte: tr('p.cut1'), doblez: false, outline: vista,
+        lineas: [guide(P(0, 0), P(0, flyL), tr('p.fly'))],
+        hilo: { x: 2, y1: 2, y2: flyL - 2 }, etiqueta: P(2, flyL / 2 - 1), compacta: true,
+      });
+      const tap = new Path().M(P(0, 0)).L(P(6, 0)).L(P(6, flyL)).L(P(0, flyL)).Z();
+      piezas.push({
+        nombre: tr('p.flyUnder'), corte: tr('p.cut1'), doblez: false, outline: tap,
+        lineas: [],
+        hilo: { x: 3, y1: 2, y2: flyL - 2 }, etiqueta: P(3, flyL / 2 - 1), compacta: true,
       });
     }
 
@@ -513,6 +533,7 @@
       piezas,
       notas: [
         tr('n.boxerEase'),
+        tr('n.boxerPouch'),
         tr('n.boxerElastic', { v: fmtN(W) }),
         tr('n.boxerFabric'),
       ],

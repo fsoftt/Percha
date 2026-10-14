@@ -116,8 +116,8 @@ PerchaI18n.add('fr', { nombre: 'Français', locale: 'fr-FR' }, {
   'g.camiseta.sum': 'Devant, dos et manche courte ou longue',
   'g.camiseta.desc': 'Pour tissus en maille. La tête de manche s’ajuste seule au tour d’emmanchure.',
   'g.boxer.name': 'Boxer',
-  'g.boxer.sum': 'Devant, dos et ceinture élastiquée',
-  'g.boxer.desc': 'Ample, avec fourche renforcée et taille élastiquée. Idéal en coton ou maille.',
+  'g.boxer.sum': 'Devant façonné, dos, braguette et élastique',
+  'g.boxer.desc': 'Ample, avec devant façonné, braguette doublée et taille élastiquée.',
 
   'm.pecho.l': 'Tour de poitrine',
   'm.pecho.h': 'Au niveau le plus fort de la poitrine, mètre horizontal.',
@@ -250,6 +250,8 @@ PerchaI18n.add('fr', { nombre: 'Français', locale: 'fr-FR' }, {
   'p.elastic': 'Ceinture élastiquée',
   'p.casing': 'Coulisse élastique (3 cm)',
   'p.fly': 'Ouverture',
+  'p.flyFace': 'Braguette · Sous-patte',
+  'p.flyUnder': 'Braguette · Sous-pont',
 
   'n.skirtEase': 'Aisance : 4 cm aux hanches, 1 cm à la taille.',
   'n.dartsFront': 'Devant : {n} pince(s) de {w} cm.',
@@ -271,6 +273,7 @@ PerchaI18n.add('fr', { nombre: 'Français', locale: 'fr-FR' }, {
   'n.cap': 'Hauteur de tête de manche calculée : {v} cm.',
   'n.knit': 'Conçu pour les tissus en maille.',
   'n.boxerEase': 'Aisance : 12 cm aux hanches, 8 cm à la taille (froncée par l’élastique).',
+  'n.boxerPouch': 'Devant façonné avec braguette doublée : sous-patte (4 cm) et sous-pont (6 cm).',
   'n.boxerElastic': 'Élastique de {v} cm (égal au tour de taille), 3 cm de large.',
   'n.boxerFabric': 'Tissu léger (popeline) ou maille de coton ; sans pinces.',
 });

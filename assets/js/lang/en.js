@@ -116,8 +116,8 @@ PerchaI18n.add('en', { nombre: 'English', locale: 'en-GB' }, {
   'g.camiseta.sum': 'Front, back and short or long sleeve',
   'g.camiseta.desc': 'For knit fabrics. The sleeve cap automatically matches the armhole length.',
   'g.boxer.name': 'Boxers',
-  'g.boxer.sum': 'Front, back and elastic waist',
-  'g.boxer.desc': 'Loose fit with reinforced crotch and elastic waist. Best in cotton or knit.',
+  'g.boxer.sum': 'Shaped front, back, fly and elastic',
+  'g.boxer.desc': 'Loose fit with shaped front pouch, faced fly and elastic waist.',
 
   'm.pecho.l': 'Bust',
   'm.pecho.h': 'Around the fullest part of the bust, tape horizontal.',
@@ -250,6 +250,8 @@ PerchaI18n.add('en', { nombre: 'English', locale: 'en-GB' }, {
   'p.elastic': 'Elastic waistband',
   'p.casing': 'Elastic casing (3 cm)',
   'p.fly': 'Fly opening',
+  'p.flyFace': 'Fly · Facing',
+  'p.flyUnder': 'Fly · Underlap',
 
   'n.skirtEase': 'Ease: 4 cm at hips, 1 cm at waist.',
   'n.dartsFront': 'Front: {n} dart(s) of {w} cm.',
@@ -271,6 +273,7 @@ PerchaI18n.add('en', { nombre: 'English', locale: 'en-GB' }, {
   'n.cap': 'Calculated sleeve cap height: {v} cm.',
   'n.knit': 'Designed for knit fabrics.',
   'n.boxerEase': 'Ease: 12 cm at hips, 8 cm at waist (gathered by the elastic).',
+  'n.boxerPouch': 'Shaped curved front with faced fly: facing (4 cm) and underlap (6 cm).',
   'n.boxerElastic': '{v} cm elastic (same as waist) 3 cm wide.',
   'n.boxerFabric': 'Lightweight woven (poplin) or cotton knit; no darts.',
 });

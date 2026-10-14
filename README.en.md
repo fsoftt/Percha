@@ -35,7 +35,7 @@ Everything runs in the browser: no server, no accounts, no tracking. Measurement
 | Basic bodice | bust, waist, front and back length, back width, shoulder, neck, bust height and span | front and back with bust and waist darts |
 | Basic trousers | waist, hips, crotch depth, length, hem width | front, back, waistband |
 | T-shirt | bust, shoulder width, neck, length, sleeve length, upper arm | front, back, sleeve with cap matched to the armhole |
-| Boxers | waist, hips, crotch depth, thigh, length | front, back, elastic casing strip |
+| Boxers | waist, hips, crotch depth, thigh, length | shaped front, back, fly facing and underlap, elastic strip |
 
 ## Usage
 

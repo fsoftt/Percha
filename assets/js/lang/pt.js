@@ -116,8 +116,8 @@ PerchaI18n.add('pt', { nombre: 'Português', locale: 'pt-PT' }, {
   'g.camiseta.sum': 'Frente, costas e manga curta ou comprida',
   'g.camiseta.desc': 'Para malhas. A cabeça da manga ajusta-se sozinha ao contorno da cava.',
   'g.boxer.name': 'Cueca boxer',
-  'g.boxer.sum': 'Frente, costas e cós com elástico',
-  'g.boxer.desc': 'Folgada, com gancho reforçado e elástico na cintura. Ideal em algodão ou malha.',
+  'g.boxer.sum': 'Frente anatómica, costas, braguilha e elástico',
+  'g.boxer.desc': 'Folgada, com frente anatómica, braguilha forrada e elástico na cintura.',
 
   'm.pecho.l': 'Contorno de busto',
   'm.pecho.h': 'Pela parte mais saliente do busto, fita na horizontal.',
@@ -250,6 +250,8 @@ PerchaI18n.add('pt', { nombre: 'Português', locale: 'pt-PT' }, {
   'p.elastic': 'Cós com elástico',
   'p.casing': 'Passagem do elástico (3 cm)',
   'p.fly': 'Abertura',
+  'p.flyFace': 'Braguilha · Vista',
+  'p.flyUnder': 'Braguilha · Portinhola',
 
   'n.skirtEase': 'Folga: 4 cm na anca, 1 cm na cintura.',
   'n.dartsFront': 'Frente: {n} pinça(s) de {w} cm.',
@@ -271,6 +273,7 @@ PerchaI18n.add('pt', { nombre: 'Português', locale: 'pt-PT' }, {
   'n.cap': 'Altura da cabeça da manga calculada: {v} cm.',
   'n.knit': 'Pensada para malhas.',
   'n.boxerEase': 'Folga: 12 cm na anca, 8 cm na cintura (franzida pelo elástico).',
+  'n.boxerPouch': 'Frente anatómica curva com braguilha: vista (4 cm) e portinhola (6 cm).',
   'n.boxerElastic': 'Elástico de {v} cm (igual ao contorno de cintura), 3 cm de largura.',
   'n.boxerFabric': 'Tecido leve (popelina) ou malha de algodão; sem pinças.',
 });

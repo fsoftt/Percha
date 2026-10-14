@@ -120,8 +120,8 @@ PerchaI18n.add('es', { nombre: 'Español', locale: 'es-ES' }, {
   'g.camiseta.sum': 'Delantero, espalda y manga corta o larga',
   'g.camiseta.desc': 'Para tejido de punto. La copa de la manga se ajusta sola al contorno de la sisa.',
   'g.boxer.name': 'Bóxer',
-  'g.boxer.sum': 'Delantero, trasero y cintura elástica',
-  'g.boxer.desc': 'Holgado, con tiro reforzado y goma en cintura. Ideal en algodón o punto.',
+  'g.boxer.sum': 'Delantero con suplemento, trasero, bragueta y goma',
+  'g.boxer.desc': 'Holgado, con suplemento delantero, bragueta con vista y tapeta, y goma en cintura.',
 
   // ---------- Medidas ----------
   'm.pecho.l': 'Contorno de pecho',
@@ -257,6 +257,8 @@ PerchaI18n.add('es', { nombre: 'Español', locale: 'es-ES' }, {
   'p.elastic': 'Cintura elástica',
   'p.casing': 'Jareta de goma (3 cm)',
   'p.fly': 'Abertura',
+  'p.flyFace': 'Bragueta · Vista',
+  'p.flyUnder': 'Bragueta · Tapeta',
 
   'n.skirtEase': 'Holgura: 4 cm en cadera, 1 cm en cintura.',
   'n.dartsFront': 'Delantero: {n} pinza(s) de {w} cm.',
@@ -278,6 +280,7 @@ PerchaI18n.add('es', { nombre: 'Español', locale: 'es-ES' }, {
   'n.cap': 'Altura de copa de manga calculada: {v} cm.',
   'n.knit': 'Pensada para tejido de punto.',
   'n.boxerEase': 'Holgura: 12 cm en cadera, 8 cm en cintura (recogida por la goma).',
+  'n.boxerPouch': 'Delantero con suplemento curvo y bragueta con vista (4 cm) y tapeta (6 cm).',
   'n.boxerElastic': 'Goma de {v} cm (igual al contorno de cintura) de 3 cm de ancho.',
   'n.boxerFabric': 'Tejido plano ligero (popelín) o punto de algodón; sin pinzas.',
 });
