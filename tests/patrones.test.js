@@ -264,9 +264,28 @@ test('el boceto de prenda terminada es válido en todas las tallas e idiomas', (
   I18n.setLang('es');
 });
 
+test('el tutorial del bóxer tiene 6 pasos animados válidos', () => {
+  const { tutorialBoxer } = globalThis.Percha;
+  for (const code of I18n.idiomas) {
+    I18n.setLang(code);
+    for (let t = 34; t <= 54; t += 2) {
+      const r = tutorialBoxer(tallaBase(t));
+      assert.ok(!/NaN|Infinity|undefined/.test(r.svg), `${code} t${t}`);
+      assert.ok(r.width > 0 && r.height > 0);
+      assert.deepEqual(r.steps.map((s) => s.n), [1, 2, 3, 4, 5, 6], `${code} t${t}`);
+      assert.equal((r.svg.match(/data-step="/g) || []).length, 6);
+    }
+    for (let t = 44; t <= 60; t += 2) {
+      const r = tutorialBoxer(tallaBaseHombre(t));
+      assert.ok(!/NaN|Infinity|undefined/.test(r.svg), `${code} hombre t${t}`);
+    }
+  }
+  I18n.setLang('es');
+});
+
 test('las claves usadas en el HTML existen en el diccionario', () => {
   const dict = I18n._dicts.es;
-  for (const f of ['index.html', 'herramienta.html', 'glosario.html']) {
+  for (const f of ['index.html', 'herramienta.html', 'glosario.html', 'tutorial.html']) {
     const html = fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
     const keys = new Set();
     for (const m of html.matchAll(/data-i18n(?:-html)?="([^"]+)"/g)) keys.add(m[1]);

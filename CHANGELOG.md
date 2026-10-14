@@ -14,7 +14,8 @@
 - Estimación de tela por área según el ancho elegido (110/140/150 cm).
 - Notas de par en espejo, margen por borde y orden de costura numerado.
 - Vistas de Montaje (pasos numerados sobre el patrón) y Boceto (prenda unida, sin escala).
-- Página de glosario con 23 conceptos en 4 idiomas, enlazada desde la navegación.
+- Página de glosario con 24 conceptos en 4 idiomas, enlazada desde la navegación.
+- Página tutorial animada del bóxer en 6 pasos, con tus medidas guardadas.
 - Bolsillos traseros de ojal con vivo en el pantalón (delanteros renombrados para distinguirlos).
 
 ## 1.1.0 — 2026-10-05
