@@ -87,6 +87,7 @@
   // ---------- Falda recta ----------
   function falda(m) {
     const W = m.cintura, H = m.cadera, hh = m.altCadera, L = m.largoFalda;
+    const ventH = clamp(L * 0.35, 12, 24);
     const piezas = [];
     const notas = [];
 
@@ -122,6 +123,9 @@
       if (!isF) {
         lineas.push(notch(P(0, 20), P(1, 0)));
         lineas.push({ d: seg(P(0.8, 20), P(3.5, 20)), tipo: 'guia', texto: tr('p.zipEnd'), at: P(2.2, 19.4) });
+        const ventTop = L - ventH;
+        lineas.push({ d: seg(P(0, ventTop), P(0, L)), tipo: 'guia', texto: tr('p.vent'), at: P(1.6, ventTop + 3) });
+        lineas.push(notch(P(0, ventTop), P(1, 0)));
       }
       piezas.push({
         nombre: isF ? tr('p.skirtFront') : tr('p.skirtBack'),
@@ -148,12 +152,23 @@
       compacta: true,
     });
 
+    // Vista de la abertura trasera (para rematar el martillo)
+    {
+      const vv = new Path().M(P(0, 0)).L(P(6, 0)).L(P(6, ventH)).L(P(0, ventH)).Z();
+      piezas.push({
+        nombre: tr('p.ventFacing'), corte: tr('p.cut2'), doblez: false, outline: vv,
+        lineas: [guide(P(0, 0), P(0, ventH), tr('p.vent'))],
+        hilo: { x: 3, y1: 2, y2: ventH - 2 }, etiqueta: P(3, ventH / 2 - 1), compacta: true,
+      });
+    }
+
     return {
       piezas,
       notas: [
         tr('n.skirtEase'),
         ...notas,
         tr('n.zip'),
+        tr('n.skirtVent', { v: fmtN(ventH) }),
       ],
     };
   }
@@ -161,7 +176,7 @@
   // ---------- Cuerpo básico (delantero y espalda) ----------
   function cuerpo(m) {
     const B = m.pecho, W = m.cintura, te = m.talleEsp, td = m.talleDel, ae = m.anchoEsp,
-      sh = m.hombro, N = m.cuello, ab = m.altBusto, sb = m.sepBusto;
+      sh = m.hombro, N = m.cuello, ab = m.altBusto, sb = m.sepBusto, Lm = m.largoManga, Bi = m.brazo;
     const sisa = B / 6 + 6;
     const nw = N / 6 + 0.5;
     const notas = [];
@@ -181,9 +196,13 @@
     const back = new Path()
       .M(P(0, 0))
       .C(P(nw * 0.55, 0), P(nw, -0.8), snpB)
-      .L(spB)
+      .L(spB);
+    const beforeB = back.len;
+    back
       .C(P(spB.x - 0.3, spB.y + 3), P(bwp.x, bwp.y - 3), bwp)
-      .C(P(bwp.x, bwp.y + (sisa - bwp.y) * 0.6), P(bwp.x + (bw - bwp.x) * 0.3, sisa), uaB)
+      .C(P(bwp.x, bwp.y + (sisa - bwp.y) * 0.6), P(bwp.x + (bw - bwp.x) * 0.3, sisa), uaB);
+    const armB = back.len - beforeB;
+    back
       .L(wsB)
       .L(P(0, te))
       .Z();
@@ -209,9 +228,13 @@
     const front = new Path()
       .M(P(0, nd))
       .C(P(nw * 0.55, nd), P(nw, nd * 0.55), snpF)
-      .L(spF)
+      .L(spF);
+    const beforeF = front.len;
+    front
       .C(P(spF.x - 0.5, spF.y + 3), P(fwp.x, fwp.y - 3), fwp)
-      .C(P(fwp.x, fwp.y + (uaY - fwp.y) * 0.55), P(fwp.x + (fw - fwp.x) * 0.35, uaY), uaF)
+      .C(P(fwp.x, fwp.y + (uaY - fwp.y) * 0.55), P(fwp.x + (fw - fwp.x) * 0.35, uaY), uaF);
+    const armF = front.len - beforeF;
+    front
       .L(wsF)
       .L(P(0, td))
       .Z();
@@ -231,17 +254,50 @@
     if (pzF > 0.3) linF.push(dart(P(bp.x - pzF / 2, td), P(bp.x, bp.y + 2.5), P(bp.x + pzF / 2, td)));
     linF.push({ d: `M${f(bp.x - 0.4)} ${f(bp.y)} L${f(bp.x + 0.4)} ${f(bp.y)} M${f(bp.x)} ${f(bp.y - 0.4)} L${f(bp.x)} ${f(bp.y + 0.4)}`, tipo: 'piquete', texto: tr('p.bustPoint'), at: P(bp.x + 2.2, bp.y - 0.6) });
 
+    // Manga base de tejido plano: copa ajustada a la sisa (+2 cm de embebido)
+    const piezasCuerpo = [
+      {
+        nombre: tr('p.bodiceBack'), corte: tr('p.cutFold'), doblez: true, outline: back, lineas: linB,
+        hilo: { x: bw * 0.6, y1: sisa + 3, y2: te - 4 }, etiqueta: P(bw * 0.45, sisa - 5),
+      },
+      {
+        nombre: tr('p.bodiceFront'), corte: tr('p.cutFold'), doblez: true, outline: front, lineas: linF,
+        hilo: { x: fw * 0.72, y1: uaY + 9, y2: td - 3 }, etiqueta: P(fw * 0.45, uaY - 5),
+      },
+    ];
+    {
+      const sw = (Bi + 8) / 2;
+      const target = armB + armF + 2;
+      const capLenB = (hh) => 2 * cubicLen(P(0, hh), P(sw * 0.3, hh), P(sw * 0.6, 0), P(sw, 0));
+      let loB = 2, hiB = 25;
+      for (let i = 0; i < 40; i++) {
+        const mid = (loB + hiB) / 2;
+        if (capLenB(mid) < target) loB = mid; else hiB = mid;
+      }
+      const capH = (loB + hiB) / 2;
+      const hemYB = Math.max(Lm, capH + 3);
+      const codoY = (capH + hemYB) / 2;
+      const sleeveB = new Path()
+        .M(P(0, capH))
+        .C(P(sw * 0.3, capH), P(sw * 0.6, 0), P(sw, 0))
+        .C(P(sw * 1.4, 0), P(sw * 1.7, capH), P(2 * sw, capH))
+        .L(P(2 * sw - 2, hemYB))
+        .L(P(2, hemYB))
+        .Z();
+      piezasCuerpo.push({
+        nombre: tr('p.bodiceSleeve'), corte: tr('p.cut2'), doblez: false, outline: sleeveB,
+        lineas: [
+          guide(P(0, capH), P(2 * sw, capH), tr('p.bicep')),
+          { d: seg(P(2, codoY), P(2 * sw - 2, codoY)), tipo: 'guia' },
+          notch(P(sw, 0), P(0, 1)),
+        ],
+        hilo: { x: sw, y1: capH + 1.5, y2: hemYB - 1.5 }, etiqueta: P(sw, capH - 3.5),
+      });
+      notas.push(tr('n.bodiceSleeve', { v: fmtN(capH) }));
+    }
+
     return {
-      piezas: [
-        {
-          nombre: tr('p.bodiceBack'), corte: tr('p.cutFold'), doblez: true, outline: back, lineas: linB,
-          hilo: { x: bw * 0.6, y1: sisa + 3, y2: te - 4 }, etiqueta: P(bw * 0.45, sisa - 5),
-        },
-        {
-          nombre: tr('p.bodiceFront'), corte: tr('p.cutFold'), doblez: true, outline: front, lineas: linF,
-          hilo: { x: fw * 0.72, y1: uaY + 9, y2: td - 3 }, etiqueta: P(fw * 0.45, uaY - 5),
-        },
-      ],
+      piezas: piezasCuerpo,
       notas: [
         tr('n.bodiceEase'),
         tr('n.armDepth', { v: fmtN(sisa) }),
@@ -440,6 +496,7 @@
     });
 
     // Tira de cuello: 85 % del contorno del escote, 4 cm de ancho para doblar
+    let bandNote = '';
     {
       const ndF = N / 6 + 2;
       const frontNeck = cubicLen(P(0, ndF), P(nw * 0.55, ndF), P(nw, ndF * 0.5), P(nw, 0));
@@ -452,7 +509,7 @@
         hilo: { x: null, y: 3, x1: 4, x2: Math.min(bandL - 4, 40) },
         etiqueta: P(Math.min(bandL / 2, 25), 1.2), compacta: true,
       });
-      var bandNote = tr('n.teeBand', { v: fmtN(bandL) });
+      bandNote = tr('n.teeBand', { v: fmtN(bandL) });
     }
 
     return {
@@ -472,13 +529,13 @@
     const W = m.cintura, H = m.cadera, T = m.tiro, Th = m.muslo;
     const L = Math.max(m.largoBoxer, T + 5);
     const yh = (T * 2) / 3;
+    const pouch = clamp(H / 40, 2, 3.5);
     const piezas = [];
 
     // Delantero (costado en x=0, centro delante a la derecha, con suplemento)
     {
       const ww = (W + 8) / 4, hw = (H + 12) / 4;
       const ext = H / 20;
-      const pouch = clamp(H / 40, 2, 3.5);
       const php = P(hw + pouch * 0.5, yh);
       const xc = (hw + ext) / 2;
       const hemHalf = (Th + 6) / 4;
@@ -509,15 +566,17 @@
         hilo: { x: xc, y1: 8, y2: L - 4 }, etiqueta: P(xc - 1, (T + L) / 2),
       });
 
-      // Vista y tapeta de la bragueta (rectas; dar forma con la curva del delantero)
+      // Vista y tapeta de la bragueta, con el borde interior curvado como el delantero
       const flyL = 14;
-      const vista = new Path().M(P(0, 0)).L(P(4, 0)).L(P(4, flyL)).L(P(0, flyL)).Z();
+      const vista = new Path().M(P(0, 0)).L(P(4, 0)).L(P(4, flyL)).L(P(0, flyL))
+        .C(P(pouch * 0.4, 10), P(pouch * 0.4, 4), P(0, 0)).Z();
       piezas.push({
         nombre: tr('p.flyFace'), corte: tr('p.cut1'), doblez: false, outline: vista,
         lineas: [guide(P(0, 0), P(0, flyL), tr('p.fly'))],
         hilo: { x: 2, y1: 2, y2: flyL - 2 }, etiqueta: P(2, flyL / 2 - 1), compacta: true,
       });
-      const tap = new Path().M(P(0, 0)).L(P(6, 0)).L(P(6, flyL)).L(P(0, flyL)).Z();
+      const tap = new Path().M(P(0, 0)).L(P(6, 0)).L(P(6, flyL)).L(P(0, flyL))
+        .C(P(pouch * 0.5, 10), P(pouch * 0.5, 4), P(0, 0)).Z();
       piezas.push({
         nombre: tr('p.flyUnder'), corte: tr('p.cut1'), doblez: false, outline: tap,
         lineas: [],
@@ -572,6 +631,7 @@
         tr('n.boxerPouch'),
         tr('n.boxerElastic', { v: fmtN(W) }),
         tr('n.boxerFabric'),
+        tr('n.boxerRef'),
       ],
     };
   }
@@ -603,7 +663,7 @@
 
   const PRENDAS = {
     falda: { medidas: ['cintura', 'cadera', 'altCadera', 'largoFalda'], trazar: falda },
-    cuerpo: { medidas: ['pecho', 'cintura', 'talleEsp', 'talleDel', 'anchoEsp', 'hombro', 'cuello', 'altBusto', 'sepBusto'], trazar: cuerpo },
+    cuerpo: { medidas: ['pecho', 'cintura', 'talleEsp', 'talleDel', 'anchoEsp', 'hombro', 'cuello', 'altBusto', 'sepBusto', 'largoManga', 'brazo'], trazar: cuerpo },
     pantalon: { medidas: ['cintura', 'cadera', 'tiro', 'largoPantalon', 'bajo'], trazar: pantalon },
     camiseta: { medidas: ['pecho', 'hombros', 'cuello', 'largoCamiseta', 'largoManga', 'brazo'], trazar: camiseta },
     boxer: { medidas: ['cintura', 'cadera', 'tiro', 'muslo', 'largoBoxer'], trazar: boxer },

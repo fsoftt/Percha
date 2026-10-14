@@ -101,4 +101,53 @@ test('el patrón se genera en todos los idiomas sin claves sin traducir', () => 
   I18n.setLang('es');
 });
 
+test('la falda trae abertura trasera con vista', () => {
+  I18n.setLang('es');
+  const res = PRENDAS.falda.trazar(tallaBase(38));
+  assert.equal(res.piezas.length, 4);
+  assert.ok(res.piezas.some((p) => p.nombre === 'Vista de abertura'));
+  assert.ok(res.piezas.some((p) => p.nombre === 'Falda · Espalda' && p.lineas.some((l) => l.texto === 'Abertura')));
+  assert.ok(res.notas.some((n) => n.startsWith('Abertura trasera')));
+});
+
+test('el cuerpo trae manga con copa ajustada a la sisa', () => {
+  I18n.setLang('es');
+  const res = PRENDAS.cuerpo.trazar(tallaBase(38));
+  assert.equal(res.piezas.length, 3);
+  assert.ok(res.piezas.some((p) => p.nombre === 'Cuerpo · Manga'));
+  assert.ok(res.notas.some((n) => n.startsWith('Manga de tejido plano')));
+});
+
+test('el pantalón trae bragueta con vista y tapeta', () => {
+  I18n.setLang('es');
+  const res = PRENDAS.pantalon.trazar(tallaBase(38));
+  assert.equal(res.piezas.length, 5);
+  assert.ok(res.piezas.some((p) => p.nombre === 'Bragueta · Vista'));
+  assert.ok(res.piezas.some((p) => p.nombre === 'Bragueta · Tapeta'));
+  assert.ok(res.notas.some((n) => n.startsWith('Bragueta con cremallera')));
+});
+
+test('la camiseta trae tira de cuello con largo positivo', () => {
+  I18n.setLang('es');
+  const res = PRENDAS.camiseta.trazar(tallaBase(38));
+  assert.equal(res.piezas.length, 4);
+  const tira = res.piezas.find((p) => p.nombre === 'Tira de cuello');
+  assert.ok(tira);
+  const w = Math.max(...tira.outline.pts.map((p) => p.x)) - Math.min(...tira.outline.pts.map((p) => p.x));
+  assert.ok(w > 20, `ancho tira ${w}`);
+});
+
+test('el bóxer trae suplemento y bragueta curva', () => {
+  I18n.setLang('es');
+  const m = tallaBase(38);
+  const res = PRENDAS.boxer.trazar(m);
+  assert.equal(res.piezas.length, 5);
+  const del = res.piezas.find((p) => p.nombre === 'Bóxer · Delantero');
+  const hw = (m.cadera + 12) / 4;
+  assert.ok(Math.max(...del.outline.pts.map((p) => p.x)) > hw, 'sin suplemento');
+  const vista = res.piezas.find((p) => p.nombre === 'Bragueta · Vista');
+  assert.ok(vista.outline.toString().includes('C'), 'vista recta sin curva');
+  assert.ok(res.notas.some((n) => n.includes('masculino')));
+});
+
 console.log(`\n${ok} pruebas superadas`);

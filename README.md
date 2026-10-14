@@ -44,8 +44,8 @@ Todo ocurre en el navegador: no hay servidor, cuentas ni seguimiento. Las medida
 
 | Prenda | Medidas | Piezas |
 | --- | --- | --- |
-| Falda recta | cintura, cadera, altura de cadera, largo | delantero (al doblez), espalda, cinturilla |
-| Cuerpo básico | pecho, cintura, talles delantero y espalda, ancho de espalda, hombro, cuello, altura y separación de busto | delantero y espalda con pinzas de busto y cintura |
+| Falda recta | cintura, cadera, altura de cadera, largo | delantero (al doblez), espalda con abertura, vistas, cinturilla |
+| Cuerpo básico | pecho, cintura, talles delantero y espalda, ancho de espalda, hombro, cuello, altura y separación de busto, largo de manga, brazo | delantero, espalda y manga con copa ajustada a la sisa |
 | Pantalón básico | cintura, cadera, tiro, largo, contorno de bajo | delantero, trasero, vista y tapeta de bragueta, cinturilla |
 | Camiseta | pecho, ancho de hombros, cuello, largo, largo de manga, brazo | delantero, espalda, manga con copa ajustada a la sisa, tira de cuello |
 | Bóxer | cintura, cadera, tiro, muslo, largo | delantero con suplemento, trasero, vista y tapeta de bragueta, tira para goma |
@@ -110,7 +110,7 @@ El archivo `.nojekyll` evita que GitHub procese el sitio con Jekyll.
 
 ## Hoja de ruta
 
-- [ ] Manga para el cuerpo básico
+- [x] Manga para el cuerpo básico
 - [ ] Vestido y falda evasé derivados de los bloques
 - [ ] Medidas en pulgadas
 - [x] Interfaz en español, inglés, francés y portugués

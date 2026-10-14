@@ -31,8 +31,8 @@ Everything runs in the browser: no server, no accounts, no tracking. Measurement
 
 | Garment | Measurements | Pieces |
 | --- | --- | --- |
-| Straight skirt | waist, hips, waist-to-hip, length | front (on fold), back, waistband |
-| Basic bodice | bust, waist, front and back length, back width, shoulder, neck, bust height and span | front and back with bust and waist darts |
+| Straight skirt | waist, hips, waist-to-hip, length | front (on fold), vented back, facings, waistband |
+| Basic bodice | bust, waist, front and back length, back width, shoulder, neck, bust height and span, sleeve length, upper arm | front, back and sleeve with cap matched to the armhole |
 | Basic trousers | waist, hips, crotch depth, length, hem width | front, back, fly facing and underlap, waistband |
 | T-shirt | bust, shoulder width, neck, length, sleeve length, upper arm | front, back, sleeve with cap matched to the armhole, neckband |
 | Boxers | waist, hips, crotch depth, thigh, length | shaped front, back, fly facing and underlap, elastic strip |

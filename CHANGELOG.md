@@ -1,5 +1,14 @@
 # Changelog
 
+## Sin publicar
+
+- Bóxer con suplemento delantero curvo, bragueta con vista y tapeta, y tira para goma.
+- Pantalón con bragueta (vista, tapeta y guía de cremallera).
+- Camiseta con tira de cuello calculada al 85 % del escote.
+- Falda con abertura trasera y vista para el martillo.
+- Cuerpo básico con manga de tejido plano (copa ajustada a la sisa).
+- Pruebas específicas por prenda (piezas, suplemento, tira de cuello).
+
 ## 1.1.0 — 2026-10-05
 
 - Multilenguaje: español, inglés, francés y portugués.
