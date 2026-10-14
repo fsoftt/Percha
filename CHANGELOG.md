@@ -14,6 +14,7 @@
 - Estimación de tela por área según el ancho elegido (110/140/150 cm).
 - Notas de par en espejo, margen por borde y orden de costura numerado.
 - Vistas de Montaje (pasos numerados sobre el patrón) y Boceto (prenda unida, sin escala).
+- Página de glosario con 23 conceptos en 4 idiomas, enlazada desde la navegación.
 
 ## 1.1.0 — 2026-10-05
 

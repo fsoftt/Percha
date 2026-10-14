@@ -249,7 +249,7 @@ test('el boceto de prenda terminada es válido en todas las tallas e idiomas', (
 
 test('las claves usadas en el HTML existen en el diccionario', () => {
   const dict = I18n._dicts.es;
-  for (const f of ['index.html', 'herramienta.html']) {
+  for (const f of ['index.html', 'herramienta.html', 'glosario.html']) {
     const html = fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
     const keys = new Set();
     for (const m of html.matchAll(/data-i18n(?:-html)?="([^"]+)"/g)) keys.add(m[1]);

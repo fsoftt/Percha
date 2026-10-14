@@ -122,6 +122,6 @@ La herramienta ofrece tres vistas de la misma prenda (conmutador en la barra de 
 1. Copia `assets/js/lang/es.js` a `assets/js/lang/<código>.js` (por ejemplo `it.js`).
 2. Cambia la primera línea: `PerchaI18n.add('it', { nombre: 'Italiano', locale: 'it-IT' }, { … })`.
 3. Traduce todos los valores. No cambies las claves ni los marcadores `{n}`, `{w}`…
-4. Añade `<script src="assets/js/lang/it.js" defer></script>` en `index.html` y `herramienta.html`, junto a los demás idiomas (y un `<link rel="alternate" hreflang="it">` en la landing).
+4. Añade `<script src="assets/js/lang/it.js" defer></script>` en `index.html`, `herramienta.html` y `glosario.html`, junto a los demás idiomas (y un `<link rel="alternate" hreflang="it">` en la landing y el glosario).
 5. Ejecuta `npm test`: comprueba que el idioma tiene exactamente las mismas claves que `es.js` y los mismos parámetros.
 6. Revisa la web en móvil: algunos idiomas son más largos y pueden necesitar textos más cortos en botones.
