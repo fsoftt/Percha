@@ -287,6 +287,7 @@
         guide(P(0, yh), P(fw, yh), tr('p.hip')),
         guide(P(0, T), P(tip.x, T), tr('p.crotch')),
         guide(kOut, kIn, tr('p.knee')),
+        guide(cf, P(cf.x, clamp(T * 0.65, 15, 20)), tr('p.fly')),
       ];
       if (pz > 0.3) lineas.push(dart(P(xc - pz / 2, 0), P(xc, 9), P(xc + pz / 2, 0)));
       piezas.push({
@@ -358,6 +359,24 @@
       etiqueta: P(Math.min(cl / 2, 22), 2), compacta: true,
     });
 
+    // Vista y tapeta de la bragueta (rectas; la cremallera va en el delantero izquierdo)
+    {
+      const flyL = clamp(T * 0.65, 15, 20);
+      const vista = new Path().M(P(0, 0)).L(P(4.5, 0)).L(P(4.5, flyL)).L(P(0, flyL)).Z();
+      piezas.push({
+        nombre: tr('p.flyFace'), corte: tr('p.cut1'), doblez: false, outline: vista,
+        lineas: [guide(P(0, 0), P(0, flyL), tr('p.fly'))],
+        hilo: { x: 2.2, y1: 2, y2: flyL - 2 }, etiqueta: P(2.2, flyL / 2 - 1), compacta: true,
+      });
+      const tap = new Path().M(P(0, 0)).L(P(5, 0)).L(P(5, flyL)).L(P(0, flyL)).Z();
+      piezas.push({
+        nombre: tr('p.flyUnder'), corte: tr('p.cut1'), doblez: false, outline: tap,
+        lineas: [],
+        hilo: { x: 2.5, y1: 2, y2: flyL - 2 }, etiqueta: P(2.5, flyL / 2 - 1), compacta: true,
+      });
+      notas.push(tr('n.pantsFly', { v: fmtN(flyL) }));
+    }
+
     return {
       piezas,
       notas: [tr('n.pantsEase'), ...notas, tr('n.crease')],
@@ -420,12 +439,29 @@
       hilo: { x: sw, y1: h + 1.5, y2: hemY - 1.5 }, etiqueta: P(sw, h - 3.5),
     });
 
+    // Tira de cuello: 85 % del contorno del escote, 4 cm de ancho para doblar
+    {
+      const ndF = N / 6 + 2;
+      const frontNeck = cubicLen(P(0, ndF), P(nw * 0.55, ndF), P(nw, ndF * 0.5), P(nw, 0));
+      const backNeck = cubicLen(P(0, 0), P(nw * 0.55, 0), P(nw, -0.8), P(nw, -2));
+      const bandL = Math.max((frontNeck + backNeck) * 2 * 0.85, 20);
+      const band = new Path().M(P(0, 0)).L(P(bandL, 0)).L(P(bandL, 4)).L(P(0, 4)).Z();
+      piezas.push({
+        nombre: tr('p.neckband'), corte: tr('p.cut1'), doblez: false, outline: band,
+        lineas: [guide(P(0, 2), P(bandL, 2), tr('p.foldHere'))],
+        hilo: { x: null, y: 3, x1: 4, x2: Math.min(bandL - 4, 40) },
+        etiqueta: P(Math.min(bandL / 2, 25), 1.2), compacta: true,
+      });
+      var bandNote = tr('n.teeBand', { v: fmtN(bandL) });
+    }
+
     return {
       piezas,
       notas: [
         tr('n.teeEase'),
         tr('n.armhole', { v: fmtN(arm) }),
         tr('n.cap', { v: fmtN(h) }),
+        bandNote,
         tr('n.knit'),
       ],
     };
