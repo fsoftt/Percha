@@ -46,7 +46,7 @@ Todo ocurre en el navegador: no hay servidor, cuentas ni seguimiento. Las medida
 | --- | --- | --- |
 | Falda recta | cintura, cadera, altura de cadera, largo | delantero (al doblez), espalda con abertura, vistas, cinturilla |
 | Cuerpo básico | pecho, cintura, talles delantero y espalda, ancho de espalda, hombro, cuello, altura y separación de busto, largo de manga, brazo | delantero, espalda y manga con copa ajustada a la sisa |
-| Pantalón básico | cintura, cadera, tiro, largo, contorno de bajo | delantero, trasero, vista y tapeta de bragueta, fondo de bolsillo, tira para trabillas, cinturilla |
+| Pantalón básico | cintura, cadera, tiro, largo, contorno de bajo | delantero, trasero, vista y tapeta de bragueta, fondos de bolsillo delantero y trasero, vivo, tira para trabillas, cinturilla |
 | Camiseta | pecho, ancho de hombros, cuello, largo, largo de manga, brazo | delantero, espalda, manga con copa ajustada a la sisa, tira de cuello |
 | Bóxer | cintura, cadera, tiro, muslo, largo | delantero con suplemento, trasero, vista y tapeta de bragueta, tira para goma |
 

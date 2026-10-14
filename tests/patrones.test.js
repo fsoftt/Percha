@@ -127,7 +127,7 @@ test('el cuerpo trae manga con copa ajustada a la sisa', () => {
 test('el pantalón trae bragueta con vista y tapeta', () => {
   I18n.setLang('es');
   const res = PRENDAS.pantalon.trazar(tallaBase(38));
-  assert.equal(res.piezas.length, 7);
+  assert.equal(res.piezas.length, 9);
   assert.ok(res.piezas.some((p) => p.nombre === 'Bragueta · Vista'));
   assert.ok(res.piezas.some((p) => p.nombre === 'Bragueta · Tapeta'));
   assert.ok(res.notas.some((n) => n.startsWith('Bragueta con cremallera')));
@@ -136,15 +136,30 @@ test('el pantalón trae bragueta con vista y tapeta', () => {
 test('el pantalón trae bolsillo y tira para trabillas', () => {
   I18n.setLang('es');
   const res = PRENDAS.pantalon.trazar(tallaBase(38));
-  const fondo = res.piezas.find((p) => p.nombre === 'Bolsillo · Fondo');
+  const fondo = res.piezas.find((p) => p.nombre === 'Bolsillo delantero · Fondo');
   assert.ok(fondo);
   assert.equal(fondo.corte, 'Cortar 4');
   assert.ok(fondo.lineas.filter((l) => l.tipo === 'piquete').length >= 2, 'el fondo no trae piquetes de coincidencia');
   assert.ok(res.piezas.some((p) => p.nombre === 'Tira para trabillas'));
   assert.ok(res.piezas.some((p) => p.nombre === 'Tira para trabillas'));
-  assert.ok(res.piezas.some((p) => p.nombre === 'Pantalón · Delantero' && p.lineas.some((l) => l.texto === 'Bolsillo · Fondo')));
-  assert.ok(res.notas.some((n) => n.startsWith('Bolsillos laterales')));
+  assert.ok(res.piezas.some((p) => p.nombre === 'Pantalón · Delantero' && p.lineas.some((l) => l.texto === 'Bolsillo delantero · Fondo')));
+  assert.ok(res.notas.some((n) => n.startsWith('Bolsillos delanteros')));
   assert.ok(res.notas.some((n) => n.startsWith('Tira de 15')));
+});
+
+test('el pantalón trae bolsillos traseros de ojal con vivo', () => {
+  I18n.setLang('es');
+  const res = PRENDAS.pantalon.trazar(tallaBase(38));
+  const tras = res.piezas.find((p) => p.nombre === 'Pantalón · Trasero');
+  assert.ok(tras.lineas.some((l) => l.texto === 'Bolsillo trasero'), 'el trasero no marca el ojal');
+  assert.ok(tras.lineas.filter((l) => l.tipo === 'piquete').length >= 2, 'el ojal no trae piquetes');
+  const vivo = res.piezas.find((p) => p.nombre === 'Vivo trasero');
+  assert.ok(vivo);
+  assert.equal(vivo.corte, 'Cortar 2');
+  const fondoT = res.piezas.find((p) => p.nombre === 'Bolsillo trasero · Fondo');
+  assert.ok(fondoT);
+  assert.equal(fondoT.corte, 'Cortar 4');
+  assert.ok(res.notas.some((n) => n.startsWith('Bolsillos traseros de ojal')));
 });
 
 test('la tabla masculina genera patrones válidos en todos los idiomas', () => {

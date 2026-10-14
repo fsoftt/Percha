@@ -411,6 +411,14 @@
         guide(kOut, kIn, tr('p.knee')),
         guide(P(hOut.x, L - 4), P(hIn.x, L - 4), tr('p.hem')),
       ];
+      // Bolsillo trasero de ojal: abertura inclinada sobre la pala
+      const ojalL = clamp(H * 0.14, 12, 16);
+      const yOjal = Math.min(11, yh - 2);
+      const xcOjal = bw * 0.45;
+      const ojalA = P(xcOjal - ojalL / 2, yOjal + 1), ojalB = P(xcOjal + ojalL / 2, yOjal);
+      lineas.push({ d: seg(ojalA, ojalB), tipo: 'guia', texto: tr('p.backPocket'), at: P(xcOjal, yOjal - 0.6) });
+      lineas.push(notch(ojalA, P(-1, 0.3)));
+      lineas.push(notch(ojalB, P(1, -0.3)));
       if (pz > 0.3) {
         const n = pz > 3 ? 2 : 1;
         const wv = P(cb.x - st.x, cb.y - st.y), wl = Math.hypot(wv.x, wv.y);
@@ -431,7 +439,7 @@
       piezas.push({
         nombre: tr('p.pantsBack'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
         pasos: [
-          { n: 1, x: (st.x + cb.x) / 2, y: 4 },
+          { n: 1, x: (st.x + cb.x) / 2, y: 4 }, { n: 2, x: xcOjal, y: yOjal },
           { n: 4, x: (tip.x + hIn.x) / 2 - 1.5, y: (T + L) / 2 }, { n: 5, x: hOut.x + 2, y: (T + L) / 2 },
           { n: 7, x: xc, y: L - 2 },
         ],
@@ -495,6 +503,36 @@
         hilo: { x: null, y: 7, x1: 2, x2: 13 }, etiqueta: P(7.5, 2.5), compacta: true,
       });
       notas.push(tr('n.pockets'), tr('n.loops'));
+    }
+
+    // Bolsillo trasero de ojal: vivo doblado + fondo propio
+    {
+      const ojalL2 = clamp(H * 0.14, 12, 16);
+      const vivo = new Path().M(P(0, 0)).L(P(ojalL2 + 2, 0)).L(P(ojalL2 + 2, 6)).L(P(0, 6)).Z();
+      piezas.push({
+        nombre: tr('p.welt'), corte: tr('p.cut2'), doblez: false, outline: vivo,
+        lineas: [guide(P(0, 3), P(ojalL2 + 2, 3), tr('p.foldHere'))],
+        pasos: [{ n: 2, x: (ojalL2 + 2) / 2, y: 3 }],
+        hilo: { x: null, y: 4.5, x1: 2, x2: ojalL2 }, etiqueta: P((ojalL2 + 2) / 2, 1.2), compacta: true,
+      });
+      const bw2 = ojalL2 + 3, bh2 = 18;
+      const fondoT = new Path()
+        .M(P(0, 0)).L(P(bw2, 0)).L(P(bw2, 13))
+        .C(P(bw2, 17), P(bw2 - 4, bh2), P(bw2 - 6, bh2))
+        .L(P(6, bh2))
+        .C(P(4, bh2), P(0, 17), P(0, 13))
+        .Z();
+      piezas.push({
+        nombre: tr('p.backBag'), corte: tr('p.cut4'), doblez: false, outline: fondoT,
+        lineas: [
+          guide(P(2, 1.5), P(bw2 - 2, 1.5), tr('p.backPocket')),
+          notch(P(2, 1.5), P(0, -1)),
+          notch(P(bw2 - 2, 1.5), P(0, -1)),
+        ],
+        pasos: [{ n: 2, x: bw2 / 2, y: 9 }],
+        hilo: { x: bw2 / 2, y1: 3, y2: bh2 - 2 }, etiqueta: P(bw2 / 2, 7), compacta: true,
+      });
+      notas.push(tr('n.backPockets', { v: fmtN(ojalL2) }));
     }
 
     return {
