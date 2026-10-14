@@ -431,6 +431,94 @@
     };
   }
 
+  // ---------- Bóxer (delantero, trasero y cintura elástica) ----------
+  function boxer(m) {
+    const W = m.cintura, H = m.cadera, T = m.tiro, Th = m.muslo;
+    const L = Math.max(m.largoBoxer, T + 5);
+    const yh = (T * 2) / 3;
+    const piezas = [];
+
+    // Delantero (costado en x=0, centro delante a la derecha)
+    {
+      const ww = (W + 8) / 4, hw = (H + 12) / 4;
+      const ext = H / 20;
+      const xc = (hw + ext) / 2;
+      const hemHalf = (Th + 6) / 4;
+      const st = P(0, 0), cf = P(ww, 0);
+      const tip = P(hw + ext, T);
+      const hIn = P(xc + hemHalf, L), hOut = P(xc - hemHalf, L);
+      const path = new Path()
+        .M(st).L(cf).L(P(hw, yh))
+        .C(P(hw, yh + (T - yh) * 0.6), P(hw + ext * 0.35, T), tip)
+        .C(P(tip.x - 0.6, T + 2), P(hIn.x + 0.3, L - 6), hIn)
+        .L(hOut)
+        .C(P(hOut.x - 0.3, (L + yh) / 2), P(0, T + 2), P(0, yh))
+        .C(P(0, yh * 0.45), P(st.x * 0.6, 0.4), st)
+        .Z();
+      const lineas = [
+        guide(P(0, yh), P(hw, yh), tr('p.hip')),
+        guide(P(0, T), P(tip.x, T), tr('p.crotch')),
+        guide(P(0, 3), P(cf.x, 3), tr('p.casing')),
+        guide(cf, P(cf.x, 12), tr('p.fly')),
+        { d: seg(hOut, hIn), tipo: 'guia' },
+        notch(tip, P(-1, 1)),
+      ];
+      piezas.push({
+        nombre: tr('p.boxerFront'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
+        hilo: { x: xc, y1: 8, y2: L - 4 }, etiqueta: P(xc, (T + L) / 2),
+      });
+    }
+
+    // Trasero (más cruce de tiro y pernera más ancha)
+    {
+      const ww = (W + 8) / 4, hw = (H + 12) / 4 + 1;
+      const ext = H / 10;
+      const xc = (hw + ext) / 2;
+      const hemHalf = (Th + 6) / 4 + 1;
+      const st = P(0, 0), cb = P(ww, 0);
+      const tip = P(hw + ext, T + 1);
+      const hIn = P(xc + hemHalf, L), hOut = P(xc - hemHalf, L);
+      const path = new Path()
+        .M(st).L(cb).L(P(hw, yh))
+        .C(P(hw + 0.3, yh + (T + 1 - yh) * 0.65), P(hw + ext * 0.45, T + 1), tip)
+        .C(P(tip.x - 1, T + 3), P(hIn.x + 0.3, L - 6), hIn)
+        .L(hOut)
+        .C(P(hOut.x - 0.3, (L + yh) / 2), P(0, T + 3), P(0, yh))
+        .C(P(0, yh * 0.45), P(st.x * 0.6, 0.4), st)
+        .Z();
+      const lineas = [
+        guide(P(0, yh), P(hw, yh), tr('p.hip')),
+        guide(P(0, T), P(tip.x, T), tr('p.crotch')),
+        guide(P(0, 3), P(cb.x, 3), tr('p.casing')),
+        { d: seg(hOut, hIn), tipo: 'guia' },
+        notch(tip, P(-1, 1)),
+      ];
+      piezas.push({
+        nombre: tr('p.boxerBack'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
+        hilo: { x: xc, y1: 8, y2: L - 4 }, etiqueta: P(xc, (T + L) / 2),
+      });
+    }
+
+    // Tira para la jareta de la goma
+    const cl = W + 2;
+    piezas.push({
+      nombre: tr('p.elastic'), corte: tr('p.cut1'), doblez: false,
+      outline: new Path().M(P(0, 0)).L(P(cl, 0)).L(P(cl, 7)).L(P(0, 7)).Z(),
+      lineas: [guide(P(0, 3.5), P(cl, 3.5), tr('p.foldHere'))],
+      hilo: { x: null, y: 5.5, x1: 4, x2: Math.min(cl - 4, 40) },
+      etiqueta: P(Math.min(cl / 2, 30), 1.8), compacta: true,
+    });
+
+    return {
+      piezas,
+      notas: [
+        tr('n.boxerEase'),
+        tr('n.boxerElastic', { v: fmtN(W) }),
+        tr('n.boxerFabric'),
+      ],
+    };
+  }
+
   // ---------- Catálogo de prendas y medidas ----------
   const MEDIDAS = {
     pecho: { min: 60, max: 160 },
@@ -452,6 +540,8 @@
     hombros: { min: 28, max: 60 },
     largoManga: { min: 10, max: 70 },
     brazo: { min: 18, max: 55 },
+    muslo: { min: 35, max: 80 },
+    largoBoxer: { min: 25, max: 65 },
   };
 
   const PRENDAS = {
@@ -459,6 +549,7 @@
     cuerpo: { medidas: ['pecho', 'cintura', 'talleEsp', 'talleDel', 'anchoEsp', 'hombro', 'cuello', 'altBusto', 'sepBusto'], trazar: cuerpo },
     pantalon: { medidas: ['cintura', 'cadera', 'tiro', 'largoPantalon', 'bajo'], trazar: pantalon },
     camiseta: { medidas: ['pecho', 'hombros', 'cuello', 'largoCamiseta', 'largoManga', 'brazo'], trazar: camiseta },
+    boxer: { medidas: ['cintura', 'cadera', 'tiro', 'muslo', 'largoBoxer'], trazar: boxer },
   };
 
   // Textos traducibles como propiedades calculadas: MEDIDAS.pecho.label, PRENDAS.falda.nombre…
@@ -479,7 +570,7 @@
       largoFalda: 60, talleEsp: 40 + 0.5 * k, talleDel: 43 + 0.75 * k, anchoEsp: 35 + 1 * k,
       hombro: 12 + 0.25 * k, cuello: 36 + 1 * k, altBusto: 26 + 0.5 * k, sepBusto: 18 + 0.5 * k,
       tiro: 26 + 0.5 * k, largoPantalon: 102, bajo: 40 + 1 * k, largoCamiseta: 62 + 0.5 * k,
-      hombros: 38 + 1 * k, largoManga: 20, brazo: 27 + 1.5 * k,
+      hombros: 38 + 1 * k, largoManga: 20, brazo: 27 + 1.5 * k, muslo: 54 + 2 * k, largoBoxer: 38 + 0.5 * k,
     };
   }
 

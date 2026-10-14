@@ -15,6 +15,7 @@
     cuerpo: '<svg viewBox="0 0 48 48" fill="#B9A6FF" stroke="#14101F" stroke-width="2" stroke-linejoin="round"><path d="M17 6c2 4 12 4 14 0l5 3-1 9c-2 2-2 6 0 8v14H13V26c2-2 2-6 0-8l-1-9z"/></svg>',
     pantalon: '<svg viewBox="0 0 48 48" fill="#D4FF3A" stroke="#14101F" stroke-width="2" stroke-linejoin="round"><path d="M14 6h20l3 36h-9l-4-24-4 24h-9z"/></svg>',
     camiseta: '<svg viewBox="0 0 48 48" fill="#6A3DF0" stroke="#14101F" stroke-width="2" stroke-linejoin="round"><path d="M17 6c2 4 12 4 14 0l11 6-4 9-5-2v23H15V19l-5 2-4-9z"/></svg>',
+    boxer: '<svg viewBox="0 0 48 48" fill="#FF9D5C" stroke="#14101F" stroke-width="2" stroke-linejoin="round"><path d="M14 8h20l2 10-4 4-2 16h-6l-4-10-4 10h-6l-2-16-4-4z"/><path d="M14 13h20" fill="none"/></svg>',
   };
 
   const PAPEL = {
@@ -166,6 +167,7 @@
     if (state.prenda === 'cuerpo' && md.talleDel < md.talleEsp) avisos.push(t('warn.talle'));
     if (state.prenda === 'cuerpo' && md.altBusto > md.talleDel - 6) avisos.push(t('warn.bust'));
     if (state.prenda === 'pantalon' && md.largoPantalon < md.tiro + 15) avisos.push(t('warn.pantsLen'));
+    if (state.prenda === 'boxer' && md.largoBoxer < md.tiro + 5) avisos.push(t('warn.boxerLen'));
     return avisos;
   }
 

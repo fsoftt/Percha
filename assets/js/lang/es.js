@@ -39,7 +39,7 @@ PerchaI18n.add('es', { nombre: 'Español', locale: 'es-ES' }, {
   'how.title': 'De la cinta métrica a la tijera en cuatro pasos',
   'how.lead': 'Percha aplica reglas clásicas de patronaje (holguras, pinzas, profundidad de sisa, cruce de tiro…) sobre tus medidas para trazar cada pieza.',
   'step1.t': 'Elige la prenda',
-  'step1.p': 'Falda recta, cuerpo básico, pantalón o camiseta. Cada una pide solo las medidas que necesita.',
+  'step1.p': 'Falda recta, cuerpo básico, pantalón, camiseta o bóxer. Cada una pide solo las medidas que necesita.',
   'step2.t': 'Introduce tus medidas',
   'step2.p': 'En centímetros. Parte de una talla de referencia y ajusta. Cada campo explica cómo medir.',
   'step3.t': 'Revisa el patrón',
@@ -119,6 +119,9 @@ PerchaI18n.add('es', { nombre: 'Español', locale: 'es-ES' }, {
   'g.camiseta.name': 'Camiseta',
   'g.camiseta.sum': 'Delantero, espalda y manga corta o larga',
   'g.camiseta.desc': 'Para tejido de punto. La copa de la manga se ajusta sola al contorno de la sisa.',
+  'g.boxer.name': 'Bóxer',
+  'g.boxer.sum': 'Delantero, trasero y cintura elástica',
+  'g.boxer.desc': 'Holgado, con tiro reforzado y goma en cintura. Ideal en algodón o punto.',
 
   // ---------- Medidas ----------
   'm.pecho.l': 'Contorno de pecho',
@@ -159,6 +162,10 @@ PerchaI18n.add('es', { nombre: 'Español', locale: 'es-ES' }, {
   'm.largoManga.h': 'Desde el hueso del hombro hasta el bajo de la manga.',
   'm.brazo.l': 'Contorno de brazo',
   'm.brazo.h': 'Por la parte más ancha del brazo (bíceps).',
+  'm.muslo.l': 'Contorno de muslo',
+  'm.muslo.h': 'Por la parte más ancha del muslo, justo bajo la entrepierna.',
+  'm.largoBoxer.l': 'Largo de bóxer',
+  'm.largoBoxer.h': 'Desde la cintura por el costado hasta donde quieres la pernera.',
 
   // ---------- Herramienta ----------
   'tool.title': 'Crea tu patrón',
@@ -200,6 +207,7 @@ PerchaI18n.add('es', { nombre: 'Español', locale: 'es-ES' }, {
   'warn.talle': 'El talle delantero suele ser mayor que el de espalda. Revisa ambas medidas.',
   'warn.bust': 'La altura de busto parece demasiado cercana al talle delantero.',
   'warn.pantsLen': 'El largo es muy corto respecto al tiro.',
+  'warn.boxerLen': 'El largo es muy corto respecto al tiro: la pernera quedará muy corta.',
   'toast.size': 'Medidas de la talla {n} cargadas',
   'toast.drawErr': 'No se pudo trazar el patrón con estas medidas.',
   'toast.svg': 'SVG descargado a escala real (unidades en cm).',
@@ -244,6 +252,11 @@ PerchaI18n.add('es', { nombre: 'Español', locale: 'es-ES' }, {
   'p.teeBack': 'Camiseta · Espalda',
   'p.teeFront': 'Camiseta · Delantero',
   'p.teeSleeve': 'Camiseta · Manga',
+  'p.boxerFront': 'Bóxer · Delantero',
+  'p.boxerBack': 'Bóxer · Trasero',
+  'p.elastic': 'Cintura elástica',
+  'p.casing': 'Jareta de goma (3 cm)',
+  'p.fly': 'Abertura',
 
   'n.skirtEase': 'Holgura: 4 cm en cadera, 1 cm en cintura.',
   'n.dartsFront': 'Delantero: {n} pinza(s) de {w} cm.',
@@ -264,4 +277,7 @@ PerchaI18n.add('es', { nombre: 'Español', locale: 'es-ES' }, {
   'n.armhole': 'Contorno de sisa (delantero + espalda): {v} cm.',
   'n.cap': 'Altura de copa de manga calculada: {v} cm.',
   'n.knit': 'Pensada para tejido de punto.',
+  'n.boxerEase': 'Holgura: 12 cm en cadera, 8 cm en cintura (recogida por la goma).',
+  'n.boxerElastic': 'Goma de {v} cm (igual al contorno de cintura) de 3 cm de ancho.',
+  'n.boxerFabric': 'Tejido plano ligero (popelín) o punto de algodón; sin pinzas.',
 });
