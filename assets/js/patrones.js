@@ -98,6 +98,12 @@
     return { d: seg(p, q), tipo: 'piquete' };
   }
 
+  // Todas las pinzas de una pieza como un solo trazado (para el tutorial)
+  function pinzasDe(lineas) {
+    const d = lineas.filter((l) => l.tipo === 'pinza').map((l) => l.d).join(' ');
+    return d || undefined;
+  }
+
   // Piquete en p apuntando hacia el interior de la pieza (hacia el punto c)
   function notchHacia(p, c) { return notch(p, P(c.x - p.x, c.y - p.y)); }
 
@@ -172,6 +178,15 @@
         outline: path,
         lineas,
         union: isF ? null : { d: seg(top, P(0, L)), texto: tr('p.joinPair'), at: P(1.3, hh + ((conAbertura ? L - ventH : L) - hh) / 2), rot: 90 },
+        // Tramos del contorno: 0 cintura, 1-2 costado, 3 bajo; el centro (x=0) lo cierra Z
+        bordes: {
+          cintura: path.tramo(0), costado: path.tramo(1, 2), bajo: path.tramo(3), pinzas: pinzasDe(lineas),
+          ...(isF ? {} : {
+            cremallera: seg(top, P(0, zipL)),
+            centro: seg(P(0, zipL), P(0, conAbertura ? L - ventH : L)),
+            abertura: conAbertura ? seg(P(0, L - ventH), P(0, L)) : undefined,
+          }),
+        },
         pasos,
         hilo: { x: w * 0.55, y1: hh + 4, y2: L - 6 },
         etiqueta: P(w * 0.5, hh + (L - hh) * 0.35),
@@ -188,6 +203,7 @@
       corte: tr('p.cut1'),
       doblez: false,
       outline: banda,
+      bordes: { cintura: banda.tramo(2) },
       lineas: [
         guide(P(0, 4), P(cl, 4), tr('p.foldHere')),
         { d: seg(P(cl - 3, 0), P(cl - 3, 8)), tipo: 'guia', texto: tr('p.overlap'), at: P(cl - 1.5, 2) },
@@ -206,6 +222,7 @@
       piezas.push({
         nombre: tr('p.ventFacing'), corte: tr('p.cut2'), doblez: false, outline: vv,
         lineas: [guide(P(0, 0), P(0, ventH), tr('p.vent'))],
+        bordes: { abertura: seg(P(0, 0), P(0, ventH)) },
         pasos: [{ n: 4, x: 3, y: ventH / 2 }],
         hilo: { x: 3, y1: 2, y2: ventH - 2 }, etiqueta: P(3, ventH / 2 - 1), compacta: true,
       });
@@ -225,6 +242,7 @@
         tr('n.saEdges'),
         tr('n.sewFalda'),
       ],
+      datos: { v: zipL },
     };
   }
 
@@ -316,11 +334,14 @@
     const piezasCuerpo = [
       {
         nombre: tr('p.bodiceBack'), corte: tr('p.cutFold'), doblez: true, outline: back, lineas: linB,
+        // Tramos: 0 escote, 1 hombro, 2-3 sisa, 4 costado, 5 cintura
+        bordes: { escote: back.tramo(0), hombro: back.tramo(1), sisa: back.tramo(2, 3), costado: back.tramo(4), bajo: back.tramo(5), pinzas: pinzasDe(linB) },
         pasos: [{ n: 1, x: dxB, y: te - 5 }, { n: 2, x: spB.x, y: spB.y }, { n: 3, x: (bw + wsB.x) / 2, y: (sisa + te) / 2 }],
         hilo: { x: bw * 0.6, y1: sisa + 3, y2: te - 4 }, etiqueta: P(bw * 0.45, sisa - 5),
       },
       {
         nombre: tr('p.bodiceFront'), corte: tr('p.cutFold'), doblez: true, outline: front, lineas: linF,
+        bordes: { escote: front.tramo(0), hombro: front.tramo(1), sisa: front.tramo(2, 3), costado: front.tramo(4), bajo: front.tramo(5), pinzas: pinzasDe(linF) },
         pasos: [{ n: 1, x: bp.x, y: td - 5 }, { n: 2, x: spF.x, y: spF.y }, { n: 3, x: (uaF.x + wsF.x) / 2, y: (uaY + td) / 2 }, { n: 5, x: fw * 0.3, y: td - 1.5 }],
         hilo: { x: fw * 0.72, y1: uaY + 9, y2: td - 3 }, etiqueta: P(fw * 0.45, uaY - 5),
       },
@@ -348,6 +369,7 @@
         .Z();
       piezasCuerpo.push({
         nombre: tr('p.bodiceSleeve'), corte: tr('p.cut2'), doblez: false, outline: sleeveB,
+        bordes: { copa: sleeveB.tramo(0, 1), lado1: seg(P(2, hemYB), P(0, capH)), lado2: sleeveB.tramo(2), bajo: sleeveB.tramo(3) },
         lineas: [
           guide(P(0, capH), P(2 * sw, capH), tr('p.bicep')),
           { d: seg(P(2, codoY), P(2 * sw - 2, codoY)), tipo: 'guia' },
@@ -428,6 +450,11 @@
       cint.del = path.largo(0) - (pz > 0.3 ? pz : 0);
       piezas.push({
         nombre: tr('p.pantsFront'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
+        // Tramos: 0 cintura, 1-2 centro, 3-4 entrepierna, 5 bajo, 6-8 costado
+        bordes: {
+          cintura: path.tramo(0), centro: path.tramo(1, 2), entrepierna: path.tramo(3, 4), bajo: path.tramo(5),
+          costado: path.tramo(6, 8), bragueta: seg(cf, P(cf.x, flyL0)), bolsillo: 'M0 3 C3 5 5 9 6 15', pinzas: pinzasDe(lineas),
+        },
         union: {
           d: path.tramo(1, 2),
           texto: tr('p.joinPair'), at: P(fw - 1.6, flyL0 + (yh - flyL0) / 2 + 4), rot: 87,
@@ -503,6 +530,10 @@
       cint.esp = path.largo(0) - (pz > 0.3 ? pz : 0);
       piezas.push({
         nombre: tr('p.pantsBack'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
+        bordes: {
+          cintura: path.tramo(0), centro: path.tramo(1, 2), entrepierna: path.tramo(3, 4), bajo: path.tramo(5),
+          costado: path.tramo(6, 8), ojal: seg(ojalA, ojalB), pinzas: pinzasDe(lineas),
+        },
         union: {
           d: path.tramo(1, 2),
           texto: tr('p.joinPair'), at: P((cb.x + bw) / 2 - 1.4, yh * 0.62), rot: 75,
@@ -523,6 +554,7 @@
     piezas.push({
       nombre: tr('p.waistband'), corte: tr('p.cut1'), doblez: false,
       outline: new Path().M(P(0, 0)).L(P(cl, 0)).L(P(cl, 8)).L(P(0, 8)).Z(),
+      bordes: { cintura: seg(P(cl, 8), P(0, 8)) },
       lineas: [
         guide(P(0, 4), P(cl, 4), tr('p.foldHere')),
         { d: seg(P(cl - 3, 0), P(cl - 3, 8)), tipo: 'guia', texto: tr('p.overlap'), at: P(cl - 1.5, 2) },
@@ -540,6 +572,7 @@
       piezas.push({
         nombre: tr('p.flyFace'), corte: tr('p.cut1'), doblez: false, outline: vista,
         lineas: [guide(P(0, 0), P(0, flyL), tr('p.fly'))],
+        bordes: { bragueta: seg(P(0, 0), P(0, flyL)) },
         pasos: [{ n: 3, x: 2.2, y: flyL / 2 }],
         hilo: { x: 2.2, y1: 2, y2: flyL - 2 }, etiqueta: P(2.2, flyL / 2 - 1), compacta: true,
       });
@@ -547,6 +580,7 @@
       piezas.push({
         nombre: tr('p.flyUnder'), corte: tr('p.cut1'), doblez: false, outline: tap,
         lineas: [],
+        bordes: { bragueta: seg(P(0, 0), P(0, flyL)) },
         pasos: [{ n: 3, x: 2.5, y: flyL / 2 }],
         hilo: { x: 2.5, y1: 2, y2: flyL - 2 }, etiqueta: P(2.5, flyL / 2 - 1), compacta: true,
       });
@@ -567,6 +601,7 @@
           notch(P(0, 3), P(1, 0.3)),
           notch(P(6, 15), P(0.5, 1)),
         ],
+        bordes: { bolsillo: seg(P(0, 3), P(6, 15)) },
         pasos: [{ n: 2, x: 7, y: 10 }],
         hilo: { x: 7, y1: 3, y2: 18 }, etiqueta: P(7.5, 9), compacta: true,
       });
@@ -613,6 +648,7 @@
 
     return {
       piezas,
+      datos: { v: clamp(T * 0.65, 15, 20) },
       notas: [tr('n.pantsEase'), ...notas, tr('n.bandMatch', { v: fmtN(cl - 3) }), tr('n.hem', { v: fmtN(4) }), tr('n.mirror'), tr('n.joinPair'), tr('n.saEdges'), tr('n.sewPantalon'), tr('n.crease')],
     };
   }
@@ -656,6 +692,8 @@
         nombre: lado === 'esp' ? tr('p.teeBack') : tr('p.teeFront'),
         corte: tr('p.cutFold'), doblez: true, outline: path,
         lineas: [guide(P(0, sisa), P(w, sisa), tr('p.armLine')), guide(P(0, Lt - 2.5), P(w, Lt - 2.5), tr('p.hem'))],
+        // Tramos: 0 escote, 1 hombro, 2-3 sisa, 4 costado, 5 bajo
+        bordes: { escote: path.tramo(0), hombro: path.tramo(1), sisa: path.tramo(2, 3), costado: path.tramo(4), bajo: path.tramo(5) },
         pasos: pasosT,
         hilo: { x: w * 0.6, y1: sisa + 4, y2: Lt - 6 }, etiqueta: P(w * 0.45, sisa + (Lt - sisa) * 0.3),
       });
@@ -681,24 +719,27 @@
       .Z();
     piezas.push({
       nombre: tr('p.teeSleeve'), corte: tr('p.cut2'), doblez: false, outline: sleeve,
+      bordes: { copa: sleeve.tramo(0, 1), lado1: seg(P(2, hemY), P(0, h)), lado2: sleeve.tramo(2), bajo: sleeve.tramo(3) },
       lineas: [guide(P(0, h), P(2 * sw, h), tr('p.bicep')), guide(P(2, hemY - 2.5), P(2 * sw - 2, hemY - 2.5), tr('p.hem')), notch(P(sw, 0), P(0, 1))],
       pasos: [{ n: 3, x: sw, y: 2 }],
       hilo: { x: sw, y1: h + 1.5, y2: hemY - 1.5 }, etiqueta: P(sw, h - 3.5),
     });
 
     // Tira de cuello: 85 % del contorno real del escote (delantero + espalda), 4 cm de ancho para doblar
-    let bandNote = '';
+    let bandNote = '', bandaL = 0;
     {
       const bandL = escote * 0.85;
       const band = new Path().M(P(0, 0)).L(P(bandL, 0)).L(P(bandL, 4)).L(P(0, 4)).Z();
       piezas.push({
         nombre: tr('p.neckband'), corte: tr('p.cut1'), doblez: false, outline: band,
+        bordes: { escote: band.tramo(2) },
         lineas: [guide(P(0, 2), P(bandL, 2), tr('p.foldHere'))],
         pasos: [{ n: 2, x: bandL / 2, y: 2 }],
         hilo: { x: null, y: 3, x1: 4, x2: Math.min(bandL - 4, 40) },
         etiqueta: P(Math.min(bandL / 2, 25), 1.2), compacta: true,
       });
       bandNote = tr('n.teeBand', { v: fmtN(bandL), e: fmtN(escote) });
+      bandaL = bandL;
     }
 
     return {
@@ -714,6 +755,7 @@
         tr('n.sewCamiseta'),
         tr('n.knit'),
       ],
+      datos: { v: Math.round(bandaL) },
     };
   }
 
@@ -867,6 +909,7 @@
         tr('n.saEdges'),
         tr('n.sewBoxer'),
       ],
+      datos: { v: Math.round(W) },
     };
   }
 
@@ -1000,23 +1043,23 @@
     return { svg: `<svg xmlns="http://www.w3.org/2000/svg" width="${f(W)}" height="${f(H)}" viewBox="0 0 ${f(W)} ${f(H)}">${inner}</svg>`, inner, width: W, height: H };
   }
 
-  // ---------- Tutorial animado del bóxer (contornos reales del patrón) ----------
+  // ---------- Tutoriales animados (contornos reales del patrón) ----------
   // Las piezas se dibujan extendidas, sin solaparse, en el orden en que
-  // rodean el cuerpo: trasero · delantero · delantero · trasero (los dos de
-  // cada par en espejo). Así cada costado queda junto a su pareja y el
-  // centro delantero en medio. En cada paso, los bordes que se cosen juntos
-  // llevan el mismo color y la misma letra. La página (tutorial.js) muestra
-  // el paso actual (.on) y deja los anteriores como costuras ya hechas (.done).
+  // rodean el cuerpo, con cada pareja en espejo para que los bordes que se
+  // cosen queden juntos. Las piezas al doblez se despliegan: la mitad del
+  // patrón y su espejo (id y id~). En cada paso, los bordes que se cosen
+  // juntos llevan el mismo color y la misma letra. La página (tutorial.js)
+  // muestra el paso actual (.on) y deja los anteriores como costuras hechas (.done).
 
-  // Muestrea un trazado M/L/C y devuelve el punto a mitad de su longitud
+  // Muestrea un trazado M/L/C (puede tener varios M) y devuelve el punto a mitad de su longitud
   function puntoMedio(d) {
     const t = d.match(/[MLCZ]|-?[\d.]+/g);
-    const pts = [];
-    let i = 0, cur = null;
+    const tramos = [];
+    let i = 0, cur = null, pts = null;
     const n = () => +t[i++];
     while (i < t.length) {
       const c = t[i++];
-      if (c === 'M') { cur = P(n(), n()); pts.push(cur); }
+      if (c === 'M') { cur = P(n(), n()); pts = [cur]; tramos.push(pts); }
       else if (c === 'L') { cur = P(n(), n()); pts.push(cur); }
       else if (c === 'C') {
         const a = P(n(), n()), b = P(n(), n()), q = P(n(), n());
@@ -1024,121 +1067,217 @@
         cur = q;
       }
     }
-    let total = 0;
-    for (let k = 1; k < pts.length; k++) total += dist(pts[k - 1], pts[k]);
+    // El punto medio cae en el tramo más largo (en las pinzas, en una de ellas)
+    let mejor = tramos[0], lmax = -1;
+    for (const tr0 of tramos) {
+      let l = 0;
+      for (let k = 1; k < tr0.length; k++) l += dist(tr0[k - 1], tr0[k]);
+      if (l > lmax) { lmax = l; mejor = tr0; }
+    }
     let acc = 0;
-    for (let k = 1; k < pts.length; k++) {
-      const l = dist(pts[k - 1], pts[k]);
-      if (acc + l >= total / 2) return lerp(pts[k - 1], pts[k], (total / 2 - acc) / (l || 1));
+    for (let k = 1; k < mejor.length; k++) {
+      const l = dist(mejor[k - 1], mejor[k]);
+      if (acc + l >= lmax / 2) return lerp(mejor[k - 1], mejor[k], (lmax / 2 - acc) / (l || 1));
       acc += l;
     }
-    return pts[0];
+    return mejor[0];
   }
 
-  function tutorialBoxer(m) {
-    const res = boxer(m);
-    const [front, vista, tap, back, elastic] = res.piezas;
+  // Disposición y costuras de cada prenda.
+  // fila: piezas del cuerpo de la prenda, de izquierda a derecha; extra: piezas pequeñas debajo.
+  // Cada pieza: { id, i (índice en trazar().piezas), mir (espejo), doblez (desplegar), n (nombre i18n) }.
+  // pasos: lista de grupos por paso; cada grupo, pares [id, borde] que se cosen juntos.
+  const TUTORIALES = {
+    falda: {
+      fila: [{ id: 'eI', i: 1, n: 'tut.lbl.backS' }, { id: 'd', i: 0, doblez: true, n: 'tut.front' }, { id: 'eD', i: 1, mir: true, n: 'tut.lbl.backS' }],
+      extra: [{ id: 'c', i: 2, n: 'tut.lbl.waistband' }, { id: 'v1', i: 3, n: 'tut.lbl.ventFacing' }, { id: 'v2', i: 3, mir: true, n: 'tut.lbl.ventFacing' }],
+      pasos: [
+        [[['d', 'pinzas'], ['d~', 'pinzas']], [['eI', 'pinzas']], [['eD', 'pinzas']]],
+        [[['eI', 'costado'], ['d~', 'costado']], [['d', 'costado'], ['eD', 'costado']]],
+        [[['eI', 'cremallera'], ['eD', 'cremallera']]],
+        [[['eI', 'centro'], ['eD', 'centro']], [['v1', 'abertura'], ['eI', 'abertura']], [['v2', 'abertura'], ['eD', 'abertura']]],
+        [[['c', 'cintura'], ['eI', 'cintura'], ['d~', 'cintura'], ['d', 'cintura'], ['eD', 'cintura']]],
+        [[['eI', 'bajo'], ['d~', 'bajo'], ['d', 'bajo'], ['eD', 'bajo']]],
+      ],
+    },
+    cuerpo: {
+      fila: [{ id: 'e', i: 0, doblez: true, n: 'tut.lbl.backS' }, { id: 'd', i: 1, doblez: true, n: 'tut.front' }],
+      extra: [{ id: 'm1', i: 2, n: 'tut.lbl.sleeve' }, { id: 'm2', i: 2, mir: true, n: 'tut.lbl.sleeve' }],
+      pasos: [
+        [[['d', 'pinzas'], ['d~', 'pinzas']], [['e', 'pinzas'], ['e~', 'pinzas']]],
+        [[['e', 'hombro'], ['d~', 'hombro']], [['e~', 'hombro'], ['d', 'hombro']]],
+        [[['e', 'costado'], ['d~', 'costado']], [['e~', 'costado'], ['d', 'costado']]],
+        [[['m1', 'lado1'], ['m1', 'lado2']], [['m2', 'lado1'], ['m2', 'lado2']],
+          [['m1', 'copa'], ['e', 'sisa'], ['d~', 'sisa']], [['m2', 'copa'], ['e~', 'sisa'], ['d', 'sisa']]],
+        [[['e~', 'escote'], ['e', 'escote'], ['d~', 'escote'], ['d', 'escote']],
+          [['e~', 'bajo'], ['e', 'bajo'], ['d~', 'bajo'], ['d', 'bajo'], ['m1', 'bajo'], ['m2', 'bajo']]],
+      ],
+    },
+    pantalon: {
+      fila: [{ id: 'tI', i: 1, mir: true, n: 'tut.back' }, { id: 'dI', i: 0, n: 'tut.front' }, { id: 'dD', i: 0, mir: true, n: 'tut.front' }, { id: 'tD', i: 1, n: 'tut.back' }],
+      extra: [
+        { id: 'b1', i: 5, n: 'tut.lbl.pocket' }, { id: 'vi', i: 3, n: 'tut.lbl.facing' }, { id: 'ta', i: 4, mir: true, n: 'tut.lbl.under' },
+        { id: 'b2', i: 5, mir: true, n: 'tut.lbl.pocket' }, { id: 'c', i: 2, n: 'tut.lbl.waistband' },
+      ],
+      pasos: [
+        [[['dI', 'pinzas'], ['dD', 'pinzas']], [['tI', 'pinzas'], ['tD', 'pinzas']]],
+        [[['b1', 'bolsillo'], ['dI', 'bolsillo']], [['b2', 'bolsillo'], ['dD', 'bolsillo']], [['tI', 'ojal']], [['tD', 'ojal']]],
+        [[['vi', 'bragueta'], ['dI', 'bragueta']], [['ta', 'bragueta'], ['dD', 'bragueta']]],
+        [[['dI', 'entrepierna'], ['tI', 'entrepierna']], [['dD', 'entrepierna'], ['tD', 'entrepierna']]],
+        [[['tI', 'costado'], ['dI', 'costado']], [['dD', 'costado'], ['tD', 'costado']], [['dI', 'centro'], ['dD', 'centro']], [['tI', 'centro'], ['tD', 'centro']]],
+        [[['c', 'cintura'], ['tI', 'cintura'], ['dI', 'cintura'], ['dD', 'cintura'], ['tD', 'cintura']]],
+        [[['tI', 'bajo'], ['dI', 'bajo'], ['dD', 'bajo'], ['tD', 'bajo']]],
+      ],
+    },
+    camiseta: {
+      fila: [{ id: 'e', i: 0, doblez: true, n: 'tut.lbl.backS' }, { id: 'd', i: 1, doblez: true, n: 'tut.front' }],
+      extra: [{ id: 'm1', i: 2, n: 'tut.lbl.sleeve' }, { id: 'm2', i: 2, mir: true, n: 'tut.lbl.sleeve' }, { id: 't', i: 3, n: 'tut.lbl.neckband' }],
+      pasos: [
+        [[['e', 'hombro'], ['d~', 'hombro']], [['e~', 'hombro'], ['d', 'hombro']]],
+        [[['t', 'escote'], ['e~', 'escote'], ['e', 'escote'], ['d~', 'escote'], ['d', 'escote']]],
+        [[['m1', 'copa'], ['e', 'sisa'], ['d~', 'sisa']], [['m2', 'copa'], ['e~', 'sisa'], ['d', 'sisa']]],
+        [[['e', 'costado'], ['d~', 'costado']], [['e~', 'costado'], ['d', 'costado']], [['m1', 'lado1'], ['m1', 'lado2']], [['m2', 'lado1'], ['m2', 'lado2']]],
+        [[['e~', 'bajo'], ['e', 'bajo'], ['d~', 'bajo'], ['d', 'bajo'], ['m1', 'bajo'], ['m2', 'bajo']]],
+      ],
+    },
+    boxer: {
+      fila: [{ id: 'tI', i: 3, mir: true, n: 'tut.back' }, { id: 'dI', i: 0, n: 'tut.front' }, { id: 'dD', i: 0, mir: true, n: 'tut.front' }, { id: 'tD', i: 3, n: 'tut.back' }],
+      extra: [{ id: 'vi', i: 1, n: 'tut.lbl.facing' }, { id: 'ta', i: 2, mir: true, n: 'tut.lbl.under' }, { id: 'j', i: 4, n: 'tut.lbl.band' }],
+      pasos: [
+        [[['dI', 'bragueta'], ['vi', 'bragueta']], [['dD', 'bragueta'], ['ta', 'bragueta']]],
+        [[['dI', 'centro'], ['dD', 'centro']], [['tI', 'centro'], ['tD', 'centro']]],
+        [[['dI', 'entrepierna'], ['tI', 'entrepierna']], [['dD', 'entrepierna'], ['tD', 'entrepierna']]],
+        [[['tI', 'costado'], ['dI', 'costado']], [['dD', 'costado'], ['tD', 'costado']]],
+        [[['j', 'cintura'], ['tI', 'cintura'], ['dI', 'cintura'], ['dD', 'cintura'], ['tD', 'cintura']]],
+        [[['tI', 'bajo'], ['dI', 'bajo'], ['dD', 'bajo'], ['tD', 'bajo']]],
+      ],
+    },
+  };
+
+  function tutorial(prendaId, m) {
+    const spec = TUTORIALES[prendaId];
+    const res = PRENDAS[prendaId].trazar(m);
     for (const pz of res.piezas) pz._bb = bbox(pz.outline.pts);
-    const L = Math.max(m.largoBoxer, m.tiro + 5);
     const gap = 7;
 
-    // Fila principal: trasero (espejo) · delantero · delantero (espejo) · trasero
+    // Colocación: e = { id, pz, mir, tx, ty, n, etiqueta }
+    const placed = [];
     let x = 0;
-    const colocar = (pz, mir, ty = 0) => {
-      const e = { pz, mir, ty, tx: mir ? x + pz._bb.maxX : x - pz._bb.minX };
-      x += pz._bb.w + gap;
-      return e;
-    };
-    const placed = [colocar(back, true), colocar(front, false), colocar(front, true), colocar(back, false)];
+    for (const s0 of spec.fila) {
+      const pz = res.piezas[s0.i];
+      if (!pz) continue;
+      const bb = pz._bb;
+      if (s0.doblez) {
+        // Mitad en espejo a la izquierda del doblez y la mitad del patrón a la derecha
+        const tx = x + bb.maxX;
+        placed.push({ id: `${s0.id}~`, pz, mir: true, tx, ty: 0, n: s0.n, etiqueta: false });
+        placed.push({ id: s0.id, pz, mir: false, tx, ty: 0, n: s0.n, etiqueta: true, doblez: true });
+        x += 2 * bb.maxX + gap;
+      } else {
+        placed.push({ id: s0.id, pz, mir: !!s0.mir, tx: s0.mir ? x + bb.maxX : x - bb.minX, ty: 0, n: s0.n, etiqueta: true });
+        x += bb.w + gap;
+      }
+    }
     const rowW = x - gap;
-    // Vista y tapeta bajo los centros delanteros, con su curva mirando a la del delantero
-    const yFly = L + 7;
-    const cfD = placed[1].tx + front.eje, cfM = placed[2].tx - front.eje;
-    placed.push({ pz: vista, mir: false, tx: cfD + 3, ty: yFly });
-    placed.push({ pz: tap, mir: true, tx: cfM - 3, ty: yFly });
-    // Tira de la jareta, centrada debajo
-    const yBand = yFly + 14 + 9;
-    const cl = elastic._bb.w;
-    placed.push({ pz: elastic, mir: false, tx: rowW / 2 - cl / 2, ty: yBand });
+    let top = Infinity, bottom = -Infinity;
+    for (const e of placed) { top = Math.min(top, e.pz._bb.minY); bottom = Math.max(bottom, e.pz._bb.maxY); }
+
+    // Piezas pequeñas en una segunda fila, centrada bajo la primera
+    const extra = spec.extra.map((s0) => ({ s0, pz: res.piezas[s0.i] })).filter((o) => o.pz);
+    const exW = extra.reduce((a, o) => a + o.pz._bb.w + gap, -gap);
+    const exH = Math.max(0, ...extra.map((o) => o.pz._bb.h));
+    const yEx = bottom + 9;
+    x = Math.max(0, (rowW - exW) / 2);
+    for (const { s0, pz } of extra) {
+      const bb = pz._bb;
+      placed.push({ id: s0.id, pz, mir: !!s0.mir, tx: s0.mir ? x + bb.maxX : x - bb.minX, ty: yEx - bb.minY, n: s0.n, etiqueta: true });
+      x += bb.w + gap;
+    }
+    const porId = Object.fromEntries(placed.map((e) => [e.id, e]));
 
     // Coordenadas globales de un punto local de una pieza colocada
     const glob = (e, p) => P(e.mir ? e.tx - p.x : e.tx + p.x, e.ty + p.y);
-
-    const nombres = ['tut.back', 'tut.front', 'tut.front', 'tut.back', 'tut.lbl.facing', 'tut.lbl.under', 'tut.lbl.band'];
     const centroPieza = (e) => {
       const bb = e.pz._bb;
-      return glob(e, P((bb.minX + bb.maxX) / 2, e.pz === elastic ? bb.maxY / 2 + 0.6 : bb.minY + bb.h * 0.42));
+      if (e.doblez) return glob(e, P(0, bb.minY + bb.h * 0.42));
+      const pequena = e.ty > 0;
+      return glob(e, P((bb.minX + bb.maxX) / 2, pequena ? bb.minY + bb.h / 2 + 0.5 : bb.minY + bb.h * 0.42));
     };
     const FONT = 'font-family="Helvetica, Arial, sans-serif"';
-    const base = placed.map((e) => grupoColocado(e, `<path d="${e.pz.outline}" fill="#FFFFFF" stroke="#B9A6FF" stroke-width="0.14" stroke-linejoin="round"/>`)).join('') +
-      placed.map((e, i) => {
-        const c = centroPieza(e);
-        const fs = i >= 4 ? 1.3 : 2;
-        return `<text class="tut-name" x="${f(c.x)}" y="${f(c.y)}" font-size="${fs}" font-weight="bold" text-anchor="middle" ${FONT} fill="#7A6FA6">${esc(tr(nombres[i]))}</text>`;
-      }).join('');
-
-    // Parejas de bordes por paso: [pieza, borde, pieza, borde]; una sola
-    // pieza = borde que se cose sin pareja (jareta, bajo).
-    const COLS = ['#FF4D2E', '#6A3DF0', '#0E9F6E', '#E08A00'];
-    const pasos = {
-      1: [[1, 'bragueta', 4, 'bragueta'], [2, 'bragueta', 5, 'bragueta']],
-      2: [[1, 'centro', 2, 'centro'], [0, 'centro', 3, 'centro']],
-      3: [[1, 'entrepierna', 0, 'entrepierna'], [2, 'entrepierna', 3, 'entrepierna']],
-      4: [[0, 'costado', 1, 'costado'], [2, 'costado', 3, 'costado']],
-      5: [[6, 'cintura', 0, 'cintura', 1, 'cintura', 2, 'cintura', 3, 'cintura']],
-      6: [[0, 'bajo', 1, 'bajo', 2, 'bajo', 3, 'bajo']],
+    const tamNombre = (e) => (e.ty > 0 ? 1.3 : 2);
+    // Nombre de la pieza; en piezas estrechas (vistas, tapetas) se gira en vertical
+    const nombre = (e, col) => {
+      const c = centroPieza(e), txt = tr(e.n), bb = e.pz._bb;
+      let fs = tamNombre(e);
+      const ancho = (k) => txt.length * k * 0.56;
+      const ocupa = e.doblez ? 2 * bb.maxX : bb.w;
+      const girar = ancho(fs) > ocupa - 1 && bb.h > ocupa;
+      if (girar) fs = Math.min(fs, (bb.h - 1) / (txt.length * 0.56), ocupa * 0.7);
+      const tf = girar ? `transform="translate(${f(c.x)} ${f(c.y)}) rotate(-90)" x="0" y="${f(fs * 0.35)}"` : `x="${f(c.x)}" y="${f(c.y)}"`;
+      return `<text class="tut-name" ${tf} font-size="${f(fs)}" font-weight="bold" text-anchor="middle" ${FONT} fill="${col}">${esc(txt)}</text>`;
     };
+    const base = placed.map((e) => grupoColocado(e, `<path d="${e.pz.outline}" fill="#FFFFFF" stroke="#B9A6FF" stroke-width="0.14" stroke-linejoin="round"/>`)).join('') +
+      // Línea de doblez de las piezas desplegadas
+      placed.filter((e) => e.doblez).map((e) => `<path d="M${f(e.tx)} ${f(e.pz._bb.minY)} V${f(e.pz._bb.maxY)}" stroke="#6A3DF0" stroke-width="0.14" stroke-dasharray="1.2 0.4 0.2 0.4"/>`).join('') +
+      placed.filter((e) => e.etiqueta).map((e) => nombre(e, '#7A6FA6')).join('');
+
+    const COLS = ['#FF4D2E', '#6A3DF0', '#0E9F6E', '#E08A00'];
     const LET = 'ABCD';
-    const top = Math.min(front._bb.minY, back._bb.minY);
-    let minY = top - 4, maxY = yBand + 9;
+    let minY = top - 4, maxY = yEx + exH + 2;
     const steps = [];
-    const ov = [1, 2, 3, 4, 5, 6].map((n) => {
-      const grupos = pasos[n];
+    const ov = spec.pasos.map((grupos0, si) => {
+      const n = si + 1;
+      // Solo los bordes que existen en esta talla (pinzas, abertura… pueden faltar)
+      const grupos = grupos0
+        .map((g) => g.filter(([id, b]) => porId[id] && porId[id].pz.bordes && porId[id].pz.bordes[b]))
+        .filter((g) => g.length);
       const activos = new Set();
-      grupos.forEach((g) => { for (let k = 0; k < g.length; k += 2) activos.add(g[k]); });
-      const tinte = [...activos].map((i) => grupoColocado(placed[i], `<path d="${placed[i].pz.outline}" fill="#FF4D2E" fill-opacity="0.07" stroke="#14101F" stroke-width="0.12" stroke-linejoin="round"/>`)).join('') +
-        [...activos].map((i) => {
-          const c = centroPieza(placed[i]);
-          return `<text x="${f(c.x)}" y="${f(c.y)}" font-size="${i >= 4 ? 1.3 : 2}" font-weight="bold" text-anchor="middle" ${FONT} fill="#14101F">${esc(tr(nombres[i]))}</text>`;
-        }).join('');
+      grupos.forEach((g) => g.forEach(([id]) => activos.add(porId[id])));
+      const tinte = [...activos].map((e) => grupoColocado(e, `<path d="${e.pz.outline}" fill="#FF4D2E" fill-opacity="0.07" stroke="#14101F" stroke-width="0.12" stroke-linejoin="round"/>`)).join('') +
+        [...activos].filter((e) => e.etiqueta).map((e) => nombre(e, '#14101F')).join('');
       const seams = [], links = [], badges = [];
       const info = [];
       grupos.forEach((g, gi) => {
-        const col = COLS[gi % COLS.length], letra = LET[gi];
+        const col = COLS[gi % COLS.length], letra = LET[gi % LET.length];
         const mids = [];
         const partes = [];
-        for (let k = 0; k < g.length; k += 2) {
-          const e = placed[g[k]], d = e.pz.bordes[g[k + 1]];
+        for (const [id, b] of g) {
+          const e = porId[id], d = e.pz.bordes[b];
           seams.push(grupoColocado(e, `<path class="tut-seam" d="${d}" pathLength="100" fill="none" stroke="${col}" stroke-width="0.55" stroke-linecap="round" stroke-linejoin="round"/>`));
           mids.push(glob(e, puntoMedio(d)));
-          partes.push({ pieza: nombres[g[k]], borde: g[k + 1] });
+          // Las dos mitades de una pieza al doblez cuentan como una sola en la lista
+          const pid = id.replace('~', '');
+          if (!partes.some((p) => p.pid === pid && p.borde === b)) partes.push({ pid, pieza: e.n, borde: b });
         }
         // Uniones de dos bordes: arco discontinuo entre los puntos medios
         if (mids.length === 2) {
           const [a, b] = mids;
-          const abajo = (a.y + b.y) / 2 > L * 0.55;
+          const abajo = (a.y + b.y) / 2 > top + (bottom - top) * 0.55;
           const k = 5 + dist(a, b) * 0.18;
           // Los arcos largos pasan por fuera de las piezas (mitad del arco = media de extremos y control)
           const med = (a.y + b.y) / 2;
           let cy = abajo ? Math.max(a.y, b.y) + k : Math.min(a.y, b.y) - k;
-          if (dist(a, b) > 40) cy = abajo ? Math.max(cy, 2 * (L + 3) - med) : Math.min(cy, 2 * (top - 4) - med);
-          minY = Math.min(minY, cy - 1); maxY = Math.max(maxY, cy + 1);
+          if (dist(a, b) > 40) cy = abajo ? Math.max(cy, 2 * (bottom + 3) - med) : Math.min(cy, 2 * (top - 4) - med);
+          minY = Math.min(minY, (med + cy) / 2 - 2); maxY = Math.max(maxY, (med + cy) / 2 + 2);
           links.push(`<path class="tut-link" d="M${f(a.x)} ${f(a.y)} Q${f((a.x + b.x) / 2)} ${f(cy)} ${f(b.x)} ${f(b.y)}" fill="none" stroke="${col}" stroke-width="0.22" stroke-dasharray="0.8 0.5"/>`);
         }
         for (const p of mids) {
           badges.push(`<g class="tut-badge" transform="translate(${f(p.x)} ${f(p.y)})"><circle r="1.7" fill="${col}" stroke="#FFFFFF" stroke-width="0.3"/><text y="0.62" font-size="1.8" font-weight="bold" text-anchor="middle" ${FONT} fill="#FFFFFF">${letra}</text></g>`);
         }
-        info.push({ color: col, letra, partes });
+        info.push({ color: col, letra, partes: partes.map(({ pieza, borde }) => ({ pieza, borde })) });
       });
       steps.push({ n, grupos: info });
       return `<g class="tut-step" data-step="${n}"><g class="tut-tint">${tinte}</g>${links.join('')}${seams.join('')}${badges.join('')}</g>`;
     }).join('');
 
-    const minX = -3, maxX = rowW + 3;
+    const minX = -3, maxX = Math.max(rowW, x - gap) + 3;
     const Wd = maxX - minX, Ht = maxY - minY;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${f(Wd)}" height="${f(Ht)}" viewBox="${f(minX)} ${f(minY)} ${f(Wd)} ${f(Ht)}"><g class="tut-base">${base}</g><g class="tut-seams">${ov}</g></svg>`;
-    return { svg, width: Wd, height: Ht, steps };
+    return { svg, width: Wd, height: Ht, steps, datos: res.datos || {} };
   }
+
+  const tutorialBoxer = (m) => tutorial('boxer', m);
+
 
   // ---------- Catálogo de prendas y medidas ----------
   const MEDIDAS = {
@@ -1368,5 +1507,5 @@
     return { svg, inner, overlay, width, height, notas: res.notas, piezas: res.piezas.length };
   }
 
-  global.Percha = { PRENDAS, MEDIDAS, tallaBase, tallaBaseHombre, generar, bocetar, tutorialBoxer, _internals: { cubicLen } };
+  global.Percha = { PRENDAS, MEDIDAS, tallaBase, tallaBaseHombre, generar, bocetar, tutorial, tutorialBoxer, TUTORIALES, _internals: { cubicLen } };
 })(typeof window !== 'undefined' ? window : globalThis);

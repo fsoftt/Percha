@@ -47,7 +47,7 @@ medidas (cm) ──► PRENDAS[id].trazar(medidas) ──► { piezas, notas }
   etiqueta: { x, y },           // posición del nombre de la pieza
   pasos: [{ n: 1, x, y }],      // insignias de la vista de montaje (coordenadas locales)
   union: { d, texto, at, rot }, // borde por el que se cosen entre sí las 2 piezas de un par «Cortar 2» (línea verde)
-  bordes: { centro: 'M…', … }, // tramos del contorno por costura (bóxer; los usa el tutorial)
+  bordes: { centro: 'M…', … }, // tramos del contorno por costura (los usa el tutorial)
   compacta: false,              // etiqueta pequeña para piezas estrechas
 }
 ```
@@ -73,7 +73,7 @@ La herramienta ofrece tres vistas de la misma prenda (conmutador en la barra de 
 - **Patrón**: el trazado 1:1 que se exporta a PDF/SVG.
 - **Montaje**: el mismo trazado con insignias numeradas sobre las costuras (`pasos` de cada pieza, en coordenadas locales). Los números siguen el orden de las notas de costura (`n.sew*`). Es solo vista previa: la exportación usa siempre el patrón limpio.
 - **Boceto** (`bocetar()`): dibujo esquemático de la prenda ya unida, sin escala (lo indica en el propio dibujo). En el bóxer usa los contornos reales del patrón montados en espejo; en el resto, trazos delanteros parametrizados por las medidas.
-- **Tutorial** (`tutorialBoxer()` en `assets/js/patrones.js`, reproductor en `assets/js/tutorial.js`, página `tutorial.html`): las piezas reales del bóxer extendidas sin solaparse en el orden en que rodean el cuerpo (trasero · delantero · delantero · trasero, cada par en espejo), más vista, tapeta y tira de jareta. Cada paso (`.tut-step`) resalta los bordes que se cosen juntos con el mismo color y letra (tomados de `pieza.bordes`) y un arco que los une; la página muestra el paso actual (`.on`) y deja los anteriores como costuras hechas (`.done`). Hay una pantalla 0 con las piezas. Usa las medidas guardadas en `localStorage`.
+- **Tutoriales** (`tutorial(prenda, medidas)` y la tabla `TUTORIALES` en `assets/js/patrones.js`, reproductor en `assets/js/tutorial.js`, página `tutorial.html` con una pestaña por prenda y `#prenda` en la URL): las piezas reales extendidas sin solaparse en el orden en que rodean el cuerpo, cada pareja en espejo; las piezas al doblez se despliegan (la mitad del patrón y su espejo, con ids `x` y `x~`) y las pequeñas van en una segunda fila. `TUTORIALES[prenda]` declara `fila`, `extra` y `pasos`: cada paso es una lista de grupos de pares `[id, borde]` que se cosen juntos, con nombres de `pieza.bordes`; los bordes que no existen en una talla (pinzas, abertura) se omiten. Cada paso (`.tut-step`) resalta esos bordes con el mismo color y letra y un arco que los une; la página muestra el paso actual (`.on`) y deja los anteriores como costuras hechas (`.done`). Los textos van en `tut.<prenda>.*` (título, entradilla, `s0.d`, `sN.t`/`sN.d`, materiales) y `{v}` toma `trazar().datos.v` (cremallera, goma, tira…). Para añadir el tutorial de una prenda nueva: dale `bordes` a sus piezas, una entrada en `TUTORIALES` y sus textos. Usa las medidas guardadas en `localStorage`.
 
 ## Añadir una prenda nueva
 

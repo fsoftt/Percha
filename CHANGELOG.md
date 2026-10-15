@@ -2,6 +2,7 @@
 
 ## Sin publicar
 
+- Tutoriales animados para todas las prendas (falda, cuerpo, pantalón, camiseta y bóxer) en `tutorial.html`, con una pestaña por prenda y enlace directo `tutorial.html#prenda`. Siguen el orden de costura de cada patrón, con las piezas reales (las de doblez, desplegadas) y los bordes que se cosen juntos marcados con color y letra. El motor es uno solo (`tutorial()` + `TUTORIALES`) y cada pieza declara sus `bordes`.
 - Mejoras del bóxer llevadas al resto de prendas:
   - Cinturillas de falda y pantalón medidas sobre la cintura real de la prenda (no con fórmula), con 3 cm de cruce y piquetes de costados y centro.
   - Falda: la cremallera llega a la línea de cadera (18/20/22/25 cm) para que entre al ponérsela; la abertura solo aparece si el largo la necesita y no se cruza con la cremallera.

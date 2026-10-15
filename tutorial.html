@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title data-i18n="meta.tut.title">Percha · Tutorial: monta tu bóxer</title>
-  <meta name="description" data-i18n-attr="content:meta.tut.desc" content="Tutorial visual y animado: monta un bóxer paso a paso, del corte al dobladillo, con tus medidas.">
+  <title data-i18n="meta.tut.title">Percha · Tutoriales: cose tus prendas</title>
+  <meta name="description" data-i18n-attr="content:meta.tut.desc" content="Tutoriales visuales y animados: monta cada prenda paso a paso, del corte al dobladillo, con tus medidas.">
   <meta name="theme-color" content="#FF4D2E">
   <meta name="robots" content="noindex">
   <link rel="alternate" hreflang="es" href="https://fsoftt.github.io/Percha/tutorial.html?lang=es">
@@ -49,6 +49,9 @@
     .player__step p{margin:0;max-width:60ch}
     .player__controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
     .tut-src{display:inline-block;margin-top:12px;padding:6px 14px;border-radius:999px;background:#D4FF3A;border:2px solid #14101F;font-weight:700;font-size:.9rem}
+    .tut-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+    .tut-tabs button{padding:8px 16px;border-radius:999px;border:2px solid #14101F;background:#fff;font-weight:700;font-family:inherit;cursor:pointer}
+    .tut-tabs button[aria-selected="true"]{background:#14101F;color:#D4FF3A}
     .mat-list{display:grid;gap:10px;padding:0;list-style:none;max-width:60ch}
     .mat-list li{border:2px solid #14101F;border-radius:14px;padding:10px 16px;background:#fff}
     @media (prefers-reduced-motion:reduce){.tut-seam,.tut-badge{transition:none}}
@@ -78,10 +81,12 @@
       <div class="wrap">
         <div class="section__head">
           <span class="eyebrow" data-i18n="tut.eyebrow">Tutorial animado</span>
-          <h2 data-i18n="tut.title">Monta tu primer bóxer</h2>
-          <p data-i18n="tut.lead">Seis pasos, del corte al dobladillo. Pulsa reproducir y mira cómo se unen las piezas.</p>
+          <h2 id="tutTitle">Monta tu primer bóxer</h2>
+          <p id="tutLead">Seis pasos, del corte al dobladillo. Pulsa reproducir y mira cómo se unen las piezas.</p>
           <span class="tut-src" id="tutSrc"></span>
         </div>
+
+        <div class="tut-tabs" id="tutTabs" role="tablist" aria-label="Elige la prenda" data-i18n-attr="aria-label:tut.choose"></div>
 
         <div class="player" id="player">
           <div class="player__stage" id="tutStage"></div>
@@ -109,7 +114,7 @@
           <h2 style="font-size:1.3rem" data-i18n="tut.mat.t">Materiales</h2>
         </div>
         <ul class="mat-list">
-          <li data-i18n="tut.mat1">Tela de algodón (popelín o punto); la herramienta estima los metros.</li>
+          <li id="tutMat1"></li>
           <li id="tutMat2"></li>
           <li data-i18n="tut.mat3">Hilo, tijeras, agujas y jaboncillo para marcar.</li>
         </ul>
@@ -141,7 +146,7 @@
             <h2 data-i18n="cta.title">¿Lista la cinta métrica?</h2>
             <p data-i18n="cta.p">Tu primer patrón a medida está a cinco minutos.</p>
           </div>
-          <a class="btn btn--lime" href="herramienta.html#boxer" data-i18n="hero.cta">Crear mi patrón →</a>
+          <a class="btn btn--lime" id="tutCta" href="herramienta.html#boxer" data-i18n="hero.cta">Crear mi patrón →</a>
         </div>
       </div>
     </section>

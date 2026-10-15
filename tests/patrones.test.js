@@ -407,6 +407,56 @@ test('el escote de la camiseta pasa por la cabeza y la tira es el 85 % del escot
   }
 });
 
+test('cada prenda tiene tutorial con sus textos y los bordes reales del patrón', () => {
+  const { tutorial, TUTORIALES } = globalThis.Percha;
+  assert.deepEqual(Object.keys(TUTORIALES).sort(), Object.keys(PRENDAS).sort());
+  I18n.setLang('es');
+  const opcionales = new Set(['pinzas', 'abertura']);
+  for (const id of Object.keys(PRENDAS)) {
+    I18n.setLang('es');
+    const piezas = PRENDAS[id].trazar(tallaBase(38)).piezas;
+    // Cada borde nombrado existe en su pieza (salvo los que dependen de la talla)
+    const spec = TUTORIALES[id];
+    const porId = {};
+    for (const e of [...spec.fila, ...spec.extra]) { porId[e.id] = e; porId[`${e.id}~`] = e; }
+    for (const grupos of spec.pasos) {
+      for (const g of grupos) {
+        for (const [pid, borde] of g) {
+          const pz = piezas[porId[pid].i];
+          if (!opcionales.has(borde)) assert.ok(pz && pz.bordes && pz.bordes[borde], `${id}: ${pid}.${borde}`);
+        }
+      }
+    }
+    // Mismo número de pasos que el orden de costura de las notas
+    const sew = PRENDAS[id].trazar(tallaBase(38)).notas.find((n) => n.startsWith('Orden de costura'));
+    assert.equal(spec.pasos.length, (sew.match(/\d\)/g) || []).length, `${id}: pasos`);
+    for (const code of I18n.idiomas) {
+      I18n.setLang(code);
+      for (const m of [tallaBase(34), tallaBase(54), tallaBaseHombre(60)]) {
+        const r = tutorial(id, m);
+        assert.ok(!/NaN|Infinity|undefined/.test(r.svg), `${code} ${id}`);
+        assert.equal(r.steps.length, spec.pasos.length);
+        for (const st of r.steps) for (const g of st.grupos) for (const p of g.partes) {
+          assert.ok(I18n._dicts[code][p.pieza], `${code}: ${p.pieza}`);
+          assert.ok(I18n._dicts[code][`tut.e.${p.borde.replace(/\d$/, '')}`], `${code}: borde ${p.borde}`);
+        }
+      }
+      const claves = ['title', 'lead', 's0.d', 'mat1', 'mat2'];
+      for (let n = 1; n <= spec.pasos.length; n++) claves.push(`s${n}.t`, `s${n}.d`);
+      for (const c of claves) assert.ok(I18n._dicts[code][`tut.${id}.${c}`], `${code}: tut.${id}.${c}`);
+    }
+  }
+  I18n.setLang('es');
+});
+
+test('las piezas al doblez se despliegan en el tutorial', () => {
+  const r = globalThis.Percha.tutorial('camiseta', tallaBase(40));
+  const del = PRENDAS.camiseta.trazar(tallaBase(40)).piezas[1];
+  const veces = r.svg.split(`d="${del.outline}"`).length - 1;
+  assert.ok(veces >= 2, 'delantero sin su mitad en espejo');
+  assert.ok(r.svg.includes('stroke-dasharray="1.2 0.4 0.2 0.4"'), 'sin línea de doblez');
+});
+
 test('las claves usadas en el HTML existen en el diccionario', () => {
   const dict = I18n._dicts.es;
   for (const f of ['index.html', 'herramienta.html', 'glosario.html', 'tutorial.html']) {
