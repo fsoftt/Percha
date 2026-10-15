@@ -20,12 +20,28 @@
   <style>
     .player{border:2px solid #14101F;border-radius:20px;padding:20px;background:#fff;box-shadow:6px 6px 0 #14101F}
     .player__stage svg{width:100%;height:auto;display:block}
-    .tut-seam{stroke-dasharray:100;stroke-dashoffset:100;transition:stroke-dashoffset 1s ease .1s}
+    .tut-step{opacity:0;transition:opacity .3s ease}
+    .tut-step.on,.tut-step.done{opacity:1}
+    .tut-seam{stroke-dasharray:100;stroke-dashoffset:100;transition:stroke-dashoffset 1.2s ease .2s}
     .tut-step.on .tut-seam{stroke-dashoffset:0}
-    .tut-badge{opacity:0;transform:scale(.4);transform-box:fill-box;transform-origin:center;transition:opacity .3s ease .9s,transform .3s ease .9s}
-    .tut-step.on .tut-badge{opacity:1;transform:scale(1)}
+    .tut-step.done .tut-tint,.tut-step.done .tut-link,.tut-step.done .tut-badge{display:none}
+    .tut-step.done .tut-seam{stroke:#14101F;stroke-width:.22;stroke-dasharray:.7 .5;stroke-dashoffset:0;transition:none}
+    .tut-link{opacity:0;transition:opacity .4s ease 1.2s}
+    .tut-step.on .tut-link{opacity:1}
+    .tut-badge{opacity:0;transition:opacity .3s ease 1.2s}
+    .tut-step.on .tut-badge{opacity:1}
+    .player__stage{background:#FBF8FF;border-radius:12px;padding:8px}
+    .tut-hint{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0 0;font-size:.85rem;color:#5B5470}
+    .tut-hint span{display:inline-flex;align-items:center;gap:6px}
+    .tut-hint i{display:inline-block;width:22px;height:4px;border-radius:2px}
+    .tut-pairs{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px}
+    .tut-pairs li{display:flex;align-items:center;gap:10px;font-weight:600}
+    .tut-pairs span::first-letter{text-transform:uppercase}
+    .tut-letter{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;color:#fff;font-size:.85rem;flex:none}
+    .player__step p{margin-top:10px}
     .player__row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px}
     .player__dots{display:flex;gap:8px}
+    .player__dots{flex-wrap:wrap}
     .player__dots button{width:34px;height:34px;border-radius:50%;border:2px solid #14101F;background:#fff;font-weight:800;cursor:pointer;font-family:inherit}
     .player__dots button[aria-current="true"]{background:#FF4D2E;border-color:#FF4D2E;color:#fff}
     .player__count{font-weight:700}
@@ -69,12 +85,17 @@
 
         <div class="player" id="player">
           <div class="player__stage" id="tutStage"></div>
+          <p class="tut-hint">
+            <span><i style="background:#FF4D2E"></i><i style="background:#6A3DF0"></i><span data-i18n="tut.hint.pair">Mismo color y letra: esos bordes se cosen juntos</span></span>
+            <span><i style="background:repeating-linear-gradient(90deg,#14101F 0 4px,transparent 4px 7px)"></i><span data-i18n="tut.hint.done">Costura ya hecha</span></span>
+          </p>
           <div class="player__row">
             <div class="player__dots" id="tutDots" role="group" aria-label="Pasos"></div>
             <div class="player__count" id="tutCount"></div>
           </div>
           <div class="player__step">
             <h3 id="tutStepT"></h3>
+            <ul class="tut-pairs" id="tutPairs" aria-live="polite"></ul>
             <p id="tutStepD"></p>
           </div>
           <div class="player__controls">
@@ -104,6 +125,14 @@
           <details>
             <summary data-i18n="tut.tip2.t">Plancha cada costura</summary>
             <p data-i18n="tut.tip2.d">Plancha cada costura al terminarla: la plancha hace la mitad del acabado.</p>
+          </details>
+          <details>
+            <summary data-i18n="tut.tip3.t">¿Qué es «derecho con derecho»?</summary>
+            <p data-i18n="tut.tip3.d">El derecho es la cara bonita de la tela. Pon las dos piezas con esa cara hacia dentro, una contra otra, y cose: al abrir, la costura queda escondida por dentro.</p>
+          </details>
+          <details>
+            <summary data-i18n="tut.tip4.t">¿A cuánto del borde coso?</summary>
+            <p data-i18n="tut.tip4.d">Al margen de costura que elegiste al exportar (1 cm por defecto). La línea negra del patrón es por donde pasa la aguja; la línea exterior es por donde cortas.</p>
           </details>
         </div>
 

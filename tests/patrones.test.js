@@ -301,6 +301,36 @@ test('el boceto del bóxer usa los contornos reales del patrón', () => {
   assert.ok(!/NaN|Infinity|undefined/.test(b.svg));
 });
 
+test('el bóxer entra por la cadera y la jareta mide lo mismo que la cintura', () => {
+  for (const m of [tallaBase(34), tallaBase(46), tallaBaseHombre(44), tallaBaseHombre(60)]) {
+    const [front, , , back, band] = PRENDAS.boxer.trazar(m).piezas;
+    const cintura = 2 * (front.eje + back.eje);
+    assert.ok(cintura >= m.cadera + 4, `cintura ${cintura} < cadera ${m.cadera}`);
+    const largoTira = Math.max(...band.outline.pts.map((p) => p.x));
+    assert.ok(Math.abs(largoTira - cintura) < 0.01, `tira ${largoTira} ≠ cintura ${cintura}`);
+  }
+});
+
+test('las piezas «Cortar 2» que se cosen entre sí marcan el borde de unión', () => {
+  const m = tallaBase(40);
+  const con = (id) => PRENDAS[id].trazar(m).piezas.filter((p) => p.union).length;
+  assert.equal(con('boxer'), 2);
+  assert.equal(con('pantalon'), 2);
+  assert.equal(con('falda'), 1);
+  assert.equal(con('camiseta'), 0);
+  const svg = generar('boxer', m).svg;
+  assert.ok(svg.includes('#0E9F6E'), 'sin línea de unión en el SVG');
+});
+
+test('cada paso del tutorial une bordes con color y letra', () => {
+  const r = globalThis.Percha.tutorialBoxer(tallaBase(40));
+  for (const s of r.steps) {
+    assert.ok(s.grupos.length > 0);
+    for (const g of s.grupos) assert.ok(g.color && g.letra && g.partes.length >= 1);
+  }
+  assert.equal((r.svg.match(/class="tut-badge"/g) || []).length, 2 * 2 * 4 + 5 + 4);
+});
+
 test('las claves usadas en el HTML existen en el diccionario', () => {
   const dict = I18n._dicts.es;
   for (const f of ['index.html', 'herramienta.html', 'glosario.html', 'tutorial.html']) {

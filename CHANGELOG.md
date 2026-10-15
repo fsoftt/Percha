@@ -18,6 +18,9 @@
 - Página tutorial animada del bóxer en 6 pasos, con tus medidas guardadas.
 - El tutorial y el boceto del bóxer usan los contornos reales del patrón en espejo.
 - Bolsillos traseros de ojal con vivo en el pantalón (delanteros renombrados para distinguirlos).
+- Bóxer: la cintura se corta con la cadera + 6 cm para que entre al ponérselo en tejido plano (antes medía cintura + 8 cm), y la tira de la jareta mide lo mismo que la cintura de la prenda (antes 6 cm menos).
+- Línea verde «Unir aquí las 2 piezas» en las piezas «Cortar 2» que se cosen entre sí (bóxer, pantalón y espalda de la falda), con su entrada en la leyenda y nota.
+- Tutorial del bóxer más claro: piezas extendidas sin solapes, pantalla inicial de corte, bordes que se cosen juntos con el mismo color y letra, costuras ya hechas en punteado, textos de cada paso detallados y dos consejos nuevos.
 
 ## 1.1.0 — 2026-10-05
 

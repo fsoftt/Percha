@@ -46,6 +46,8 @@ medidas (cm) ──► PRENDAS[id].trazar(medidas) ──► { piezas, notas }
   hilo: { x, y1, y2 },          // línea de hilo vertical (o { x: null, y, x1, x2 } horizontal)
   etiqueta: { x, y },           // posición del nombre de la pieza
   pasos: [{ n: 1, x, y }],      // insignias de la vista de montaje (coordenadas locales)
+  union: { d, texto, at, rot }, // borde por el que se cosen entre sí las 2 piezas de un par «Cortar 2» (línea verde)
+  bordes: { centro: 'M…', … }, // tramos del contorno por costura (bóxer; los usa el tutorial)
   compacta: false,              // etiqueta pequeña para piezas estrechas
 }
 ```
@@ -71,7 +73,7 @@ La herramienta ofrece tres vistas de la misma prenda (conmutador en la barra de 
 - **Patrón**: el trazado 1:1 que se exporta a PDF/SVG.
 - **Montaje**: el mismo trazado con insignias numeradas sobre las costuras (`pasos` de cada pieza, en coordenadas locales). Los números siguen el orden de las notas de costura (`n.sew*`). Es solo vista previa: la exportación usa siempre el patrón limpio.
 - **Boceto** (`bocetar()`): dibujo esquemático de la prenda ya unida, sin escala (lo indica en el propio dibujo). En el bóxer usa los contornos reales del patrón montados en espejo; en el resto, trazos delanteros parametrizados por las medidas.
-- **Tutorial** (`tutorialBoxer()` en `assets/js/tutorial.js`, página `tutorial.html`): delantero y trasero del bóxer **con los contornos reales del patrón**, montados como pares en espejo (`unirBoxer()`), con las 6 costuras en grupos `.tut-step` que la página anima por orden (reproducir, anterior/siguiente, puntos). Usa las medidas guardadas en `localStorage`. La unión es esquemática (espejo recto): sirve para reconocer las piezas, no para medir sobre ella.
+- **Tutorial** (`tutorialBoxer()` en `assets/js/patrones.js`, reproductor en `assets/js/tutorial.js`, página `tutorial.html`): las piezas reales del bóxer extendidas sin solaparse en el orden en que rodean el cuerpo (trasero · delantero · delantero · trasero, cada par en espejo), más vista, tapeta y tira de jareta. Cada paso (`.tut-step`) resalta los bordes que se cosen juntos con el mismo color y letra (tomados de `pieza.bordes`) y un arco que los une; la página muestra el paso actual (`.on`) y deja los anteriores como costuras hechas (`.done`). Hay una pantalla 0 con las piezas. Usa las medidas guardadas en `localStorage`.
 
 ## Añadir una prenda nueva
 
