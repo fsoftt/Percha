@@ -43,10 +43,14 @@
   }
 
   class Path {
-    constructor() { this.d = []; this.pts = []; this.cur = null; this.len = 0; }
+    constructor() { this.d = []; this.pts = []; this.cur = null; this.len = 0; this.segs = []; }
     M(p) { this.d.push(`M${f(p.x)} ${f(p.y)}`); this.pts.push(p); this.cur = p; return this; }
-    L(p) { this.d.push(`L${f(p.x)} ${f(p.y)}`); this.pts.push(p); this.len += dist(this.cur, p); this.cur = p; return this; }
+    L(p) {
+      this.segs.push({ from: this.cur, d: `L${f(p.x)} ${f(p.y)}` });
+      this.d.push(`L${f(p.x)} ${f(p.y)}`); this.pts.push(p); this.len += dist(this.cur, p); this.cur = p; return this;
+    }
     C(c1, c2, p) {
+      this.segs.push({ from: this.cur, d: `C${f(c1.x)} ${f(c1.y)} ${f(c2.x)} ${f(c2.y)} ${f(p.x)} ${f(p.y)}` });
       this.d.push(`C${f(c1.x)} ${f(c1.y)} ${f(c2.x)} ${f(c2.y)} ${f(p.x)} ${f(p.y)}`);
       for (let i = 1; i <= 12; i++) this.pts.push(cubicAt(this.cur, c1, c2, p, i / 12));
       this.len += cubicLen(this.cur, c1, c2, p);
@@ -55,6 +59,11 @@
     }
     Z() { this.d.push('Z'); return this; }
     toString() { return this.d.join(' '); }
+    // Trazado abierto con los tramos i..j del contorno (L/C en orden de dibujo)
+    tramo(i, j = i) {
+      const a = this.segs[i].from;
+      return `M${f(a.x)} ${f(a.y)} ` + this.segs.slice(i, j + 1).map((s) => s.d).join(' ');
+    }
   }
 
   const seg = (a, b) => `M${f(a.x)} ${f(a.y)} L${f(b.x)} ${f(b.y)}`;
@@ -373,7 +382,7 @@
       piezas.push({
         nombre: tr('p.pantsFront'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
         union: {
-          d: `M${f(cf.x)} 0 L${f(fw)} ${f(yh)} C${f(fw)} ${f(yh + (T - yh) * 0.6)} ${f(fw + ext * 0.35)} ${f(T)} ${f(tip.x)} ${f(tip.y)}`,
+          d: path.tramo(1, 2),
           texto: tr('p.joinPair'), at: P(fw - 1.6, flyL0 + (yh - flyL0) / 2 + 4), rot: 87,
         },
         pasos: [
@@ -445,7 +454,7 @@
       piezas.push({
         nombre: tr('p.pantsBack'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
         union: {
-          d: `M${f(cb.x)} ${f(cb.y)} L${f(bw)} ${f(yh)} C${f(bw + 0.3)} ${f(yh + (T + 1 - yh) * 0.65)} ${f(bw + ext * 0.45)} ${f(T + 1)} ${f(tip.x)} ${f(tip.y)}`,
+          d: path.tramo(1, 2),
           texto: tr('p.joinPair'), at: P((cb.x + bw) / 2 - 1.4, yh * 0.62), rot: 75,
         },
         pasos: [
@@ -678,11 +687,6 @@
         .C(P(0, yh * 0.45), P(st.x * 0.6, 0.4), st)
         .Z();
       const flyD = `M${f(cf.x)} ${f(cf.y)} C${f(cf.x + pouch)} 5 ${f(ww + pouch)} 10 ${f(flyEnd.x)} ${f(flyEnd.y)}`;
-      // Bordes de costura (los mismos tramos del contorno), para marcar uniones
-      const crotchF = `M${f(cf.x)} ${f(cf.y)} C${f(cf.x + pouch)} 5 ${f(hw + pouch)} 10 ${f(php.x)} ${f(php.y)}` +
-        ` C${f(hw + pouch * 0.5)} ${f(yh + (T - yh) * 0.6)} ${f(hw + ext * 0.35 + pouch * 0.3)} ${f(T)} ${f(tip.x)} ${f(tip.y)}`;
-      const inseamF = `M${f(tip.x)} ${f(tip.y)} C${f(tip.x - 0.6)} ${f(T + 2)} ${f(hIn.x + 0.3)} ${f(L - 6)} ${f(hIn.x)} ${f(hIn.y)}`;
-      const sideF = `M${f(hOut.x)} ${f(hOut.y)} C${f(hOut.x - 0.3)} ${f((L + yh) / 2)} 0 ${f(T + 2)} 0 ${f(yh)} C0 ${f(yh * 0.45)} 0 0.4 0 0`;
       const lineas = [
         guide(P(0, yh), php, tr('p.hip')),
         guide(P(0, T), P(tip.x, T), tr('p.crotch')),
@@ -695,10 +699,11 @@
       piezas.push({
         nombre: tr('p.boxerFront'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
         eje: cf.x,
-        union: { d: crotchF, texto: tr('p.joinPair'), at: P(hw + pouch * 0.5 - 1.3, yh + (T - yh) * 0.2), rot: 90 },
+        union: { d: path.tramo(1, 2), texto: tr('p.joinPair'), at: P(hw + pouch * 0.5 - 1.3, yh + (T - yh) * 0.2), rot: 90 },
+        // Tramos del contorno: 0 cintura, 1-2 centro, 3 entrepierna, 4 bajo, 5-6 costado
         bordes: {
-          cintura: seg(st, cf), centro: crotchF, bragueta: flyD,
-          entrepierna: inseamF, bajo: seg(hIn, hOut), costado: sideF,
+          cintura: path.tramo(0), centro: path.tramo(1, 2), bragueta: flyD,
+          entrepierna: path.tramo(3), bajo: path.tramo(4), costado: path.tramo(5, 6),
         },
         pasos: [
           { n: 1, x: flyEnd.x, y: 10 }, { n: 2, x: cf.x + 1, y: 7 },
@@ -715,7 +720,7 @@
       piezas.push({
         nombre: tr('p.flyFace'), corte: tr('p.cut1'), doblez: false, outline: vista,
         lineas: [guide(P(0, 0), P(0, flyL), tr('p.fly'))],
-        bordes: { bragueta: `M0 ${f(flyL)} C${f(pouch * 0.4)} 10 ${f(pouch * 0.4)} 4 0 0` },
+        bordes: { bragueta: vista.tramo(3) },
         pasos: [{ n: 1, x: 2, y: 7 }],
         hilo: { x: 2, y1: 2, y2: flyL - 2 }, etiqueta: P(2, flyL / 2 - 1), compacta: true,
       });
@@ -724,7 +729,7 @@
       piezas.push({
         nombre: tr('p.flyUnder'), corte: tr('p.cut1'), doblez: false, outline: tap,
         lineas: [],
-        bordes: { bragueta: `M0 ${f(flyL)} C${f(pouch * 0.5)} 10 ${f(pouch * 0.5)} 4 0 0` },
+        bordes: { bragueta: tap.tramo(3) },
         pasos: [{ n: 1, x: 3, y: 7 }],
         hilo: { x: 3, y1: 2, y2: flyL - 2 }, etiqueta: P(3, flyL / 2 - 1), compacta: true,
       });
@@ -736,7 +741,8 @@
       const ext = H / 10;
       const xc = (hw + ext) / 2;
       const hemHalf = (Th + 6) / 4 + 1;
-      const st = P(0, 0), cb = P(ww, 0);
+      // El centro trasero sube 3 cm (como en el pantalón) para dar largo de tiro al sentarse
+      const st = P(0, 0), cb = P(ww, -3);
       const tip = P(hw + ext, T + 1);
       const hIn = P(xc + hemHalf, L), hOut = P(xc - hemHalf, L);
       const path = new Path()
@@ -747,13 +753,10 @@
         .C(P(hOut.x - 0.3, (L + yh) / 2), P(0, T + 3), P(0, yh))
         .C(P(0, yh * 0.45), P(st.x * 0.6, 0.4), st)
         .Z();
-      const crotchB = `M${f(cb.x)} 0 L${f(hw)} ${f(yh)} C${f(hw + 0.3)} ${f(yh + (T + 1 - yh) * 0.65)} ${f(hw + ext * 0.45)} ${f(T + 1)} ${f(tip.x)} ${f(tip.y)}`;
-      const inseamB = `M${f(tip.x)} ${f(tip.y)} C${f(tip.x - 1)} ${f(T + 3)} ${f(hIn.x + 0.3)} ${f(L - 6)} ${f(hIn.x)} ${f(hIn.y)}`;
-      const sideB = `M${f(hOut.x)} ${f(hOut.y)} C${f(hOut.x - 0.3)} ${f((L + yh) / 2)} 0 ${f(T + 3)} 0 ${f(yh)} C0 ${f(yh * 0.45)} 0 0.4 0 0`;
       const lineas = [
         guide(P(0, yh), P(hw, yh), tr('p.hip')),
         guide(P(0, T), P(tip.x, T), tr('p.crotch')),
-        guide(P(0, 3), P(cb.x, 3), tr('p.casing')),
+        guide(P(0, 3), P(cb.x, cb.y + 3), tr('p.casing')),
         guide(P(hOut.x, L - 2), P(hIn.x, L - 2), tr('p.hem')),
         { d: seg(hOut, hIn), tipo: 'guia' },
         notch(tip, P(-1, 1)),
@@ -761,10 +764,10 @@
       piezas.push({
         nombre: tr('p.boxerBack'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
         eje: cb.x,
-        union: { d: crotchB, texto: tr('p.joinPair'), at: P((cb.x + hw) / 2 - 1.2, yh * 0.5), rot: 64 },
+        union: { d: path.tramo(1, 2), texto: tr('p.joinPair'), at: P((cb.x + hw) / 2 - 1.2, yh * 0.5), rot: 64 },
         bordes: {
-          cintura: seg(st, cb), centro: crotchB,
-          entrepierna: inseamB, bajo: seg(hIn, hOut), costado: sideB,
+          cintura: path.tramo(0), centro: path.tramo(1, 2),
+          entrepierna: path.tramo(3), bajo: path.tramo(4), costado: path.tramo(5, 6),
         },
         pasos: [
           { n: 2, x: cb.x - 1, y: 7 },
@@ -776,12 +779,13 @@
     }
 
     // Tira para la jareta de la goma: mide lo mismo que la cintura de la prenda
-    const cl = ww * 4;
+    const cl = 2 * (ww + Math.hypot(ww, 3));
+    const tira = new Path().M(P(0, 0)).L(P(cl, 0)).L(P(cl, 7)).L(P(0, 7)).Z();
     piezas.push({
       nombre: tr('p.elastic'), corte: tr('p.cut1'), doblez: false,
-      outline: new Path().M(P(0, 0)).L(P(cl, 0)).L(P(cl, 7)).L(P(0, 7)).Z(),
+      outline: tira,
       lineas: [guide(P(0, 3.5), P(cl, 3.5), tr('p.foldHere'))],
-      bordes: { cintura: seg(P(0, 7), P(cl, 7)) },
+      bordes: { cintura: tira.tramo(2) },
       pasos: [{ n: 5, x: cl / 2, y: 3.5 }],
       hilo: { x: null, y: 5.5, x1: 4, x2: Math.min(cl - 4, 40) },
       etiqueta: P(Math.min(cl / 2, 30), 1.8), compacta: true,
@@ -1023,7 +1027,8 @@
       6: [[0, 'bajo', 1, 'bajo', 2, 'bajo', 3, 'bajo']],
     };
     const LET = 'ABCD';
-    let minY = -4, maxY = yBand + 9;
+    const top = Math.min(front._bb.minY, back._bb.minY);
+    let minY = top - 4, maxY = yBand + 9;
     const steps = [];
     const ov = [1, 2, 3, 4, 5, 6].map((n) => {
       const grupos = pasos[n];
@@ -1054,7 +1059,7 @@
           // Los arcos largos pasan por fuera de las piezas (mitad del arco = media de extremos y control)
           const med = (a.y + b.y) / 2;
           let cy = abajo ? Math.max(a.y, b.y) + k : Math.min(a.y, b.y) - k;
-          if (dist(a, b) > 40) cy = abajo ? Math.max(cy, 2 * (L + 3) - med) : Math.min(cy, 2 * -4 - med);
+          if (dist(a, b) > 40) cy = abajo ? Math.max(cy, 2 * (L + 3) - med) : Math.min(cy, 2 * (top - 4) - med);
           minY = Math.min(minY, cy - 1); maxY = Math.max(maxY, cy + 1);
           links.push(`<path class="tut-link" d="M${f(a.x)} ${f(a.y)} Q${f((a.x + b.x) / 2)} ${f(cy)} ${f(b.x)} ${f(b.y)}" fill="none" stroke="${col}" stroke-width="0.22" stroke-dasharray="0.8 0.5"/>`);
         }

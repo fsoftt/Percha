@@ -304,7 +304,8 @@ test('el boceto del bóxer usa los contornos reales del patrón', () => {
 test('el bóxer entra por la cadera y la jareta mide lo mismo que la cintura', () => {
   for (const m of [tallaBase(34), tallaBase(46), tallaBaseHombre(44), tallaBaseHombre(60)]) {
     const [front, , , back, band] = PRENDAS.boxer.trazar(m).piezas;
-    const cintura = 2 * (front.eje + back.eje);
+    const largo = (pz) => { const [a, b] = [pz.outline.pts[0], pz.outline.pts[1]]; return Math.hypot(b.x - a.x, b.y - a.y); };
+    const cintura = 2 * (largo(front) + largo(back));
     assert.ok(cintura >= m.cadera + 4, `cintura ${cintura} < cadera ${m.cadera}`);
     const largoTira = Math.max(...band.outline.pts.map((p) => p.x));
     assert.ok(Math.abs(largoTira - cintura) < 0.01, `tira ${largoTira} ≠ cintura ${cintura}`);
@@ -329,6 +330,20 @@ test('cada paso del tutorial une bordes con color y letra', () => {
     for (const g of s.grupos) assert.ok(g.color && g.letra && g.partes.length >= 1);
   }
   assert.equal((r.svg.match(/class="tut-badge"/g) || []).length, 2 * 2 * 4 + 5 + 4);
+});
+
+test('los bordes del bóxer salen del propio contorno del patrón', () => {
+  const [front, vista, , back] = PRENDAS.boxer.trazar(tallaBase(40)).piezas;
+  for (const pz of [front, back]) {
+    const o = pz.outline.toString();
+    for (const [k, d] of Object.entries(pz.bordes)) {
+      if (k === 'bragueta') continue; // guía de la abertura, no es un tramo del contorno
+      for (const tramo of d.replace(/^M[^LC]+/, '').trim().split(/ (?=[LC])/)) assert.ok(o.includes(tramo), `${k}: ${tramo}`);
+    }
+  }
+  assert.ok(vista.outline.toString().includes(vista.bordes.bragueta.replace(/^M[^LC]+/, '').trim()));
+  // El trasero sube en el centro: más largo de tiro que el delantero
+  assert.ok(back.outline.pts[1].y < 0);
 });
 
 test('las claves usadas en el HTML existen en el diccionario', () => {
