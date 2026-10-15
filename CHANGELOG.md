@@ -2,6 +2,7 @@
 
 ## Sin publicar
 
+- La página de tutoriales vuelve a ser visible: enlazada desde la cabecera y el pie de todas las páginas, y sin `noindex`.
 - Tutoriales animados para todas las prendas (falda, cuerpo, pantalón, camiseta y bóxer) en `tutorial.html`, con una pestaña por prenda y enlace directo `tutorial.html#prenda`. Siguen el orden de costura de cada patrón, con las piezas reales (las de doblez, desplegadas) y los bordes que se cosen juntos marcados con color y letra. El motor es uno solo (`tutorial()` + `TUTORIALES`) y cada pieza declara sus `bordes`.
 - Mejoras del bóxer llevadas al resto de prendas:
   - Cinturillas de falda y pantalón medidas sobre la cintura real de la prenda (no con fórmula), con 3 cm de cruce y piquetes de costados y centro.
