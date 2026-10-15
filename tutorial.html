@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
   <style>
-    .player{border:2px solid #14101F;border-radius:20px;padding:20px;background:#fff;box-shadow:6px 6px 0 #14101F}
+    .player{border:2px solid var(--text);border-radius:20px;padding:20px;background:var(--surface);color:var(--text);box-shadow:6px 6px 0 var(--text)}
     .player__stage svg{width:100%;height:auto;display:block}
     .tut-step{opacity:0;transition:opacity .3s ease}
     .tut-step.on,.tut-step.done{opacity:1}
@@ -30,7 +30,7 @@
     .tut-badge{opacity:0;transition:opacity .3s ease 1.2s}
     .tut-step.on .tut-badge{opacity:1}
     .player__stage{background:#FBF8FF;border-radius:12px;padding:8px}
-    .tut-hint{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0 0;font-size:.85rem;color:#5B5470}
+    .tut-hint{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0 0;font-size:.85rem;color:var(--muted)}
     .tut-hint span{display:inline-flex;align-items:center;gap:6px}
     .tut-hint i{display:inline-block;width:22px;height:4px;border-radius:2px}
     .tut-pairs{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px}
@@ -41,18 +41,18 @@
     .player__row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px}
     .player__dots{display:flex;gap:8px}
     .player__dots{flex-wrap:wrap}
-    .player__dots button{width:34px;height:34px;border-radius:50%;border:2px solid #14101F;background:#fff;font-weight:800;cursor:pointer;font-family:inherit}
+    .player__dots button{width:34px;height:34px;border-radius:50%;border:2px solid var(--text);background:var(--surface);color:var(--text);font-weight:800;cursor:pointer;font-family:inherit}
     .player__dots button[aria-current="true"]{background:#FF4D2E;border-color:#FF4D2E;color:#fff}
     .player__count{font-weight:700}
     .player__step h3{margin:16px 0 6px;font-size:1.25rem}
     .player__step p{margin:0;max-width:60ch}
     .player__controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    .tut-src{display:inline-block;margin-top:12px;padding:6px 14px;border-radius:999px;background:#D4FF3A;border:2px solid #14101F;font-weight:700;font-size:.9rem}
+    .tut-src{display:inline-block;margin-top:12px;padding:6px 14px;border-radius:999px;background:var(--lime);color:var(--ink);border:2px solid var(--ink);font-weight:700;font-size:.9rem}
     .tut-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
-    .tut-tabs button{padding:8px 16px;border-radius:999px;border:2px solid #14101F;background:#fff;font-weight:700;font-family:inherit;cursor:pointer}
-    .tut-tabs button[aria-selected="true"]{background:#14101F;color:#D4FF3A}
+    .tut-tabs button{padding:8px 16px;border-radius:999px;border:2px solid var(--text);background:var(--surface);color:var(--text);font-weight:700;font-family:inherit;cursor:pointer}
+    .tut-tabs button[aria-selected="true"]{background:var(--lime);color:var(--ink);border-color:var(--ink)}
     .mat-list{display:grid;gap:10px;padding:0;list-style:none;max-width:60ch}
-    .mat-list li{border:2px solid #14101F;border-radius:14px;padding:10px 16px;background:#fff}
+    .mat-list li{border:2px solid var(--text);border-radius:14px;padding:10px 16px;background:var(--surface);color:var(--text)}
     @media (prefers-reduced-motion:reduce){.tut-seam,.tut-badge{transition:none}}
   </style>
 </head>
@@ -91,7 +91,7 @@
           <div class="player__stage" id="tutStage"></div>
           <p class="tut-hint">
             <span><i style="background:#FF4D2E"></i><i style="background:#6A3DF0"></i><span data-i18n="tut.hint.pair">Mismo color y letra: esos bordes se cosen juntos</span></span>
-            <span><i style="background:repeating-linear-gradient(90deg,#14101F 0 4px,transparent 4px 7px)"></i><span data-i18n="tut.hint.done">Costura ya hecha</span></span>
+            <span><i style="background:repeating-linear-gradient(90deg,var(--text) 0 4px,transparent 4px 7px)"></i><span data-i18n="tut.hint.done">Costura ya hecha</span></span>
           </p>
           <div class="player__row">
             <div class="player__dots" id="tutDots" role="group" aria-label="Pasos"></div>
