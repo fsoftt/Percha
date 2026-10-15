@@ -46,11 +46,12 @@
     constructor() { this.d = []; this.pts = []; this.cur = null; this.len = 0; this.segs = []; }
     M(p) { this.d.push(`M${f(p.x)} ${f(p.y)}`); this.pts.push(p); this.cur = p; return this; }
     L(p) {
-      this.segs.push({ from: this.cur, d: `L${f(p.x)} ${f(p.y)}` });
+      this.segs.push({ from: this.cur, d: `L${f(p.x)} ${f(p.y)}`, len: dist(this.cur, p), at: (t) => lerp(this.cur, p, t) });
       this.d.push(`L${f(p.x)} ${f(p.y)}`); this.pts.push(p); this.len += dist(this.cur, p); this.cur = p; return this;
     }
     C(c1, c2, p) {
-      this.segs.push({ from: this.cur, d: `C${f(c1.x)} ${f(c1.y)} ${f(c2.x)} ${f(c2.y)} ${f(p.x)} ${f(p.y)}` });
+      const p0 = this.cur;
+      this.segs.push({ from: p0, d: `C${f(c1.x)} ${f(c1.y)} ${f(c2.x)} ${f(c2.y)} ${f(p.x)} ${f(p.y)}`, len: cubicLen(p0, c1, c2, p), at: (t) => cubicAt(p0, c1, c2, p, t) });
       this.d.push(`C${f(c1.x)} ${f(c1.y)} ${f(c2.x)} ${f(c2.y)} ${f(p.x)} ${f(p.y)}`);
       for (let i = 1; i <= 12; i++) this.pts.push(cubicAt(this.cur, c1, c2, p, i / 12));
       this.len += cubicLen(this.cur, c1, c2, p);
@@ -63,6 +64,19 @@
     tramo(i, j = i) {
       const a = this.segs[i].from;
       return `M${f(a.x)} ${f(a.y)} ` + this.segs.slice(i, j + 1).map((s) => s.d).join(' ');
+    }
+    // Largo de los tramos i..j (lo que mide esa costura)
+    largo(i, j = i) { return this.segs.slice(i, j + 1).reduce((a, s) => a + s.len, 0); }
+    // Punto del tramo i a la distancia s (cm) de su inicio, recorriendo el borde
+    puntoA(i, s) {
+      const sg = this.segs[i];
+      let prev = sg.from, acc = 0;
+      for (let k = 1; k <= 120; k++) {
+        const q = sg.at(k / 120), l = dist(prev, q);
+        if (acc + l >= s) return lerp(prev, q, (s - acc) / (l || 1));
+        acc += l; prev = q;
+      }
+      return prev;
     }
   }
 
@@ -84,6 +98,9 @@
     return { d: seg(p, q), tipo: 'piquete' };
   }
 
+  // Piquete en p apuntando hacia el interior de la pieza (hacia el punto c)
+  function notchHacia(p, c) { return notch(p, P(c.x - p.x, c.y - p.y)); }
+
   function bbox(pts) {
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     for (const p of pts) {
@@ -97,8 +114,13 @@
   function falda(m) {
     const W = m.cintura, H = m.cadera, hh = m.altCadera, L = m.largoFalda;
     const ventH = clamp(L * 0.35, 12, 24);
+    // La cremallera llega a la línea de cadera para que la falda entre al ponérsela
+    const zipL = [18, 20, 22, 25].find((v) => v >= hh) || Math.ceil(hh);
+    // Abertura solo si el largo la necesita y no se cruza con la cremallera
+    const conAbertura = L - ventH >= zipL + 10;
     const piezas = [];
     const notas = [];
+    const cint = {};
 
     for (const lado of ['del', 'esp']) {
       const isF = lado === 'del';
@@ -121,7 +143,9 @@
         .L(P(0, L))
         .Z();
 
-      const lineas = [guide(P(0, hh), P(w, hh), tr('p.hipLine')), guide(P(0, L - 4), P(w, L - 4), tr('p.hem'))];
+      const lineas = [guide(P(0, hh), P(w, hh), tr('p.hipLine')), guide(P(0, L - 4), P(w, L - 4), tr('p.hem')), notch(P(w, hh), P(-1, 0))];
+      // Cintura de la pieza ya cosida: el borde menos lo que se va en pinzas
+      cint[lado] = path.largo(0) - pz;
       const waistY = (x) => cbY + (st.y - cbY) * Math.pow(x / st.x, 2);
       for (let i = 1; i <= n; i++) {
         const x = (st.x * i) / (n + 1);
@@ -130,22 +154,24 @@
         lineas.push(dart(P(x - half, waistY(x - half)), P(x, cbY + len), P(x + half, waistY(x + half))));
       }
       if (!isF) {
-        lineas.push(notch(P(0, 20), P(1, 0)));
-        lineas.push({ d: seg(P(0.8, 20), P(3.5, 20)), tipo: 'guia', texto: tr('p.zipEnd'), at: P(2.2, 19.4) });
-        const ventTop = L - ventH;
-        lineas.push({ d: seg(P(0, ventTop), P(0, L)), tipo: 'guia', texto: tr('p.vent'), at: P(1.6, ventTop + 3) });
-        lineas.push(notch(P(0, ventTop), P(1, 0)));
+        lineas.push(notch(P(0, zipL), P(1, 0)));
+        lineas.push({ d: seg(P(0.8, zipL), P(3.5, zipL)), tipo: 'guia', texto: tr('p.zipEnd'), at: P(2.2, zipL - 0.6) });
+        if (conAbertura) {
+          const ventTop = L - ventH;
+          lineas.push({ d: seg(P(0, ventTop), P(0, L)), tipo: 'guia', texto: tr('p.vent'), at: P(1.6, ventTop + 3) });
+          lineas.push(notch(P(0, ventTop), P(1, 0)));
+        }
       }
       const pasos = isF
         ? [{ n: 1, x: w * 0.5, y: cbY + 5 }, { n: 2, x: w, y: (hh + L) / 2 }, { n: 6, x: w * 0.5, y: L - 2 }]
-        : [{ n: 1, x: w * 0.5, y: cbY + 5 }, { n: 2, x: w, y: (hh + L) / 2 }, { n: 3, x: 0, y: 10 }, { n: 4, x: 0, y: L - ventH / 2 }, { n: 6, x: w * 0.5, y: L - 2 }];
+        : [{ n: 1, x: w * 0.5, y: cbY + 5 }, { n: 2, x: w, y: (hh + L) / 2 }, { n: 3, x: 0, y: zipL / 2 }, ...(conAbertura ? [{ n: 4, x: 0, y: L - ventH / 2 }] : []), { n: 6, x: w * 0.5, y: L - 2 }];
       piezas.push({
         nombre: isF ? tr('p.skirtFront') : tr('p.skirtBack'),
         corte: isF ? tr('p.cutFold') : tr('p.cut2'),
         doblez: isF,
         outline: path,
         lineas,
-        union: isF ? null : { d: seg(top, P(0, L)), texto: tr('p.joinPair'), at: P(1.3, hh + (L - ventH - hh) / 2), rot: 90 },
+        union: isF ? null : { d: seg(top, P(0, L)), texto: tr('p.joinPair'), at: P(1.3, hh + ((conAbertura ? L - ventH : L) - hh) / 2), rot: 90 },
         pasos,
         hilo: { x: w * 0.55, y1: hh + 4, y2: L - 6 },
         etiqueta: P(w * 0.5, hh + (L - hh) * 0.35),
@@ -153,14 +179,21 @@
       if (pz > 0) notas.push(tr(isF ? 'n.dartsFront' : 'n.dartsBack', { n, w: fmtN(pz / n) }));
     }
 
-    const cl = W + 1 + 3;
-    const cint = new Path().M(P(0, 0)).L(P(cl, 0)).L(P(cl, 8)).L(P(0, 8)).Z();
+    // Cinturilla: mide lo mismo que la cintura de la falda (espalda · delantero · espalda) + 3 cm de cruce
+    const wB = cint.esp, wF = 2 * cint.del;
+    const cl = 2 * wB + wF + 3;
+    const banda = new Path().M(P(0, 0)).L(P(cl, 0)).L(P(cl, 8)).L(P(0, 8)).Z();
     piezas.push({
       nombre: tr('p.waistband'),
       corte: tr('p.cut1'),
       doblez: false,
-      outline: cint,
-      lineas: [guide(P(0, 4), P(cl, 4), tr('p.foldHere')), { d: seg(P(cl - 3, 0), P(cl - 3, 8)), tipo: 'guia', texto: tr('p.overlap'), at: P(cl - 1.5, 2) }],
+      outline: banda,
+      lineas: [
+        guide(P(0, 4), P(cl, 4), tr('p.foldHere')),
+        { d: seg(P(cl - 3, 0), P(cl - 3, 8)), tipo: 'guia', texto: tr('p.overlap'), at: P(cl - 1.5, 2) },
+        // Piquetes de costado y centro delantero
+        ...[wB, wB + wF / 2, wB + wF].map((x) => notch(P(x, 8), P(0, -1))),
+      ],
       pasos: [{ n: 5, x: cl / 2, y: 4 }],
       hilo: { x: null, y: 6, x1: 4, x2: Math.min(cl - 6, 30) },
       etiqueta: P(Math.min(cl / 2, 22), 2),
@@ -168,7 +201,7 @@
     });
 
     // Vista de la abertura trasera (para rematar el martillo)
-    {
+    if (conAbertura) {
       const vv = new Path().M(P(0, 0)).L(P(6, 0)).L(P(6, ventH)).L(P(0, ventH)).Z();
       piezas.push({
         nombre: tr('p.ventFacing'), corte: tr('p.cut2'), doblez: false, outline: vv,
@@ -183,8 +216,9 @@
       notas: [
         tr('n.skirtEase'),
         ...notas,
-        tr('n.zip'),
-        tr('n.skirtVent', { v: fmtN(ventH) }),
+        tr('n.zip', { v: fmtN(zipL) }),
+        conAbertura ? tr('n.skirtVent', { v: fmtN(ventH) }) : tr('n.noVent'),
+        tr('n.bandMatch', { v: fmtN(cl - 3) }),
         tr('n.hem', { v: fmtN(4) }),
         tr('n.mirror'),
         tr('n.joinPair'),
@@ -205,8 +239,10 @@
     // Espalda
     const bw = (B + 8) / 4 - 1;
     const snpB = P(nw, -2);
-    const dropB = Math.min(4, sh - 1);
-    const spB = P(nw + Math.sqrt(sh * sh - dropB * dropB), -2 + dropB);
+    // El hombro de la espalda lleva 1 cm más que el delantero para embeber (omóplato)
+    const shB = sh + 1;
+    const dropB = Math.min(4, shB - 1);
+    const spB = P(nw + Math.sqrt(shB * shB - dropB * dropB), -2 + dropB);
     const uaB = P(bw, sisa);
     const bwp = P(Math.min(ae / 2, bw - 1.5), (spB.y + sisa) / 2 + 1);
     const excB = Math.max(bw - ((W + 4) / 4 - 1), 0);
@@ -228,7 +264,8 @@
       .L(P(0, te))
       .Z();
     const dxB = ae / 4 + 1;
-    const linB = [guide(P(0, sisa), P(bw, sisa), tr('p.armLine'))];
+    // Piquetes de sisa: doble en la espalda, sencillo en el delantero (igual que en la manga)
+    const linB = [guide(P(0, sisa), P(bw, sisa), tr('p.armLine')), notch(P(bwp.x, bwp.y - 0.5), P(-1, 0)), notch(P(bwp.x, bwp.y + 0.5), P(-1, 0))];
     if (pzB > 0.3) linB.push(dart(P(dxB - pzB / 2, te), P(dxB, sisa + 2), P(dxB + pzB / 2, te)));
 
     // Delantero
@@ -260,7 +297,7 @@
       .L(P(0, td))
       .Z();
 
-    const linF = [guide(P(0, uaY), P(fw, uaY), tr('p.armLine'))];
+    const linF = [guide(P(0, uaY), P(fw, uaY), tr('p.armLine')), notch(fwp, P(-1, 0))];
     // Pinza de costado: absorbe la diferencia de largo por el busto
     const dSide = clamp(td - (te + 2), 0, 6);
     if (dSide >= 0.5) {
@@ -300,6 +337,8 @@
       const capH = (loB + hiB) / 2;
       const hemYB = Math.max(Lm, capH + 3);
       const codoY = (capH + hemYB) / 2;
+      // Distancia del bajo de sisa al piquete (tramo inferior de cada sisa) + 0,3 cm de embebido
+      const dB = back.largo(3) + 0.3, dF = front.largo(3) + 0.3;
       const sleeveB = new Path()
         .M(P(0, capH))
         .C(P(sw * 0.3, capH), P(sw * 0.6, 0), P(sw, 0))
@@ -314,6 +353,8 @@
           { d: seg(P(2, codoY), P(2 * sw - 2, codoY)), tipo: 'guia' },
           guide(P(2, hemYB - 2), P(2 * sw - 2, hemYB - 2), tr('p.hem')),
           notch(P(sw, 0), P(0, 1)),
+          ...[dB - 0.5, dB + 0.5].map((d) => notchHacia(sleeveB.puntoA(0, d), P(sw, capH))),
+          notchHacia(sleeveB.puntoA(1, sleeveB.largo(1) - dF), P(sw, capH)),
         ],
         pasos: [{ n: 4, x: sw, y: 2 }],
         hilo: { x: sw, y1: capH + 1.5, y2: hemYB - 1.5 }, etiqueta: P(sw, capH - 3.5),
@@ -326,6 +367,8 @@
       notas: [
         tr('n.bodiceEase'),
         tr('n.armDepth', { v: fmtN(sisa) }),
+        tr('n.shoulderEase'),
+        tr('n.armNotches'),
         ...notas,
         pzF > 0.3 ? tr('n.frontDart', { v: fmtN(pzF) }) : tr('n.noFrontDart'),
         pzB > 0.3 ? tr('n.backDart', { v: fmtN(pzB) }) : tr('n.noBackDart'),
@@ -343,6 +386,7 @@
     const yk = T + (L - T) / 2 - 5;
     const piezas = [];
     const notas = [];
+    const cint = {};
 
     // Delantero (costado en x=0, centro delantero a la derecha)
     {
@@ -377,8 +421,11 @@
         { d: `M${f(0)} 3 C3 5 5 9 6 15`, tipo: 'guia', texto: tr('p.pocket'), at: P(7.5, 10) },
         notch(P(0, 3), P(1, 0.3)),
         notch(P(6, 15), P(0.5, 1)),
+        notch(P(0, yh), P(1, 0)),
+        notch(tip, P(-1, 1)),
       ];
       if (pz > 0.3) lineas.push(dart(P(xc - pz / 2, 0), P(xc, 9), P(xc + pz / 2, 0)));
+      cint.del = path.largo(0) - (pz > 0.3 ? pz : 0);
       piezas.push({
         nombre: tr('p.pantsFront'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
         union: {
@@ -425,6 +472,8 @@
         guide(P(0, T), P(tip.x, T), tr('p.crotch')),
         guide(kOut, kIn, tr('p.knee')),
         guide(P(hOut.x, L - 4), P(hIn.x, L - 4), tr('p.hem')),
+        notch(P(0, yh), P(1, 0)),
+        notch(tip, P(-1, 1)),
       ];
       // Bolsillo trasero de ojal: abertura inclinada sobre la pala
       const ojalL = clamp(H * 0.14, 12, 16);
@@ -451,6 +500,7 @@
         }
         notas.push(tr('n.pantsBack', { n, w: fmtN(pz / n) }));
       }
+      cint.esp = path.largo(0) - (pz > 0.3 ? pz : 0);
       piezas.push({
         nombre: tr('p.pantsBack'), corte: tr('p.cut2'), doblez: false, outline: path, lineas,
         union: {
@@ -466,11 +516,18 @@
       });
     }
 
-    const cl = W + 2 + 3;
+    // Cinturilla: mide lo mismo que la cintura del pantalón + 3 cm de cruce para el botón.
+    // Empieza en el centro delantero: delantero · trasero · trasero · delantero.
+    const wF = cint.del, wB = cint.esp;
+    const cl = 2 * (wF + wB) + 3;
     piezas.push({
       nombre: tr('p.waistband'), corte: tr('p.cut1'), doblez: false,
       outline: new Path().M(P(0, 0)).L(P(cl, 0)).L(P(cl, 8)).L(P(0, 8)).Z(),
-      lineas: [guide(P(0, 4), P(cl, 4), tr('p.foldHere'))],
+      lineas: [
+        guide(P(0, 4), P(cl, 4), tr('p.foldHere')),
+        { d: seg(P(cl - 3, 0), P(cl - 3, 8)), tipo: 'guia', texto: tr('p.overlap'), at: P(cl - 1.5, 2) },
+        ...[wF, wF + wB, wF + 2 * wB].map((x) => notch(P(x, 8), P(0, -1))),
+      ],
       pasos: [{ n: 6, x: cl / 2, y: 4 }],
       hilo: { x: null, y: 6, x1: 4, x2: Math.min(cl - 6, 30) },
       etiqueta: P(Math.min(cl / 2, 22), 2), compacta: true,
@@ -556,16 +613,23 @@
 
     return {
       piezas,
-      notas: [tr('n.pantsEase'), ...notas, tr('n.hem', { v: fmtN(4) }), tr('n.mirror'), tr('n.joinPair'), tr('n.saEdges'), tr('n.sewPantalon'), tr('n.crease')],
+      notas: [tr('n.pantsEase'), ...notas, tr('n.bandMatch', { v: fmtN(cl - 3) }), tr('n.hem', { v: fmtN(4) }), tr('n.mirror'), tr('n.joinPair'), tr('n.saEdges'), tr('n.sewPantalon'), tr('n.crease')],
     };
   }
 
   // ---------- Camiseta básica ----------
+  // Escote redondo de camiseta: más abierto que el del cuerpo base para que
+  // pase por la cabeza (contorno ≈ cuello + 9 cm antes de la tira).
+  function escoteCamiseta(N) {
+    return { nw: N / 6 + 2, ndF: N / 6 + 3.5, ndB: 2.5 };
+  }
+
   function camiseta(m) {
     const B = m.pecho, Lt = m.largoCamiseta, AH = m.hombros, N = m.cuello, Lm = m.largoManga, Bi = m.brazo;
     const w = (B + 10) / 4;
     const sisa = B / 6 + 8;
-    const nw = N / 6 + 1;
+    const { nw, ndF, ndB } = escoteCamiseta(N);
+    let escote = 0;
     const sp = P(clamp(AH / 2, nw + 4, w - 0.5), 4);
     const ua = P(w, sisa);
     const ap = P(Math.min(sp.x - 1, w - 1.5), sisa * 0.62);
@@ -573,7 +637,7 @@
     let arm = 0;
 
     for (const lado of ['esp', 'del']) {
-      const nd = lado === 'esp' ? 2.5 : N / 6 + 2;
+      const nd = lado === 'esp' ? ndB : ndF;
       const path = new Path()
         .M(P(0, nd))
         .C(P(nw * 0.55, nd), P(nw, nd * 0.5), P(nw, 0))
@@ -583,6 +647,7 @@
         .C(P(sp.x - 0.4, sp.y + 4), P(ap.x, ap.y - 4), ap)
         .C(P(ap.x, ap.y + (sisa - ap.y) * 0.6), P(ap.x + (w - ap.x) * 0.35, sisa), ua);
       arm += path.len - before;
+      escote += 2 * path.largo(0);
       path.L(P(w, Lt)).L(P(0, Lt)).Z();
       const pasosT = lado === 'esp'
         ? [{ n: 1, x: sp.x, y: sp.y + 1 }, { n: 4, x: w, y: (sisa + Lt) / 2 }, { n: 5, x: w * 0.5, y: Lt - 1.5 }]
@@ -621,13 +686,10 @@
       hilo: { x: sw, y1: h + 1.5, y2: hemY - 1.5 }, etiqueta: P(sw, h - 3.5),
     });
 
-    // Tira de cuello: 85 % del contorno del escote, 4 cm de ancho para doblar
+    // Tira de cuello: 85 % del contorno real del escote (delantero + espalda), 4 cm de ancho para doblar
     let bandNote = '';
     {
-      const ndF = N / 6 + 2;
-      const frontNeck = cubicLen(P(0, ndF), P(nw * 0.55, ndF), P(nw, ndF * 0.5), P(nw, 0));
-      const backNeck = cubicLen(P(0, 0), P(nw * 0.55, 0), P(nw, -0.8), P(nw, -2));
-      const bandL = Math.max((frontNeck + backNeck) * 2 * 0.85, 20);
+      const bandL = escote * 0.85;
       const band = new Path().M(P(0, 0)).L(P(bandL, 0)).L(P(bandL, 4)).L(P(0, 4)).Z();
       piezas.push({
         nombre: tr('p.neckband'), corte: tr('p.cut1'), doblez: false, outline: band,
@@ -636,7 +698,7 @@
         hilo: { x: null, y: 3, x1: 4, x2: Math.min(bandL - 4, 40) },
         etiqueta: P(Math.min(bandL / 2, 25), 1.2), compacta: true,
       });
-      bandNote = tr('n.teeBand', { v: fmtN(bandL) });
+      bandNote = tr('n.teeBand', { v: fmtN(bandL), e: fmtN(escote) });
     }
 
     return {
@@ -863,7 +925,7 @@
   }
 
   function bocetoCamiseta(m) {
-    const bodyW = (m.pecho + 10) / 2, nw = m.cuello / 6 + 1, nd = m.cuello / 6 + 2;
+    const bodyW = (m.pecho + 10) / 2, { nw, ndF: nd } = escoteCamiseta(m.cuello);
     const b = bocetoTorso(bodyW, bodyW, m.largoCamiseta, m.largoCamiseta, m.hombros / 2, 4, nw, nd, m.pecho / 6 + 8, m.largoManga, false);
     const hem = `<path d="M${f(-bodyW / 2)} ${f(m.largoCamiseta - 2.5)} H${f(bodyW / 2)}" stroke="${BC.guia}" stroke-width="0.25" stroke-dasharray="1 0.8"/>`;
     return { d: b.d + hem, w: b.w, h: b.h, y0: b.y0 };
@@ -1092,7 +1154,7 @@
     cuello: { min: 28, max: 55 },
     altBusto: { min: 18, max: 40 },
     sepBusto: { min: 12, max: 28 },
-    tiro: { label: tr('p.crotch'), ayuda: 'Sentada en una silla dura: desde la cintura hasta el asiento, por el costado.', min: 18, max: 40 },
+    tiro: { min: 18, max: 40 },
     largoPantalon: { min: 50, max: 130 },
     bajo: { min: 30, max: 70 },
     largoCamiseta: { min: 40, max: 95 },

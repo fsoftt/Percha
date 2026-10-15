@@ -346,6 +346,67 @@ test('los bordes del bóxer salen del propio contorno del patrón', () => {
   assert.ok(back.outline.pts[1].y < 0);
 });
 
+const TALLAS_TODAS = () => [
+  ...[34, 38, 42, 46, 50, 54].map((t) => tallaBase(t)),
+  ...[44, 50, 56, 60].map((t) => tallaBaseHombre(t)),
+];
+const largoX = (pz) => Math.max(...pz.outline.pts.map((p) => p.x));
+
+test('las cinturillas miden lo mismo que la cintura cosida de la prenda + 3 cm de cruce', () => {
+  for (const m of TALLAS_TODAS()) {
+    const f = PRENDAS.falda.trazar(m).piezas, p = PRENDAS.pantalon.trazar(m).piezas;
+    assert.ok(Math.abs(largoX(f[2]) - 3 - (m.cintura + 1)) < 0.6, `falda: ${largoX(f[2])} para cintura ${m.cintura}`);
+    assert.ok(Math.abs(largoX(p[2]) - 3 - (m.cintura + 2)) < 0.6, `pantalón: ${largoX(p[2])} para cintura ${m.cintura}`);
+    for (const banda of [f[2], p[2]]) assert.equal(banda.lineas.filter((l) => l.tipo === 'piquete').length, 3);
+  }
+});
+
+test('la cremallera de la falda llega a la cadera y no se cruza con la abertura', () => {
+  for (const m of TALLAS_TODAS()) {
+    for (const largo of [MEDIDAS.largoFalda.min, 45, 60, MEDIDAS.largoFalda.max]) {
+      for (const altCadera of [MEDIDAS.altCadera.min, m.altCadera, MEDIDAS.altCadera.max]) {
+        const res = PRENDAS.falda.trazar({ ...m, largoFalda: largo, altCadera });
+        const zip = res.piezas[1].lineas.find((l) => l.texto === I18n.t('p.zipEnd'));
+        const zipY = Number(zip.d.split(' ')[1]);
+        assert.ok(zipY >= altCadera, `cremallera ${zipY} sobre cadera ${altCadera}`);
+        const vent = res.piezas[1].lineas.find((l) => l.texto === I18n.t('p.vent'));
+        if (vent) assert.ok(Number(vent.d.split(' ')[1]) >= zipY + 10, `abertura pisa la cremallera (largo ${largo})`);
+        assert.equal(res.piezas.length, vent ? 4 : 3);
+      }
+    }
+  }
+});
+
+test('las costuras que se cosen entre sí casan', () => {
+  for (const m of TALLAS_TODAS()) {
+    const [fd, fe] = PRENDAS.falda.trazar(m).piezas;
+    assert.ok(Math.abs(fd.outline.largo(1, 2) - fe.outline.largo(1, 2)) < 0.1, 'costados de falda');
+    const [pd, pt] = PRENDAS.pantalon.trazar(m).piezas;
+    assert.ok(Math.abs(pd.outline.largo(7, 8) - pt.outline.largo(7, 8)) < 0.5, 'costados de pantalón');
+    const entre = pd.outline.largo(3, 4) - pt.outline.largo(3, 4);
+    assert.ok(entre >= 0 && entre < 1.5, `entrepierna: el trasero se estira hasta ${entre}`);
+    const [ce, cd] = PRENDAS.cuerpo.trazar(m).piezas;
+    assert.ok(Math.abs(ce.outline.largo(1) - cd.outline.largo(1) - 1) < 0.01, 'hombro espalda = delantero + 1 cm de embebido');
+  }
+});
+
+test('la sisa del cuerpo lleva piquetes que casan con la manga', () => {
+  const [ce, cd, manga] = PRENDAS.cuerpo.trazar(tallaBase(40)).piezas;
+  const n = (pz) => pz.lineas.filter((l) => l.tipo === 'piquete').length;
+  assert.equal(n(ce), 2);
+  assert.equal(n(cd), 2); // sisa + punto de busto
+  assert.equal(n(manga), 4); // copa + doble trasero + sencillo delantero
+});
+
+test('el escote de la camiseta pasa por la cabeza y la tira es el 85 % del escote real', () => {
+  for (const m of TALLAS_TODAS()) {
+    const [esp, del, , tira] = PRENDAS.camiseta.trazar(m).piezas;
+    const escote = 2 * (esp.outline.largo(0) + del.outline.largo(0));
+    assert.ok(escote >= m.cuello + 7, `escote ${escote} para cuello ${m.cuello}`);
+    assert.ok(Math.abs(largoX(tira) - escote * 0.85) < 0.01, `tira ${largoX(tira)} ≠ 85 % de ${escote}`);
+  }
+});
+
 test('las claves usadas en el HTML existen en el diccionario', () => {
   const dict = I18n._dicts.es;
   for (const f of ['index.html', 'herramienta.html', 'glosario.html', 'tutorial.html']) {

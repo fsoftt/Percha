@@ -2,6 +2,14 @@
 
 ## Sin publicar
 
+- Mejoras del bóxer llevadas al resto de prendas:
+  - Cinturillas de falda y pantalón medidas sobre la cintura real de la prenda (no con fórmula), con 3 cm de cruce y piquetes de costados y centro.
+  - Falda: la cremallera llega a la línea de cadera (18/20/22/25 cm) para que entre al ponérsela; la abertura solo aparece si el largo la necesita y no se cruza con la cremallera.
+  - Camiseta: escote más abierto para que pase por la cabeza (≈ cuello + 9 cm) y tira de cuello calculada sobre el escote real (antes usaba otra curva de espalda).
+  - Piquetes de cadera en costados (falda y pantalón) y de punta de tiro en el pantalón.
+- Revisión de patronaje:
+  - Cuerpo: el hombro de la espalda lleva 1 cm de embebido; piquetes de sisa (uno delante, dos detrás) que casan con la manga.
+  - Pruebas de costuras que casan entre sí, cinturillas, cremallera y escote en tallas de mujer y hombre.
 - Bóxer con suplemento delantero curvo, bragueta con vista y tapeta, y tira para goma.
 - Pantalón con bragueta (vista, tapeta y guía de cremallera).
 - Camiseta con tira de cuello calculada al 85 % del escote.
